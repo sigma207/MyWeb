@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Table</title>
+    <link rel="stylesheet" href="../css/dynamicTable.css">
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            color: #fff;
+        }
+
+        .tableContainer {
+            width: 100%;
+            height: 50%;
+            overflow: auto;
+        }
+
+        /*table>tr>td th{*/
+        /*border: 1px solid blue;*/
+        /*}*/
+        .dynamicTable th {
+            border-color: #565656;
+
+            background: #5c5f66; /* Old browsers */
+            background: -moz-linear-gradient(top, #5c5f66 0%, #000000 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5c5f66), color-stop(100%, #000000)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #5c5f66 0%, #000000 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #5c5f66 0%, #000000 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #5c5f66 0%, #000000 100%); /* IE10+ */
+            background: linear-gradient(to bottom, #5c5f66 0%, #000000 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5c5f66', endColorstr='#000000', GradientType=0); /* IE6-9 */
+        }
+
+        .dynamicTable td {
+            border-style: none;
+        }
+
+        .oddEven tbody tr:nth-child(odd) {
+            background-color: #272727;
+        }
+
+        .oddEven tbody tr:nth-child(even) {
+            background-color: #0f0f0f;
+        }
+
+        .oddEven tbody tr:hover {
+            background-color: #565656;
+        }
+
+        .oddEven tbody tr td:hover {
+            box-shadow: inset 1px 1px 3px 1px rgb(255,183,10),inset -1px -1px 3px 1px rgb(255,183,10);
+        }
+
+        .golden {
+            color: #ffb70a;
+        }
+
+        .lightBlue {
+            color: lightskyblue;
+        }
+
+        .scroller{
+            position: relative;
+            left: 0;
+            top: 0;
+            /*width: 100%;*/
+            height: 50%;
+            overflow: auto;
+        }
+
+        .columnHead{
+            position: relative;
+            /*position: absolute;*/
+            /*-webkit-transform: translate(20px,50px);*/
+            /*-moz-transform:    translate(20px,50px);*/
+            /*-ms-transform:     translate(20px,50px);*/
+            /*-o-transform:      translate(20px,50px);*/
+        }
+
+        /*.columnHead tr, .columnHead th{*/
+            /*position: relative;*/
+        /*}*/
+
+    </style>
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.freezeheader.js"></script>
+    <script type="text/javascript" src="../js/numeral.min.js"></script>
+    <script type="text/javascript" src="../js/moment.js"></script>
+    <script type="text/javascript" src="../js/mock.js"></script>
+    <script type="text/javascript" src="../js/jsonTool.js"></script>
+    <script type="text/javascript" src="../js/domTool.js"></script>
+    <script type="text/javascript" src="../js/dynamicTable.js"></script>
+    <script type="text/javascript" src="stockData.template.js"></script>
+    <script>
+        var dragTable;
+        $(document).ready(function () {
+
+            dragTable = DragTable.createNew();
+            $("#hide").click(function () {
+                dragTable.hideColumn(parseInt($("#no").val()));
+            });
+            $("#show").click(function () {
+                dragTable.showColumn(parseInt($("#no").val()));
+            });
+            $("#refresh").click(function(){
+                ajax();
+            });
+
+            Mock.mock("quote.json",generateData);
+//            $("#columnHead").css("transform","translate(50px,50px)");
+            overMyHead();
+            ajax();
+//            setInterval(ajax,1000);
+        });
+
+        function ajax(){
+            $.ajax({
+                url:"quote.json",
+                dataType:"json",
+                success:function(data){
+                    console.log("ajax success");
+                    dragTable.setDataSource(data);
+//                    console.time("freezeHeader");
+//                    $('.dynamicTable').freezeHeader();
+//                    console.timeEnd("freezeHeader");
+                }
+            });
+        }
+
+        function generateData(option){
+            var data = [];
+//            console.time("mock");
+            var temp;
+            for (var i = 0; i < 50; i++) {
+                temp = Mock.mock(stock);
+                data.push(temp);
+            }
+//            console.timeEnd("mock");
+            return data;
+        }
+
+        function overMyHead(){
+            var scroller = $(".scroller");
+//            scroller.get(0).style.msTransform = "translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)";
+            var ch = $(".columnHead");
+//            alert(getComputedStyle(ch,null).getPropertyValue("-ms-transform"));
+//            console.dir(ch.get(0));
+            scroller.on("scroll", function (e) {
+//                console.dir(scroller);
+//                console.log("scroller offset top:"+scroller.offset().top);
+//                console.log("ch offset top:"+ch.offset().top);
+//                console.log("ch css top:"+ch.css("top"));
+//                ch.get(0).style.top = scroller.offset().top;
+
+//                var temp =parseInt(scroller.offset().top)-parseInt(ch.css("height"));
+//                console.log("scrollTop="+scroller.scrollTop());
+//                ch.offset({top:parseInt(scroller.offset().top)+0});//firefox chrome
+//                ch.css("top", parseInt(scroller.scrollTop()) - 1);//firefox
+
+                ch.css("transform","translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)");//firefox chrome
+//                ch.css("ms-Transform ","translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)");//firefox chrome
+//                ch.get(0).style.msTransform = "translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)";
+                
+                
+
+//                console.log("ch css top:"+ch.css("top"));
+//                console.log("ch offset top:"+ch.offset().top);
+//                ch.attr("offsetTop",scroller.offset().top);
+
+            });
+
+        }
+    </script>
+</head>
+<body>
+欄位顯示控制:
+<input id="no" type="text">
+<button id="show">show</button>
+<button id="hide">hide</button>
+<br/>
+<button id="refresh">更新資料</button>
+<div class="scroller">
+<table id="dynamicTable" border="1" cellpadding="0" cellspacing="0" width="100%" class="dynamicTable oddEven">
+    <thead class="columnHead">
+    <tr >
+        <th field="code" tdClass="golden">代號</th>
+        <th field="name" tdClass="golden">名稱</th>
+        <th field="buying" type="number" decimal="4">買價</th>
+        <th field="selling" type="number" decimal="4">賣價</th>
+        <th field="transaction" type="number" decimal="4" stockChangeColorField="change">成交價</th>
+        <th field="single" type="number" tdClass="lightBlue">單量</th>
+        <th field="total" type="number" tdClass="lightBlue">總量</th>
+        <th field="change" type="number" decimal="4" stockChangeColorField="change">漲跌</th>
+        <th field="changeRate" type="rate" decimal="2" stockChangeColorField="change">漲跌幅(%)</th>
+        <th field="height" type="number" decimal="4">最高價</th>
+        <th field="low" type="number" decimal="4">最低價</th>
+        <th field="BIDVOL" type="number">委買量</th>
+        <th field="ASKVOL" type="number">委賣量</th>
+        <th field="opening" type="number" decimal="4">開盤價</th>
+        <th field="close" type="number" decimal="4">昨收</th>
+        <th field="date" type="date">日期</th>
+        <th field="time" type="time">時間</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+</div>
+</body>
+</html>

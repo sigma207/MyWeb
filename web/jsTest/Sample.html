@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sample</title>
+<script type="text/javascript">
+	var simpleEncoding = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+	function simpleEncode(values, maxValue) {
+
+		var chartData = [ 's:' ];
+		for (var i = 0; i < values.length; i++) {
+			var currentValue = values[i];
+			if (!isNaN(currentValue) && currentValue >= 0) {
+				chartData.push(simpleEncoding.charAt(Math
+						.round((simpleEncoding.length - 1) * currentValue
+								/ maxValue)));
+			} else {
+				chartData.push('_');
+			}
+		}
+		return chartData.join('');
+	}
+
+	function test() {
+		var valueArray = new Array(20, 100, 40, 50, 60, 81, 74);
+		var maxValue = 100;
+		document.write(simpleEncode(valueArray, maxValue));
+	}
+</script>
+</head>
+<body>
+<input type="button" value="test" onclick="test()" />
+</body>
+</html>

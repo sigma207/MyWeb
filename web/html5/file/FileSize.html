@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>File(s) size</title>
+<style type="text/css">
+#dropBox{
+	width: 500px;
+	height: 300px;
+	background-color: #00AACC;
+}
+</style>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+	function fileChange(){
+		updateSize(document.getElementById("uploadInput").files);
+	}
+	function updateSize(oFiles) {
+		var dropList = document.getElementById("dropList");
+		
+		var nBytes = 0,  nFiles = oFiles.length;
+		for (var nFileId = 0; nFileId < nFiles; nFileId++) {
+			nBytes += oFiles[nFileId].size;
+		}
+		var sOutput = nBytes + " bytes";
+		// optional code for multiples approximation
+		var aMultiples = [ "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB" ];
+		var nApprox = nBytes / 1024;
+		//alert("nBytes="+nBytes+",nApprox="+nApprox);
+		//如果nBytes(檔案合計大小)大於1024Bytes才會進入下面for loop中進行格式化
+		for (var nMultiple = 0; nApprox > 1; nApprox /= 1024, nMultiple++) {
+			sOutput = nApprox.toFixed(3) + " " + aMultiples[nMultiple] + " (" + nBytes + " bytes)";
+		}
+		// end of optional code
+		document.getElementById("fileNum").innerHTML = nFiles;
+		document.getElementById("fileSize").innerHTML = sOutput;
+	}
+	
+	var dropBox;
+	function init(){
+		dropBox = document.getElementById("dropBox");
+		dropBox.addEventListener("dragenter", dragenter, false);
+		dropBox.addEventListener("dragover", dragover, false);
+		dropBox.addEventListener("drop", drop, false);
+	}
+	
+	function dragenter(e){
+		e.stopPropagation();
+		e.preventDefault();
+	}
+	function dragover(e){
+		e.stopPropagation();
+		e.preventDefault();
+	}
+	function drop(e){
+		e.stopPropagation();
+		e.preventDefault();
+		
+		var dt = e.dataTransfer;
+		var files = dt.files;
+		updateSize(files);
+		$("p").html("");
+	}
+</script>
+</head>
+
+<body onload="fileChange();init();">
+	<form name="uploadForm">
+		<p>
+			<input id="uploadInput" type="file" name="myFiles" onchange="fileChange();" multiple> 
+		</p>
+		<p>
+			<input type="submit" value="Send file">
+		</p>
+	</form>
+	selected files: <span id="fileNum">0</span>; total size: <span id="fileSize">0</span>
+	<div id="dropBox">
+		drop local file to here!
+	</div>
+	<ul id="dropList">
+	</ul>
+	
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>BaseDataTable</title>
+    <link rel="stylesheet" href="../../css/jquery.dataTables.css"/>
+    <script type="text/javascript" src="../../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../../js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#dataTable").dataTable();
+        })
+    </script>
+</head>
+<body>
+<table id="dataTable" class="display">
+    <thead>
+    <tr>
+        <th>code</th>
+        <th>name</th>
+        <th>amount</th>
+        <th>location</th>
+        <th>remark</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>01</td>
+        <td>bill</td>
+        <td>50</td>
+        <td>Taipei</td>
+        <td>none</td>
+    </tr>
+    <tr>
+        <td>02</td>
+        <td>Mary</td>
+        <td>100</td>
+        <td>Japan</td>
+        <td>...</td>
+    </tr>
+    <tr>
+        <td>03</td>
+        <td>John</td>
+        <td>150</td>
+        <td>China</td>
+        <td>haha</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

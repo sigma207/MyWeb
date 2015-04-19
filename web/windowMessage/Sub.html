@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+	window.addEventListener("message", onMessage, false);
+	function onMessage(evt){
+		if(evt.origin!="http://localhost:8080"){
+			return;
+		}
+		document.body.innerHTML = "從"+evt.origin+"傳來的消息.<BR>"+evt.data;
+		evt.source.postMessage("你好,這裡是"+this.location,evt.origin);
+	}
+</script>
+</head>
+<body>
+
+</body>
+</html>

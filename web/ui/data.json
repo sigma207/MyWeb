@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "code": "01",
+      "name": "Bill",
+      "amount": 50
+    },
+    {
+      "code": "02",
+      "name": "Mary",
+      "amount": 100
+    },
+    {
+      "code": "03",
+      "name": "John",
+      "amount": 150
+    }
+  ]
+}

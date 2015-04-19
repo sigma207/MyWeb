@@ -1,0 +1,47 @@
+.dynamicTable {
+    /*transform: scale(1,0.5);*/
+    /*transform: translate(50px,100px);*/
+    position: relative;
+}
+
+.dragOverColumn {
+    border-style: dashed;
+}
+
+.baseTD {
+    padding-left: 1px;
+}
+
+.numberTD {
+    padding-right: 1px;
+    text-align: right;
+}
+
+.basicTH {
+
+}
+
+.stockRiseZh{
+    color: #ff0000;
+}
+
+.stockFallZh{
+    color: #00ff00;
+}
+
+.arrowDiv {
+    position: relative;
+    /*right: -5px;*/
+}
+
+.descArrow {
+    display: inline-block;
+    border: 5px solid;
+    border-color: #00AACC transparent transparent transparent;
+}
+
+.ascArrow {
+    display: inline-block;
+    border: 5px solid;
+    border-color: transparent transparent #00AACC transparent;
+}

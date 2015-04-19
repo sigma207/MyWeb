@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swipe</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+    <style>
+        html, body{
+            padding: 0;
+            margin: 10px auto;
+        }
+        #checkbox{
+            width: 210px;
+            height: 100px;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        #wrapper{
+            width: 210px;
+            height: 100px;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        #inner{
+            position: absolute;
+            width: 630px;
+        }
+
+        #inner div{
+            width: 200px;
+            height: 100px;
+            margin: 0 5px;
+            background: #ccc;
+            float: left;
+        }
+
+        .full-circle{
+            background-color: #cccccc;
+            height: 10px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            width: 10px;
+            float: left;
+            margin: 5px;
+        }
+        .cur{
+            background-color: #555;
+        }
+        #btns{
+            width: 60px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div id="main">
+    <div id="wrapper">
+        <div id="inner">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div id="btns">
+        <div class="full-circle cur"></div>
+        <div class="full-circle"></div>
+        <div class="full-circle"></div>
+    </div>
+</div>
+<script>
+    var curNum=0;
+    $('#wrapper').swipeleft(function(){
+        $('#inner').animate({left:'-=210'},500, function(){
+            //Animation complete
+            curNum++;
+            $(".full-circle").removeClass("cur");
+            $(".full-circle").eq(curNum).addClass("cur");
+            console.log("left");
+        });
+    });
+    $("#wrapper").swiperight(function () {
+        $("#inner").animate({left: "+=210"}, 500, function () {
+            curNum--;
+            $(".full-circle").removeClass("cur");
+            $(".full-circle").eq(curNum).addClass("cur");
+            console.log("right");
+        });
+    });
+</script>
+</body>
+</html>

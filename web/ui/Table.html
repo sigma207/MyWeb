@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Table</title>
+    <link rel="stylesheet" href="../css/dynamicTable.css">
+    <style>
+        table{
+            border-collapse: collapse;
+        }
+        table>tr>td th{
+            border: 1px solid blue;
+        }
+        th{
+            background: #fedd00;
+        }
+    </style>
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../js/mock.js"></script>
+    <script type="text/javascript" src="../js/jsonTool.js"></script>
+    <script type="text/javascript" src="../js/domTool.js"></script>
+    <script type="text/javascript" src="../js/dynamicTable.js"></script>
+    <!--<script type="text/javascript" src="fakeData.json.js"></script>-->
+    <script type="text/javascript" src="mockTemplate.js"></script>
+    <script>
+        $(document).ready(function () {
+//            console.dir(fakeData);
+            var data = [];
+            console.time("mock");
+            for(var i=0;i<10;i++){
+                data.push(Mock.mock(template));
+            }
+            console.timeEnd("mock");
+            var dragTable = DragTable.createNew();
+            dragTable.setDataSource(data);
+            $("#hide").click(function(){
+                dragTable.hideColumn(parseInt($("#no").val()));
+            });
+            $("#show").click(function(){
+                dragTable.showColumn(parseInt($("#no").val()));
+            });
+        });
+    </script>
+</head>
+<body>
+<input id="no" type="text">
+<button id="show">show</button>
+<button id="hide">hide</button>
+<table border="1" cellpadding="0" cellspacing="0" width="100%" class="dynamicTable">
+    <thead>
+    <tr>
+        <th field="code" type="number">code</th>
+        <th field="name">name</th>
+        <th field="amount" type="number" tdClass="bw">amount</th>
+        <th field="location">location</th>
+        <th field="remark">remark</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+</body>
+</html>

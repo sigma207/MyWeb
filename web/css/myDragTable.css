@@ -1,0 +1,50 @@
+.dragTable{
+    z-index: 3;
+}
+.dragOverColumn {
+    border-style: dashed;
+}
+
+.dragImgCover{
+    background: blue;
+    width: 170px;
+    height: 100px;
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*right: 0;*/
+    z-index: 2;
+}
+
+.baseTD {
+    padding-left: 5px;
+}
+
+.numberTD {
+    padding-right: 5px;
+    text-align: right;
+}
+
+.basicTH {
+
+}
+.arrowDiv {
+    position: relative;
+    /*right: -5px;*/
+}
+
+.descArrow {
+    display: inline-block;
+    border: 5px solid;
+    border-color: #00AACC transparent transparent transparent;
+}
+
+.ascArrow {
+    display: inline-block;
+    border: 5px solid;
+    border-color: transparent transparent #00AACC transparent;
+}
+
+.bw {
+    color: #FFF;
+    background: #000;
+}

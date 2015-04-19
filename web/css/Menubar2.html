@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<link rel="stylesheet" href="Menubar2.css">
+<script type="text/javascript">
+$(function(){
+    $("ul.navigation > li:has(ul) > a").append('<div class="arrow-bottom"></div>');
+    $("ul.navigation > li ul li:has(ul) > a").append('<div class="arrow-right"></div>');
+});
+</script>
+<style>
+body ul.navigation, ul.navigation li, ul.navigation ul, a {
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	text-decoration: none;
+}
+ul.navigation ,ul.navigation li{
+	list-style: none;
+}
+ul.navigation li{
+	position: relative;
+	float: left;
+}
+ul.navigation li a{
+	display: block;
+	padding: 12px 20px;
+	background: #888;
+	color: #FFF;
+}
+ul.navigation > li > a{
+	border-bottom: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+}
+ul.navigation > li > a:hover{
+	color: #666;
+	background: #ddd;
+}
+
+ul.navigation ul{
+	display: none;
+	float: left;
+	position: absolute;
+	left: 0;
+	margin: 0;
+}
+ul.navigation li:hover>ul{
+	display: block;
+}
+ul.navigation ul li{
+	border-bottom: 1px solid #ddd;
+}
+ul.navigation ul li:last-child{
+	border-bottom: none;
+}
+ul.navigation ul a{
+	width: 120px;
+	padding: 10px 12px;
+	color: #666;
+	background: #EEE;
+}
+ul.navigation ul a:hover{
+	background: #ccc;
+}
+ul.navigation ul li:hover > ul{
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 100%;
+}
+/* 箭頭向下 */
+.arrow-bottom {
+    display: inline-block;
+    margin-left: 5px;
+    border-top: 4px solid #FFF;
+    border-right: 4px solid transparent;    
+    border-left: 4px solid transparent;        
+    width: 1px;
+    height: 1px;
+}
+/* 箭頭向右 */
+.arrow-right {
+    display: inline-block;
+    margin-left: 12px;    
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    border-left: 3px solid #666;        
+    width: 1px;
+    height: 1px;
+}
+</style>
+</head>
+<body>
+	<ul class="navigation">
+		<li><a href="#">選單內容 1</a>
+			<ul>
+				<li><a href="#">選單內容 1 - 1</a></li>
+				<li><a href="#">選單內容 1 - 2</a>
+					<ul>
+						<li><a href="#">選單內容 2 - 1</a></li>
+						<li><a href="#">選單內容 2 - 2</a>
+							<ul>
+								<li><a href="#">選單內容 3 - 1</a>
+									<ul>
+										<li><a href="#">選單內容 4 - 1</a></li>
+										<li><a href="#">選單內容 4 - 2</a>
+											<ul>
+												<li><a href="#">選單內容 5 - 1</a></li>
+												<li><a href="#">選單內容 5 - 2</a></li>
+											</ul></li>
+									</ul></li>
+								<li><a href="#">選單內容 3 - 2</a></li>
+							</ul></li>
+					</ul></li>
+			</ul></li>
+		<li><a href="#">選單內容 2</a></li>
+		<li><a href="#">選單內容 3</a></li>
+		<li><a href="#">選單內容 4</a></li>
+		<li><a href="#">選單內容 5</a></li>
+		<li><a href="#">選單內容 6</a></li>
+		<li><a href="#">選單內容 7</a></li>
+	</ul>
+</body>
+</html>

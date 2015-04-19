@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Axis</title>
+</head>
+<body>
+<canvas id="canvas" width="300" height="300"></canvas>
+<script>
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    AXIS_MARGIN = 50;
+    var axis = {};
+    function initAxis(){
+        axis.x = AXIS_MARGIN;
+        axis.y = canvas.height - AXIS_MARGIN;
+        axis.top = AXIS_MARGIN;
+        axis.right = canvas.width - AXIS_MARGIN;
+        axis.width = axis.right - axis.x;
+        axis.height = axis.y-axis.top;
+        axis.color = "blue";
+        axis.lineWidth = 1.0;
+        axis.ticksWidth = 10;
+        axis.ticksColor = "red";
+        axis.ticksLineWidth = 0.5;
+        axis.horTicksSpacing = 10;
+        axis.verTicksSpacing = 10;
+        axis.numHorTicks = axis.width/axis.horTicksSpacing;
+        axis.numVerTicks = axis.height/axis.verTicksSpacing;
+    }
+
+    function drawAxis(){
+        ctx.strokeStyle = axis.color;
+        ctx.lineWidth = axis.lineWidth;
+        drawHorizontalAxis();
+        drawVerticalAxis();
+        ctx.strokeStyle = axis.ticksColor;
+        ctx.lineWidth = axis.ticksLineWidth;
+        drawHorizontalAxisTicks();
+        drawVerticalAxisTicks();
+    }
+
+    function drawHorizontalAxis(){
+        ctx.beginPath();
+        ctx.moveTo(axis.x,axis.y);
+        ctx.lineTo(axis.right,axis.y);
+        ctx.stroke();
+    }
+
+    function drawVerticalAxis(){
+        ctx.beginPath();
+        ctx.moveTo(axis.x,axis.y);
+        ctx.lineTo(axis.x,axis.top);
+        ctx.stroke();
+    }
+
+    function drawHorizontalAxisTicks(){
+        ctx.beginPath();
+        var x = axis.x;
+        var deltaY;
+        for(var i=1;i<=axis.numHorTicks;i++){
+            x+=axis.horTicksSpacing;
+            deltaY = (i%5==0)?axis.y-axis.ticksWidth:axis.y-(axis.ticksWidth/2);
+            ctx.moveTo(x,axis.y);
+            ctx.lineTo(x,deltaY);
+        }
+        ctx.stroke();
+    }
+
+    function drawVerticalAxisTicks(){
+        ctx.beginPath();
+        var y = axis.y;
+        var deltaX;
+        for(var i=1;i<=axis.numVerTicks;i++){
+            y-=axis.verTicksSpacing;
+            deltaX = (i%5==0)?axis.x+axis.ticksWidth:axis.x+(axis.ticksWidth/2);
+            ctx.moveTo(axis.x,y);
+            ctx.lineTo(deltaX,y);
+        }
+        ctx.stroke();
+    }
+
+    initAxis();
+//    console.dir(axis);
+    drawAxis();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+@CHARSET "BIG5";
+
+div.menu-bar ul ul {
+	display: none;
+}
+
+div.menu-bar li:hover > ul {
+	display: block;
+}

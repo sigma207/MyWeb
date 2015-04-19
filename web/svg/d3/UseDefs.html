@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>UseDefs</title>
+    <script type="text/javascript" src="../../js/d3.js"></script>
+</head>
+<body>
+<svg id="mainSvg">
+    <defs>
+        <text id="myText" text-anchor="middle" font-family="sans-serif" font-size="11" fill="white">
+        </text>
+        <rect id="myRect" height="15" width="15" fill="red"></rect>
+    </defs>
+</svg>
+<script>
+    var w = 500, h = 100, barPadding = 1;
+    var dataset = [];
+    for (var i = 0; i < 25; i++) {
+        dataset.push(Math.round(Math.random() * 25));
+    }
+
+    var svg = d3.select("#mainSvg").attr("width", w).attr("height", h);
+    svg
+            .selectAll("rect")
+            .data(dataset)
+            .enter()
+            .append("rect")
+            .attr("x", function (d, i) {
+                return i * (w / dataset.length)
+            })
+            .attr("y", function (d) {
+                return h - (d * 4);
+            })
+            .attr("width", w / dataset.length - 1)
+            .attr("height", function (d) {
+                return d * 4;
+            })
+            .attr("fill", function (d) {
+                return "rgb(0,0," + (d * 10) + ")";
+            })
+    ;
+
+    svg
+            .selectAll("use")
+            .data(dataset)
+            .enter()
+            .append("use")
+            .attr("xlink:href","#myRect")
+    ;
+
+    svg
+            .selectAll("use")
+            .data(dataset)
+            .enter()
+            .append("use")
+            .attr("xlink:href","#myText")
+            .text(function (d) {
+                return d;
+            })
+            .attr("x", function (d, i) {
+                return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
+            })
+            .attr("y", function (d) {
+                return h - (d * 4) + 14;
+            })
+    ;
+
+
+</script>
+</body>
+</html>

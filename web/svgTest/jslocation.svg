@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+<script language="JavaScript" xlink:href="lib.js" />
+<script language="JavaScript">
+<![CDATA[
+	function Body_function(str){
+	alert("Body_function->"+str)
+	}
+	]]>
+</script>
+<g id="funciton_load" transform="translate(10 10)">
+<g onclick="Body_function('onclike')" transform="translate(0 0)">
+<text x="6px" y="30px" style="font-size:20">Body_function</text>
+</g>
+<g onclick="Lib_function('onclike')" transform="translate(160 0)">
+<text x="6px" y="30px" style="font-size:20">Lib_function</text>
+</g>
+</g>
+</svg>

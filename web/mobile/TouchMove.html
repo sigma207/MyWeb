@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TouchMove</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+    <style type="text/css">
+        #square{
+            width: 100px;
+            height: 100px;
+            background: #cc2814;
+            position: absolute;
+        }
+    </style>
+    <script>
+        $(document).ready(function(){
+            $("#square").bind("touchmove", function (e) {
+                e.preventDefault();
+                var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+                var elm = $(this).offset();
+                var x = touch.pageX - elm.left/2;
+                var y = touch.pageY - elm.top/2;
+                $(this).css("left",x+"px");
+                $(this).css("top",y+"px");
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="main">
+    <div id="square">Move Me!</div>
+</div>
+</body>
+</html>

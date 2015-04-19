@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Clock</title>
+
+</head>
+<body>
+<canvas id="clock" width="500" height="500"></canvas>
+<script>
+    var canvas = document.getElementById("clock");
+    var ctx = canvas.getContext("2d");
+    FONT_HEIGHT = 15;
+    MARGIN = 35;
+    HAND_TURNCATION = canvas.width / 25;
+    HOUR_HAND_TURNCATION = canvas.width / 10;
+    NUMERAL_SPACING = 20;
+    RADIUS = canvas.width / 2 - MARGIN;
+    HAND_RADIUS = RADIUS + NUMERAL_SPACING;
+    ctx.font = FONT_HEIGHT + "px Arial";
+    loop = setInterval(drawClock, 1000);
+    var clockObj = {};
+    var c;
+    function clock(){
+        clockObj.width =canvas.width;
+        clockObj.height = canvas.height;
+        clockObj.x = clockObj.width/2;
+        clockObj.y = clockObj.height/2;
+        return clockObj;
+    }
+    function drawCircle() {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, RADIUS, 0, Math.PI * 2, true);
+        ctx.stroke();
+    }
+
+    function drawCenter(){
+        ctx.beginPath();
+        ctx.arc(c.x, c.y,5,0,Math.PI*2,true);
+        ctx.fill();
+    }
+
+    function drawHands(){
+        var date = new Date();
+        var hours = date.getHours();
+        hours = hours>12?hours-12:hours;
+
+        drawHand(hours*5+(date.getMinutes()/60)*5,true);
+        drawHand(date.getMinutes(),false);
+        drawHand(date.getSeconds(),false);
+    }
+
+    function drawHand(loc,isHour){
+        var angle = (Math.PI*2)*(loc/60)-Math.PI/2;
+        var handRadius = isHour?RADIUS-HAND_TURNCATION-HOUR_HAND_TURNCATION:RADIUS-HAND_TURNCATION;
+        ctx.moveTo(c.x, c.y);
+        ctx.lineTo(c.x+Math.cos(angle)*handRadius, c.y+Math.sin(angle)*handRadius);
+        ctx.stroke();
+    }
+
+    function drawNumerals(){
+        var numerals = [1,2,3,4,5,6,7,8,9,10,11,12];
+        var angle = 0;
+        var numeralWidth =0;
+
+        numerals.forEach(function (numeral) {
+           angle = Math.PI/6*(numeral-3);
+            numeralWidth = ctx.measureText(numeral).width;
+            ctx.fillText(numeral, c.x+Math.cos(angle)*(HAND_RADIUS)-numeralWidth/2,
+                    c.y+Math.sin(angle)*(HAND_RADIUS)+FONT_HEIGHT/3);
+        });
+    }
+    function drawClock() {
+        c = clock();
+        ctx.clearRect(0, 0, c.width, c.height);
+
+        drawCircle();
+        drawCenter();
+        drawHands();
+        drawNumerals();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Circle</title>
+</head>
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+<script>
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    var obj = {};
+    var c = origin();
+
+    drawCircle();
+    drawCenter();
+
+    function drawCircle(){
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.width/2,0,Math.PI*2,true);
+        ctx.stroke();
+    }
+    function drawCenter(){
+        ctx.beginPath();
+        ctx.arc(c.x, c.y,2,0,Math.PI*2,true);
+        ctx.fill();
+    }
+
+    function drawTriangle(){
+        ctx.moveTo(c.x, c.y);
+//        ctx.lineTo()
+    }
+    function origin(){
+        obj.width = canvas.width;
+        obj.height = canvas.height;
+        obj.x = obj.width/2;
+        obj.y = obj.height/2;
+        return obj;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Bar</title>
+    <script type="text/javascript" src="../../js/d3.js"></script>
+    <style>
+        div.bar{
+            display: inline-block;
+            width: 20px;
+            /*height: 75px;*/
+            margin-right: 2px;
+            background-color: teal;
+        }
+    </style>
+</head>
+<body>
+<script>
+    var dataset = [5,10,15,20,25];
+    d3.select("body").
+            selectAll("div").
+            data(dataset).
+            enter().
+            append("div").
+            attr("class", "bar").
+            style("height", function (d) {
+                return d * 5 + "px";
+            });
+</script>
+</body>
+</html>

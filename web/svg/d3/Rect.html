@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Rect</title>
+    <style>
+        .svg{
+            display: block;
+            margin: 0 auto;
+            background: #a4ccae;
+        }
+        .rect{
+            fill: #ccb0cc;
+        }
+    </style>
+    <script type="text/javascript" src="../../js/d3.js"></script>
+</head>
+<body>
+<script>
+    var svgWidth=500,svgHeight=500,rectWidth=400,rectHeight=400;
+    var svg = d3.select("body").append("svg").attr("class","svg").attr("width",svgWidth).attr("height",svgHeight);
+    var rect = svg.append("rect").attr("class","rect").attr("width",rectWidth).attr("height",rectHeight);
+</script>
+</body>
+</html>

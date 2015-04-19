@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+/*
+ * WebWorker不能在本機執行，一定要在server上執行才會有效果
+ 錯誤==>file:///C:/Users/user/workspace/WebTest/WebContent/html5/worker/Test1.html
+ 正確==>http://localhost:8080/WebTest/html5/worker/Test1.html
+ 參考:http://stackoverflow.com/questions/21408510/chrome-cant-load-web-worker
+ */*/
+var myWorker = new Worker("test1.js");
+
+myWorker.onmessage = function (oEvent) {
+  console.log("Worker said : " + oEvent.data);
+};
+
+myWorker.postMessage("ali");
+</script>
+</head>
+<body>
+
+</body>
+</html>

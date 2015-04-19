@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>WebSocketManager Test!!</title>
+<meta http-equiv="Pragma" content="no-cache">
+<script type="text/javascript" src="../js/WebSocketManager.js"></script>
+<script type="text/javascript">
+var wsm;
+var messageDiv;
+function init(){
+	messageDiv = document.getElementById("message");
+}
+function connect(){
+	var logDom = document.getElementById("message");
+	wsm = new WebSocketManager("ws://localhost:8080/MyWeb/chat",logDom);
+	document.addEventListener("WebSocketDataEvent",onData,false);
+	document.addEventListener("WebSocketStateEvent",onState,false);
+	document.addEventListener("WebSocketLogEvent",onLog,false);
+	wsm.connect();
+
+}
+
+function send(){
+	var text = document.getElementById("text");
+	wsm.send(text.value);
+	text.value = "";
+}
+
+function disconnect(){
+	wsm.close();
+}
+
+function onData(evt){
+	messageDiv.innerHTML += "<p>data:"+evt.data+"</p>";
+}
+function onState(evt){
+	messageDiv.innerHTML += "<p>current state:"+evt.readyState+"</p>";
+}
+function onLog(evt){
+	messageDiv.innerHTML += "<p>log:"+evt.msg+"</p>";
+}
+</script>
+</head>
+<body onload="init()">
+<div id="message"></div>
+<input id="text" type="text"/>
+<button id="connect" onclick="connect()">連接</button>
+<button id="send" onclick="send()">發送</button>
+<button id="disconnect" onclick="disconnect()">斷開連接</button>
+</body>
+</html>

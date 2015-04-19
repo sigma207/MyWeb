@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <style>
+        .center{
+            display: block;
+            margin: 0 auto;
+        }
+        .mainSvg{
+            background: #d1d3ff;
+        }
+        .subSvg{
+            background: #02ccbd;
+        }
+
+        .axis path, .axis line{
+            fill:none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+    </style>
+    <script type="text/javascript" src="../../js/d3.js"></script>
+
+</head>
+<body>
+<script>
+    var svgW=150,svgH=150,contentW=100,contentH=100;
+    var contentOriginX = (svgW-contentW)/2;
+    var contentOriginY = (svgH-contentH)/2;
+    var xAxisStartX = contentOriginX;
+    var xAxisStartY = contentOriginY+contentH;
+    var loc = {
+        "origin":{
+            "x": contentOriginX,
+            "y": contentOriginY
+        },
+        "xAxis":{
+            "x":contentOriginX,
+            "y":contentOriginY+contentH
+        },
+        "yAxis":{
+            "x":contentOriginX,
+            "y":contentOriginY
+        }
+    };
+    console.table(loc);
+    var svg = d3.select("body")
+            .append("svg")
+            .attr("class","mainSvg center")
+            .attr("width",svgW)
+            .attr("height",svgH);
+    var xScale = d3.scale.linear().domain([0,100]).range([0,100]);
+    var yScale = d3.scale.linear().domain([0,100]).range([0,100]);
+    var xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5);
+    var yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(5);
+    svg.append("g").attr("class","axis").attr("transform","translate("+loc.xAxis.x+","+loc.xAxis.y+")").call(xAxis);
+    svg.append("g").attr("class","axis").attr("transform","translate("+loc.yAxis.x+","+loc.yAxis.y+")").call(yAxis);
+    svg.append("circle").attr("fill","red").attr("cx",loc.origin.x).attr("cy",loc.origin.y).attr("r",2);
+</script>
+</body>
+</html>

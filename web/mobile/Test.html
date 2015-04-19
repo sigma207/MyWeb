@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../js/browserInformation.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            generateList();
+        });
+
+        function generateList(){
+            var browserInfo = new BrowserInformation();
+            var infoList = browserInfo.collectInformation();
+            var list = $("#list");
+            for(var i=0;i<infoList.length;i++){
+                list.append("<li>"+infoList[i].name+":"+infoList[i].value+"</li>");
+            }
+        }
+    </script>
+</head>
+<body>
+<header>
+    Main Navigation here
+</header>
+<p>Browser information</p>
+<div>
+    <ul id="list"></ul>
+</div>
+<footer>
+    Footer link here
+</footer>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>nth-child</title>
+    <style>
+        .import{
+            color: red;
+        }
+        table{
+            border-collapse: collapse;
+        }
+        table,th,td{
+            border: 1px solid #000;
+        }
+        thead tr{
+            background-color: #ccb0cc;
+        }
+        .oddEven tbody tr:nth-child(odd){
+            background-color: #9aaa00;
+        }
+        .oddEven tbody tr:nth-child(even){
+            background-color: #02ccbd;
+        }
+
+        .nthNumber tbody tr:nth-child(3n+1){
+            background-color: #cc9c8e;
+        }
+
+        .nthNumber tbody tr:nth-child(3n+2){
+            background-color: #8fcc90;
+        }
+
+        .nthNumber tbody tr:nth-child(3n+3){
+            background-color: #6265cc;
+        }
+    </style>
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript">
+        var table;
+        $(document).ready(function(){
+            table = $("#table");
+            $("#bt1").click(oddEven);
+            $("#bt2").click(nthNumber);
+        });
+
+        function removerTableClass(){
+            table.removeClass();
+        }
+
+        function oddEven(){
+            removerTableClass();
+            table.addClass("oddEven");
+        }
+
+        function nthNumber(){
+            removerTableClass();
+            table.addClass("nthNumber");
+        }
+    </script>
+</head>
+<body>
+<table id="table">
+    <thead>
+        <tr>
+            <th>col1</th>
+            <th>col2</th>
+            <th>col3</th>
+            <th>col4</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>x1</td>
+            <td>x2</td>
+            <td>x3</td>
+            <td>x4</td>
+        </tr>
+        <tr>
+            <td>y1</td>
+            <td>y2</td>
+            <td>y3</td>
+            <td>y4</td>
+        </tr>
+        <tr>
+            <td>z1</td>
+            <td>z2</td>
+            <td>z3</td>
+            <td>z4</td>
+        </tr>
+        <tr>
+            <td>a1</td>
+            <td>a2</td>
+            <td>a3</td>
+            <td>a4</td>
+        </tr>
+        <tr>
+            <td>b1</td>
+            <td>b2</td>
+            <td>b3</td>
+            <td>b4</td>
+        </tr>
+        <tr>
+            <td>c1</td>
+            <td>c2</td>
+            <td>c3</td>
+            <td>c4</td>
+        </tr>
+    </tbody>
+</table>
+<button id="bt1">odd even</button>
+<button id="bt2">nth-child(number)</button>
+<p class="import">一、使用:nth-child(n)時，必須為相同連續的子代物件</p>
+<p class="import">二、若要選取class，則必須同樣為連續物件</p>
+</body>
+</html>

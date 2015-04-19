@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>webSocket</title>
+<script type="text/javascript">
+var ws;
+var readyState = new Array("正在連接","已建立連接","正在關閉連接","已關閉連接");
+function connect(){
+	try{
+		var host="ws://localhost:8080/WebTest/chat";
+		ws = new WebSocket(host);
+		var message = document.getElementById("message");
+		message.innerHTML+=getWsSateHTML();
+		ws.onopen = function(evt){
+			message.innerHTML+=getWsSateHTML();
+			//message.innerHTML+=ws.protocol;
+		}
+		ws.onmessage = function(msg){
+			message.innerHTML+="<p>接收訊息:"+msg.data+"</p>";
+		}
+		ws.onclose = function(evt){
+			message.innerHTML+=getWsSateHTML();
+		}
+		
+		ws.onerror = function(evt){
+			for(var key in evt){
+				message.innerHTML+="<p>"+key+":"+evt[key]+"</p>";
+			}
+		}
+	}catch(exception){
+		message.innerHTML+="<p>有錯誤發生"+exception+"</p>";
+	}
+}
+
+function send(){
+	var text = document.getElementById("text").value;
+	var message = document.getElementById("message");
+	if(text=="")return;
+	try{
+		ws.send(text);
+		message.innerHTML += "<p>發送數据:"+text+"</p>";
+	}catch(exception){
+		message.innerHTML += "<p>發送數据出錯</p>";
+	}
+	document.getElementById("text").value = "";
+}
+
+function disconnect(){
+	ws.close();
+}
+
+function getWsSateHTML(){
+	return "<p>Socket狀態:"+readyState[ws.readyState]+"</p>";
+}
+
+</script>
+</head>
+<body>
+<h1>webSocket test</h1>
+<div id="message"></div>
+<input id="text" type="text"/>
+<button id="connect" onclick="connect()">連接</button>
+<button id="send" onclick="send()">發送</button>
+<button id="disconnect" onclick="disconnect()">斷開連接</button>
+</body>
+</html>

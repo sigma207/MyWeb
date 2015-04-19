@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>ArcTo</title>
+    <script type="text/javascript" src="../js/myCanvas.js"></script>
+</head>
+<body>
+<canvas id="canvas" width="1000" height="1000"></canvas>
+<script>
+    var canvas = document.getElementById("canvas"),
+            ctx = canvas.getContext("2d");
+    drawRoundedRect("blue","yellow",50,40,100,100,10);
+    drawRoundedRect("purple","green",200,40,100,100,20);
+    drawRoundedRect("red","white",350,40,100,100,30);
+    function rounderRect(cornerX,cornerY,width,height,cornerRadius){
+
+        ctx.moveTo(cornerX+cornerRadius,cornerY);//60,40
+        ctx.arcTo(cornerX+width,cornerY,cornerX+width,cornerY+cornerRadius,cornerRadius);//140,40/150,50
+        ctx.arcTo(cornerX+width,cornerY+height,cornerX+width-cornerRadius,cornerY+height,cornerRadius);//150,130/140,140
+        ctx.arcTo(cornerX,cornerY+height,cornerX,cornerY+height-cornerRadius,cornerRadius);
+        ctx.arcTo(cornerX,cornerY,cornerX+cornerRadius,cornerY,cornerRadius);
+    }
+    function drawRoundedRect(strokeStyle,fillStyle,cornerX,cornerY,width,height,cornerRadius){
+
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = fillStyle;
+
+        ctx.beginPath();
+        rounderRect(cornerX,cornerY,width,height,cornerRadius);
+        ctx.stroke();
+        ctx.fill();
+        ctx.drawPoint(cornerX,cornerY);
+        ctx.drawPoint(cornerX+width,cornerY);
+        ctx.drawPoint(cornerX+width,cornerY+height);
+        ctx.drawPoint(cornerX,cornerY+height);
+    }
+</script>
+</body>
+</html>

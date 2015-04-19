@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="../js/pako.js"></script>
+<script type="text/javascript">
+//Get datastream as Array, for example:
+var charData    = [31,139,8,0,0,0,0,0,0,3,5,193,219,13,0,16,16,4,192,86,214,151,102,52,33,110,35,66,108,226,60,218,55,147,164,238,24,173,19,143,241,18,85,27,58,203,57,46,29,25,198,34,163,193,247,106,179,134,15,50,167,173,148,48,0,0,0];
+
+// Turn number array into byte-array
+var binData     = new Uint8Array(charData);
+
+// Pako magic
+var data        = pako.inflate(binData);
+
+// Convert gunzipped byteArray back to ascii string:
+var strData     = String.fromCharCode.apply(null, new Uint16Array(data));
+
+// Output to console
+console.log(strData);
+</script>
+</head>
+<body>
+Open up the developer console.
+</body>
+</html>

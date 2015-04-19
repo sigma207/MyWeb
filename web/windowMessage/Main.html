@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript">
+	var subUrl = "http://localhost:8080/WebTest/windowMessage/Sub.html";
+	window.addEventListener("message", onMessage, false);
+	function onMessage(event) {
+		if (event.origin != "http://localhost:8080") {
+			return;
+		}
+		alert("從" + event.origin + "收到" + event.data);
+	}
+
+	function hello() {
+		var iframe = window.frames[0];
+		iframe.postMessage("你好",subUrl);
+	}
+</script>
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>跨試通訊測試</h1>
+	<iframe width="400" src="http://localhost:8080/WebTest/windowMessage/Sub.html" onload="hello()"></iframe>
+</body>
+</html>

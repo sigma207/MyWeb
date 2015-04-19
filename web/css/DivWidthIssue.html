@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>DivWidthIssue</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        header{
+            min-width: 1800px;
+            height: 45px;
+            background: #32b3bf;
+        }
+        .container{
+            width: 1800px;
+            height: 45px;
+            line-height: 45px;
+            color: #FFFFFF;
+            text-align: center;
+            border: solid 2px #FFFFFF;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        “道富投资”隶属于美国波士顿的全球跨国金融企业“美国道富公司”，FCA（英国金融监管机构）监管号：194525。道富公司作为全球领导地位的金融企业在2011年完成过渡与调整，总价值达450亿美元，公司业务涵盖外汇，股票，总价值达450亿美元，
+    </div>
+    <p>在container的parent(header)加上min-width等同於container的width才不會在browser的寬度小於container的width時scroll bar右邊出現空白</p>
+</header>
+</body>
+</html>

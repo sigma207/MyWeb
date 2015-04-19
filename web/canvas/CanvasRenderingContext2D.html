@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>CanvasRenderingContext2D</title>
+</head>
+<body>
+<canvas id="canvas" width="300" height="300"></canvas>
+<script>
+    var ctx = document.getElementById("canvas").getContext("2d");
+    var moveToFunction = CanvasRenderingContext2D.prototype.moveTo;
+    CanvasRenderingContext2D.prototype.lastMoveToLocation = {};
+
+    CanvasRenderingContext2D.prototype.moveTo = function (x, y) {
+        moveToFunction.apply(ctx, [x, y]);
+        this.lastMoveToLocation.x = x;
+        this.lastMoveToLocation.y = y;
+    };
+
+    CanvasRenderingContext2D.prototype.dashLineTo = function(x,y,dashLength){
+        var deltaX = x-this.lastMoveToLocation.x;
+        var deltaY = y-this.lastMoveToLocation.y;
+        var distance = Math.sqrt(Math.pow(deltaX,2)+Math.pow(deltaY,2));//2點之間的距離
+        var numDash = Math.floor(distance/dashLength);//虛線和空白的數量
+        console.log("distance="+distance);
+        console.log("dashNum="+numDash);
+        var originX = this.lastMoveToLocation.x;
+        var originY = this.lastMoveToLocation.y;
+        var toX;
+        var toY;
+        this.beginPath();
+        for(var i=0;i<numDash;i++){
+            toX = originX+deltaX/numDash*i;
+            toY = originY+deltaY/numDash*i;
+            if(i%2==0){
+                this.moveTo(toX,toY);
+                console.log("move("+toX+","+toY+")");
+            }else{
+                this.lineTo(toX,toY);
+                console.log("line("+toX+","+toY+")");
+            }
+        }
+        if(numDash%2!=0){//
+            this.lineTo(x,y);
+            this.moveTo(x,y);
+        }
+
+        this.stroke();
+    };
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "blue";
+    ctx.moveTo(20,20);
+    ctx.dashLineTo(ctx.canvas.width-20,20,20);
+    ctx.dashLineTo(ctx.canvas.width-20,ctx.canvas.height-20,20);
+</script>
+</body>
+</html>

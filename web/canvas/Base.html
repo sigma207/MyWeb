@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Base</title>
+    <script>
+        var context;
+        function draw(){
+            var canvas  = document.getElementById("canvas");
+            context = canvas.getContext("2d");
+
+            context.fillStyle  ="yellow";
+            context.strokeStyle="blue";
+            context.lineWidth  = 5;
+
+            drawRect(5, 5, 50, 50);
+
+            context.save();
+
+            context.fillStyle = "red";
+
+            drawRect(65, 5, 50, 50);
+
+            context.save();
+
+            context.strokeStyle = "green";
+
+            drawRect(125, 5, 50, 50);
+
+            context.restore();
+
+            drawRect(185, 5, 50, 50);
+
+            context.restore();
+
+            drawRect(245, 5, 50, 50);
+
+        }
+
+        function drawRect(x,y,w,h){
+            context.fillRect  (x, y, w, h);
+            context.strokeRect(x, y, w, h);
+        }
+    </script>
+</head>
+<body onload="draw()">
+<canvas id="canvas" width="300" height="300"></canvas>
+</body>
+</html>

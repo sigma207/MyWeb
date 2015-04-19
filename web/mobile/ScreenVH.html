@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScreenVH</title>
+    <style>
+        html, body{
+            padding: none;
+            margin: none;
+        }
+    </style>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+    <script>
+        $(document).ready(function () {
+//            var metas = document.getElementsByTagName("meta");
+//            var i;
+//            for(i=0;i<metas.length;i++){
+//
+//            }
+            $(window).bind('orientationchange', function (e) {
+                updateOrientation(e.orientation);
+            });
+
+        });
+        function updateOrientation(orientation){
+            $("#a").html("<p>"+orientation.toUpperCase()+"</p>");
+        }
+    </script>
+</head>
+<body>
+<div id="a"></div>
+</body>
+</html>

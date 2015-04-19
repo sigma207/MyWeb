@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        var Cat = {
+            type:"animal",
+            createNew: function (name) {
+                var cat = {};
+                cat.name = name;
+                cat.makeSound = function () {
+                    console.log(cat.name+":mumu");
+                };
+                cat.getType = function(){
+                    console.log(cat.name+":"+Cat.type);
+                };
+                cat.changeType = function(newType){
+                    Cat.type = newType;
+                };
+                cat.changeName = function(name){
+                    cat.name = name;
+                };
+                cat.test = function (){
+                    console.log(cat.name);
+                };
+                return cat;
+            }
+        };
+        var myCat = Cat.createNew("pipi");
+        var bigCat = Cat.createNew("bigJohn");
+        myCat.makeSound();
+        bigCat.makeSound();
+        myCat.getType();
+        bigCat.getType();
+        console.log(Cat.type);
+        myCat.changeType("haha");
+        myCat.getType();
+        bigCat.getType();
+        console.log(Cat.type);
+
+        myCat.changeName("Pipi");
+        bigCat.changeName("BigBigJohn");
+        myCat.test();
+        bigCat.test();
+        myCat.makeSound();
+        bigCat.makeSound();
+    </script>
+</head>
+<body>
+
+</body>
+</html>

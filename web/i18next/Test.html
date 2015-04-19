@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../js/i18next-1.8.0.js"></script>
+    <script>
+        var langSelect;
+        $(document).ready(function () {
+            var browserLang = window.navigator.userLanguage || window.navigator.language;
+            langSelect = $("#langSelect");
+            langSelect.change(function (e) {
+                console.log("Change:" + $(this).val());
+                changeLang($(this).val());
+            });
+            /**
+             * Why does the jquery change event not trigger when I set the value of a select using val()?
+             * http://stackoverflow.com/questions/4672505/why-does-the-jquery-change-event-not-trigger-when-i-set-the-value-of-a-select-us
+             */
+            langSelect.val(browserLang).change();
+        });
+
+        function changeLang(lang) {
+            var option = {resGetPath: "../locales/" + lang + "/test.json"};
+            i18n.init(option, function (t) {
+                $("#container").i18n();
+            });
+        }
+    </script>
+</head>
+<body>
+<select name="" id="langSelect">
+    <option value="zh-TW">中文(繁體)</option>
+    <option value="zh-CN">中文(简体)</option>
+    <option value="en-US">English</option>
+</select>
+
+<div id="container">
+    <p data-i18n="test.title"></p>
+
+    <div data-i18n="test.context"></div>
+</div>
+</body>
+</html>
