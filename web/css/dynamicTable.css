@@ -1,7 +1,9 @@
 .dynamicTable {
     /*transform: scale(1,0.5);*/
     /*transform: translate(50px,100px);*/
-    position: relative;
+    /*position: relative;*/
+    /*padding-top: 50px;*/
+
 }
 
 .dragOverColumn {

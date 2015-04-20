@@ -14,19 +14,20 @@
 
         table {
             border-collapse: collapse;
+            /*border: 1px solid #6265cc;*/
             color: #fff;
         }
 
-        .tableContainer {
-            width: 100%;
-            height: 50%;
-            overflow: auto;
-        }
 
-        /*table>tr>td th{*/
-        /*border: 1px solid blue;*/
-        /*}*/
+
         .dynamicTable th {
+            border-width: 0 1px 1px 0;
+            border-style: solid;
+            /*border-color: #1dcc2e;*/
+            /*border: 2px solid gray;*/
+            /*border-width: 5px;*/
+            /*border-width: 0 1px 1px 0;*/
+            /*border-right-width: 5px;*/
             border-color: #565656;
 
             background: #5c5f66; /* Old browsers */
@@ -69,35 +70,19 @@
 
         .scroller{
             position: relative;
-            left: 0;
-            top: 0;
-            /*width: 100%;*/
             height: 50%;
             overflow: auto;
         }
 
-        .columnHead{
-            position: relative;
-            /*position: absolute;*/
-            /*-webkit-transform: translate(20px,50px);*/
-            /*-moz-transform:    translate(20px,50px);*/
-            /*-ms-transform:     translate(20px,50px);*/
-            /*-o-transform:      translate(20px,50px);*/
-        }
-
-        /*.columnHead tr, .columnHead th{*/
-            /*position: relative;*/
-        /*}*/
-
     </style>
     <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
-    <script type="text/javascript" src="../js/jquery.freezeheader.js"></script>
     <script type="text/javascript" src="../js/numeral.min.js"></script>
     <script type="text/javascript" src="../js/moment.js"></script>
     <script type="text/javascript" src="../js/mock.js"></script>
     <script type="text/javascript" src="../js/jsonTool.js"></script>
     <script type="text/javascript" src="../js/domTool.js"></script>
     <script type="text/javascript" src="../js/dynamicTable.js"></script>
+    <script type="text/javascript" src="../js/tableFixedHeader.js"></script>
     <script type="text/javascript" src="stockData.template.js"></script>
     <script>
         var dragTable;
@@ -116,7 +101,7 @@
 
             Mock.mock("quote.json",generateData);
 //            $("#columnHead").css("transform","translate(50px,50px)");
-            overMyHead();
+//            overMyHead();
             ajax();
 //            setInterval(ajax,1000);
         });
@@ -128,6 +113,9 @@
                 success:function(data){
                     console.log("ajax success");
                     dragTable.setDataSource(data);
+//                    overMyHead3();
+                    tf.fixedTHead("columnHead","scroller");
+//                    tf.fixedTHead("columnHead","dataBody");
 //                    console.time("freezeHeader");
 //                    $('.dynamicTable').freezeHeader();
 //                    console.timeEnd("freezeHeader");
@@ -146,26 +134,156 @@
 //            console.timeEnd("mock");
             return data;
         }
+        function overMyHead3(){
+            var dynamicTable = $(".dynamicTable");
+            var tHead = dynamicTable.find("thead");
+            var tHeadHeight = parseInt(tHead.css("height"));
+            var headTr = tHead.find("tr").eq(0);
+            var thList = headTr.children();
+            var scroller = $(".scroller");
+
+            tHead.after("<thead class='tHeadHolder'>"+tHead.html()+"</thead>");
+
+            thList.each(function(index){
+                $(this).attr("originalWidth",$(this).css("width"));
+            });
+
+            tHead.css("position","absolute");
+
+            thList.each(function(index){
+                $(this).css("width",$(this).attr("originalWidth"));
+            });
+            tHead.css("transform","translate(0px,"+(-tHeadHeight)+"px)");//firefox chrome
+
+            scroller.on("scroll", function (e) {
+                var scrollTop = scroller.scrollTop();
+                var position = tHead.css("position");
+                if(scrollTop>0){
+                    tHead.css("transform","translate(0px,"+(parseInt(scroller.scrollTop())-tHeadHeight-1)+"px)");//firefox chrome
+                }else{
+                    tHead.css("transform","translate(0px,"+(-tHeadHeight)+"px)");//firefox chrome
+                }
+            });
+        }
+
+        function overMyHead2(){
+            var dynamicTable = $(".dynamicTable");
+            var tHead = dynamicTable.find("thead");
+            var tHeadHeight = parseInt(tHead.css("height"));
+            var headTr = tHead.find("tr");
+            var thList = headTr.children();
+            var scroller = $(".scroller");
+            var body = $(".dataBody");
+            var bodyDom = body.get(0);
+
+            tHead.after("<thead>"+tHead.html()+"</thead>");
+            var cloneTr = dynamicTable.find("thead").eq(1);
+            cloneTr.hide();
+
+            thList.each(function(index){
+                console.log($(this).css("display"));
+                $(this).attr("originalWidth",$(this).css("width"));
+            });
+
+            console.log(tHead.css("position"));
+            tHead.css("position","absolute");
+
+            scroller.on("scroll", function (e) {
+                var scrollTop = scroller.scrollTop();
+                var position = tHead.css("position");
+                if(scrollTop>0){
+                    if(position=="static"){
+                        tHead.css("position","absolute");
+                        thList.each(function(index){
+                            $(this).css("width",$(this).attr("originalWidth"));
+                        });
+                        cloneTr.show();
+//                        bodyDom.pseudoStyle("before","height",tHead.css("height"));
+                    }
+                    tHead.css("transform","translate(0px,"+(parseInt(scroller.scrollTop())-tHeadHeight-1)+"px)");//firefox chrome
+                }else{
+                    cloneTr.hide();
+                    tHead.css("position","static");
+//                    bodyDom.pseudoStyle("before","height","0");
+                    tHead.css("transform","translate(0px,"+(parseInt(scroller.scrollTop()))+"px)");//firefox chrome
+
+                    thList.each(function(index){
+//                        console.log("borderRightWidth="+$(this).css("borderRightWidth"));
+//                        console.log("borderBottomWidth="+$(this).css("borderBottomWidth"));
+//                        $(this).css("borderRightWidth",$(this).attr("originalBorderRightWidth"));
+//                        $(this).css("borderBottomWidth",$(this).attr("originalBorderBottomWidth"));
+                    });
+//                    tHead.css("zIndex","0");
+                }
+//                tHead.offset({top:parseInt(scroller.offset().top)+0});//firefox
+//                tHead.css("top", parseInt(scroller.scrollTop()) - 1);//firefox
+
+
+            });
+        }
 
         function overMyHead(){
+            var dynamicTable = $(".dynamicTable");
+            var tHead = dynamicTable.find("thead");
+            console.log(tHead.html());
             var scroller = $(".scroller");
-//            scroller.get(0).style.msTransform = "translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)";
             var ch = $(".columnHead");
+            var headTr = ch.find("tr");
+            var body = $(".dataBody");
+            var bodyDom = body.get(0);
+            var thList = ch.find("tr").children();
+
+            ch.append(ch.html());
+            var cloneTr = ch.find("tr").eq(1);
+            cloneTr.css("visibility","collapse");
+//            var tdList = body.find("tr:first").children();
+            headTr.css("position","relative");
+            thList.each(function(index){
+                $(this).attr("originalWidth",$(this).css("width"));
+            });
+//            thList.each(function(index){
+//                $(this).css("width",tdList.eq(index).css("width"));
+//            });
+//            bodyDom.pseudoStyle("before","height",ch.css("height"));
+
+//            chDom.pseudoStyle("before","height","30px");
+//            var holder = $(".holder");
+//            holder.css("height","100px");
+
+//            scroller.get(0).style.msTransform = "translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)";
+
 //            alert(getComputedStyle(ch,null).getPropertyValue("-ms-transform"));
 //            console.dir(ch.get(0));
             scroller.on("scroll", function (e) {
+                var scrollTop = scroller.scrollTop();
+                var position = headTr.css("position");
+                if(scrollTop>0){
+                    if(position=="relative"){
+                        headTr.css("position","absolute");
+                        thList.each(function(index){
+                            $(this).css("width",$(this).attr("originalWidth"));
+                        });
+                        bodyDom.pseudoStyle("before","height",headTr.css("height"));
+                    }
+//                    ch.offset({top:parseInt(scroller.offset().top)+0});//firefox
+                }else{
+                    headTr.css("position","relative");
+                    bodyDom.pseudoStyle("before","height","0");
+                }
+                headTr.offset({top:parseInt(scroller.offset().top)+0});//firefox
 //                console.dir(scroller);
-//                console.log("scroller offset top:"+scroller.offset().top);
-//                console.log("ch offset top:"+ch.offset().top);
-//                console.log("ch css top:"+ch.css("top"));
+                console.log("scroller offset top:"+scroller.offset().top);
+                console.log("ch offset top:"+ch.offset().top);
+                console.log("ch css top:"+ch.css("top"));
 //                ch.get(0).style.top = scroller.offset().top;
 
 //                var temp =parseInt(scroller.offset().top)-parseInt(ch.css("height"));
 //                console.log("scrollTop="+scroller.scrollTop());
-//                ch.offset({top:parseInt(scroller.offset().top)+0});//firefox chrome
+//                chDom.pseudoStyle("before","height",scroller.scrollTop()+"px");
+//                ch.offset({top:parseInt(scroller.offset().top)+0});//firefox
 //                ch.css("top", parseInt(scroller.scrollTop()) - 1);//firefox
 
-                ch.css("transform","translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)");//firefox chrome
+//                ch.css("transform","translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)");//firefox chrome
 //                ch.css("ms-Transform ","translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)");//firefox chrome
 //                ch.get(0).style.msTransform = "translate(0px,"+(parseInt(scroller.scrollTop())-1)+"px)";
                 
@@ -178,6 +296,29 @@
             });
 
         }
+
+        var UID = {
+            _current: 0,
+            getNew: function(){
+                this._current++;
+                return this._current;
+            }
+        };
+
+        HTMLElement.prototype.pseudoStyle = function(element,prop,value){
+            var _this = this;
+            var _sheetId = "pseudoStyles";
+            var _head = document.head || document.getElementsByTagName('head')[0];
+            var _sheet = document.getElementById(_sheetId) || document.createElement('style');
+            _sheet.id = _sheetId;
+            var className = "pseudoStyle" + UID.getNew();
+
+            _this.className +=  " "+className;
+
+            _sheet.innerHTML += " ."+className+":"+element+"{"+prop+":"+value+"}";
+            _head.appendChild(_sheet);
+            return this;
+        };
     </script>
 </head>
 <body>
@@ -189,8 +330,8 @@
 <button id="refresh">更新資料</button>
 <div class="scroller">
 <table id="dynamicTable" border="1" cellpadding="0" cellspacing="0" width="100%" class="dynamicTable oddEven">
-    <thead class="columnHead">
-    <tr >
+    <thead class="columnHead" >
+    <tr>
         <th field="code" tdClass="golden">代號</th>
         <th field="name" tdClass="golden">名稱</th>
         <th field="buying" type="number" decimal="4">買價</th>
@@ -210,7 +351,7 @@
         <th field="time" type="time">時間</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody class="dataBody">
     </tbody>
 </table>
 </div>
