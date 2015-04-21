@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title></title>
+    <link rel="stylesheet" href="quoteChart.css">
+    <link rel="stylesheet" href="../css/dynamicTable.css">
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../js/numeral.min.js"></script>
+    <script type="text/javascript" src="../js/moment.js"></script>
+    <script type="text/javascript" src="../js/mock.js"></script>
+    <script type="text/javascript" src="../js/jsonTool.js"></script>
+    <script type="text/javascript" src="../js/domTool.js"></script>
+    <script type="text/javascript" src="../js/dynamicTable.js"></script>
+    <script type="text/javascript" src="quoteData.template.js"></script>
+    <script type="text/javascript">
+        var quote1;
+        var quote2;
+        var forexMetalData;
+        var stockData;
+        $(document).ready(function () {
+            quote1 = DragTable.createNew("quote1");
+            quote2 = DragTable.createNew("quote2");
+            forexMetalData = generateForexData();
+            stockData = generateStockData();
+            quote1.setDataSource(forexMetalData);
+            quote2.setDataSource(stockData);
+        });
+
+        function generateForexData(option){
+            var data = [];
+            var temp;
+            for (var i = 0; i < forexMetalName.length; i++) {
+                temp = Mock.mock(forex);
+                temp.name = forexMetalName[i];
+                data.push(temp);
+            }
+            return data;
+        }
+
+        function generateStockData(option){
+            var data = [];
+            var temp;
+            for (var i = 0; i < stockName.length; i++) {
+                temp = Mock.mock(stock);
+                temp.name = stockName[i];
+                data.push(temp);
+            }
+            return data;
+        }
+    </script>
+</head>
+<body>
+    <div class="quoteContainer">
+        <table width="100%" class="quote1 oddEven">
+            <thead>
+            <tr>
+                <th field="name" tdClass="golden">貨幣對</th>
+                <th field="buying" type="number" decimal="5" stockChangeColorField="buyChange" riseFallStyle="forex">買入價</th>
+                <th field="selling" type="number" decimal="5" stockChangeColorField="sellChange" riseFallStyle="forex">賣出價</th>
+                <th field="spread" type="number" decimal="1">點差</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="quoteContainer">
+        <table width="100%" class="quote2 oddEven">
+            <thead>
+            <tr>
+                <th field="name" tdClass="golden">名稱</th>
+                <th field="transaction" type="number" decimal="4" stockChangeColorField="change">成交價</th>
+                <th field="change" type="number" decimal="4" stockChangeColorField="change">漲跌</th>
+                <th field="changeRate" type="rate" decimal="2" stockChangeColorField="change">漲跌幅(%)</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+<!--<canvas id="canvas" width="300" height="300"></canvas>-->
+</body>
+</html>

@@ -1,0 +1,21 @@
+table{
+    border-collapse: collapse;
+    border: 1px solid #000;
+}
+
+th {
+    background-color: #ff7e05;
+}
+
+.oddEven tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.oddEven tbody tr:nth-child(even) {
+    background-color: #dfdfdf;
+}
+
+.quoteContainer{
+    display: inline-block;
+    width: 20%;
+}

@@ -14,13 +14,26 @@
 
         table {
             border-collapse: collapse;
+            border-spacing: 0;
+            /*box-sizing: content-box;*/
+            /*-moz-box-sizing: content-box;*/
+            /*-webkit-box-sizing: content-box;*/
+
+            /*-moz-box-sizing: content-box;*/
             /*border: 1px solid #6265cc;*/
             color: #fff;
         }
 
+
+        /*td,*/
+        /*th {*/
+            /*padding: 0;*/
+        /*}*/
+
         .dynamicTable th {
             border-width: 0 1px 1px 0;
-            border-style: solid;
+            /*border-style: solid;*/
+
             /*border-color: #1dcc2e;*/
             /*border: 2px solid gray;*/
             /*border-width: 5px;*/
@@ -39,6 +52,7 @@
         }
 
         .dynamicTable td {
+
             border-style: none;
         }
 
@@ -87,7 +101,7 @@
         var fixedHeader;
         $(document).ready(function () {
 
-            dragTable = DragTable.createNew();
+            dragTable = DragTable.createNew("dynamicTable");
             fixedHeader = FixedHeader.createNew("dynamicTable","scroller");
             $("#hide").click(function () {
                 dragTable.hideColumn(parseInt($("#no").val()));

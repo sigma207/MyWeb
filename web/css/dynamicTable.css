@@ -31,6 +31,30 @@
     color: #00ff00;
 }
 
+.forexRise{
+    display: inline;
+    color: #FFFFFF;
+    background-color: #00ff00;
+}
+
+.forexRiseArrow{
+    display: inline-block;
+    border: 5px solid;
+    border-color: transparent transparent #00ff00 transparent;
+}
+
+.forexFall{
+    display: inline;
+    color: #FFFFFF;
+    background-color: #ff0000;
+}
+
+.forexFallArrow{
+    display: inline-block;
+    border: 5px solid;
+    border-color: #ff0000 transparent transparent transparent;
+}
+
 .arrowDiv {
     position: relative;
     /*right: -5px;*/

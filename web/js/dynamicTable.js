@@ -2,9 +2,9 @@
  * Created by Sigma on 2015/4/11.
  */
 var DragTable = {
-    createNew: function () {
+    createNew: function (tableClass) {
         var dt = {};//dragTable
-        dt.$table = $(".dynamicTable");
+        dt.$table = $("." + tableClass);
         dt.$headTr = dt.$table.find("thead>tr");
         dt.$thArrowDiv;
         /**
@@ -13,7 +13,7 @@ var DragTable = {
          * @type {Array}
          */
         dt.thObjList = [];
-        dt.debug = true;
+        dt.debug = false;
         dt.eventLogEnable = false;
         //dt.dragImgElement;
         dt.dragIndex = -1;
@@ -26,6 +26,9 @@ var DragTable = {
 
         dt.DRAG_OVER_CLASS = "dragOverColumn";
         dt.BASIC_TH_CLASS = "basicTH";
+        dt.RISE_FALL_STYLE = "riseFallStyle";
+        dt.FOREX_RISE_CLASS = "forexRise";
+        dt.FOREX_FALL_CLASS = "forexFall";
         dt.STOCK_RISE_CLASS = "stockRiseZh";
         dt.STOCK_FALL_CLASS = "stockFallZh";
         dt.STOCK_CHANGE_COLOR_FIELD = "stockChangeColorField";
@@ -55,10 +58,10 @@ var DragTable = {
                 $th.attr(dt.ORDER_BY, "");
                 $th.addClass(dt.BASIC_TH_CLASS);
                 //append the arrow div for sort
-                $th.append("<div class='"+dt.ARROW_DIV+"'></div>");
+                $th.append("<div class='" + dt.ARROW_DIV + "'></div>");
                 $th.on("click", dt.sortColumnClick);
             }
-            dt.$thArrowDiv = dt.$headTr.find("th>."+dt.ARROW_DIV);
+            dt.$thArrowDiv = dt.$headTr.find("th>." + dt.ARROW_DIV);
             //add event listener for drag&down
             var thList = dt.getThList();
             thList.attr("draggable", true);
@@ -70,7 +73,7 @@ var DragTable = {
             thList.on("drop", dt.drop);
         };
 
-        dt.initColumnField = function(){
+        dt.initColumnField = function () {
             var $th;
             var thList = dt.getThList();
             dt.columnSize = thList.length;
@@ -86,13 +89,14 @@ var DragTable = {
          * @param $th
          * @returns {{th: *, type: *, decimal: (*|number), field: *, stockChangeColorField: *, orderBy: *, display: *, arrowDiv: (*|{}), externalClass: *}}
          */
-        dt.thObject = function($th){
+        dt.thObject = function ($th) {
             var thObj = {
                 "th": $th,
                 "type": $th.attr(dt.COLUMN_TYPE),
-                "decimal": $th.attr(dt.DECIMAL)||0,
+                "decimal": $th.attr(dt.DECIMAL) || 0,
                 "field": $th.attr(dt.FIELD),
-                "stockChangeColorField":$th.attr(dt.STOCK_CHANGE_COLOR_FIELD),
+                "stockChangeColorField": $th.attr(dt.STOCK_CHANGE_COLOR_FIELD),
+                "riseFallStyle": $th.attr(dt.RISE_FALL_STYLE),
                 "orderBy": $th.attr(dt.ORDER_BY),
                 "display": $th.css("display"),
                 "arrowDiv": $th.find(dt.ARROW_DIV),
@@ -102,22 +106,22 @@ var DragTable = {
             var originalFormat = "";
             var dateTimeFormat = "";
             var digit = "";
-            switch(thObj.type){
+            switch (thObj.type) {
                 case "rate":
                     format = "%";
                 //break;
                 case "number":
-                    for(var i=0;i<thObj.decimal;i++){
-                        digit+="0";
+                    for (var i = 0; i < thObj.decimal; i++) {
+                        digit += "0";
                     }
-                    format = "0,0."+digit+format;
+                    format = "0,0." + digit + format;
                     break;
                 case "date":
-                    originalFormat =  dt.DATA_DATE_FORMATE;
+                    originalFormat = dt.DATA_DATE_FORMATE;
                     dateTimeFormat = dt.DISPLAY_DATE_FORMATE;
                     break;
                 case "time":
-                    originalFormat =  dt.DATA_TIME_FORMATE;
+                    originalFormat = dt.DATA_TIME_FORMATE;
                     dateTimeFormat = dt.DISPLAY_TIME_FORMATE;
                     break;
             }
@@ -131,11 +135,11 @@ var DragTable = {
         /**
          * refresh thObjList, make sure the thObjList have latest th attribute
          */
-        dt.refreshThObjList = function(){
+        dt.refreshThObjList = function () {
             dt.thObjList = [];
             var thList = dt.getThList();
-            thList.each(function(i){
-               dt.thObjList.push(dt.thObject($(this)));
+            thList.each(function (i) {
+                dt.thObjList.push(dt.thObject($(this)));
             });
         };
 
@@ -144,9 +148,9 @@ var DragTable = {
             dt.dataSize = dt.data.length;
             var thList = dt.getThList();
             //find unempty 'orderBy' attribute of th from thList.
-            var lastSortIndex = thList.filter("["+dt.ORDER_BY+"='"+dt.DESC+"'],["+dt.ORDER_BY+"='"+dt.ASC+"']").eq(0).index();
-            if(lastSortIndex!=-1){
-                dt.sortOrderBy(lastSortIndex,false);//keep last orderBy, so do not changes orderBy
+            var lastSortIndex = thList.filter("[" + dt.ORDER_BY + "='" + dt.DESC + "'],[" + dt.ORDER_BY + "='" + dt.ASC + "']").eq(0).index();
+            if (lastSortIndex != -1) {
+                dt.sortOrderBy(lastSortIndex, false);//keep last orderBy, so do not changes orderBy
             }
             dt.renderDom();
         };
@@ -155,7 +159,7 @@ var DragTable = {
          * Getting the th list.
          * @returns JQuery list
          */
-        dt.getThList = function(){
+        dt.getThList = function () {
             return dt.$headTr.children();
         };
 
@@ -194,7 +198,7 @@ var DragTable = {
         };
 
         dt.sortColumnClick = function (e) {
-            dt.sortOrderBy($(this).index(),true);
+            dt.sortOrderBy($(this).index(), true);
         };
 
         /**
@@ -202,23 +206,23 @@ var DragTable = {
          * @param sortIndex
          * @param changeOrderBy
          */
-        dt.sortOrderBy = function(sortIndex,changeOrderBy){
+        dt.sortOrderBy = function (sortIndex, changeOrderBy) {
             var $th = dt.getThByIndex(sortIndex);
             var currentOrderBy = $th.attr(dt.ORDER_BY);
-            currentOrderBy = (currentOrderBy == dt.ASC || currentOrderBy == "")?dt.ASC:dt.DESC;
-            if(changeOrderBy){
-                currentOrderBy = (currentOrderBy==dt.ASC)?dt.DESC:dt.ASC;
+            currentOrderBy = (currentOrderBy == dt.ASC || currentOrderBy == "") ? dt.ASC : dt.DESC;
+            if (changeOrderBy) {
+                currentOrderBy = (currentOrderBy == dt.ASC) ? dt.DESC : dt.ASC;
             }
-            dt.sortColumn(sortIndex,currentOrderBy);
+            dt.sortColumn(sortIndex, currentOrderBy);
         };
 
-        dt.sortColumn = function(sortIndex,orderBy){
-            dt.log("sortIndex="+sortIndex+":"+orderBy);
+        dt.sortColumn = function (sortIndex, orderBy) {
+            dt.log("sortIndex=" + sortIndex + ":" + orderBy);
             var thList = dt.getThList();
             var $th = dt.getThByIndex(sortIndex);
             var type = $th.attr(dt.COLUMN_TYPE);
             var field = $th.attr(dt.FIELD);
-            var arrowDiv = $th.find("."+dt.ARROW_DIV);
+            var arrowDiv = $th.find("." + dt.ARROW_DIV);
             //remove all arrow class
             dt.$thArrowDiv.removeClass(dt.DESC_ARROW);
             dt.$thArrowDiv.removeClass(dt.ASC_ARROW);
@@ -229,12 +233,12 @@ var DragTable = {
                 arrowDiv.addClass(dt.DESC_ARROW);
             }
 
-            if (type == "number"||type=="rate") {
+            if (type == "number" || type == "rate") {
                 JsonTool.sort(dt.data, field, orderBy);
             } else {
                 JsonTool.sortString(dt.data, field, orderBy);
             }
-            thList.attr(dt.ORDER_BY,"");//empty 'orderBy' attribute of all th
+            thList.attr(dt.ORDER_BY, "");//empty 'orderBy' attribute of all th
             $th.attr(dt.ORDER_BY, orderBy);//set 'orderBy' attribute of this th
             dt.renderDom();
         };
@@ -276,19 +280,48 @@ var DragTable = {
          * @returns {string}
          */
         dt.generateTd = function (thObj, colIndex, rowData) {
-            var tdClass = dt.generateTdClass(thObj,rowData);
+
+            var tdClass = dt.generateTdClass(thObj, rowData);
             var tdStyle = dt.generateStyle(thObj.display);
-            var tdValue = dt.generateValue(thObj,rowData);
-            return "<td"+tdClass+tdStyle+">"+tdValue+"</td>";
+            var tdValue = dt.generateValue(thObj, rowData);
+            tdValue = dt.generateTdDiv(thObj,rowData,tdValue);
+            return "<td" + tdClass + tdStyle + ">" + tdValue + "</td>";
         };
 
-        dt.generateTdClass = function(thObj,rowData){
+        dt.generateTdDiv = function(thObj,rowData,tdValue){
+            var stockChangeColorField = thObj[dt.STOCK_CHANGE_COLOR_FIELD];
+            var tdDiv = "";
+            var divClass = "";
+            var afterDiv = "";
+            var riseFallStyle = thObj[dt.RISE_FALL_STYLE];
+            if (typeof riseFallStyle !== typeof undefined && riseFallStyle !== false) {
+                var change = rowData[stockChangeColorField];
+                if(riseFallStyle=="forex"){
+                    if (change >= 0) {
+                        divClass += " " + dt.FOREX_RISE_CLASS;
+                        afterDiv += "<div class='forexRiseArrow'></div>";
+                    } else {
+                        divClass += " " + dt.FOREX_FALL_CLASS;
+                        afterDiv += "<div class='forexFallArrow'></div>";
+                    }
+                }
+            }
+            if(divClass!=""||afterDiv!=""){
+                tdDiv = "<div class='"+divClass+"'>"+tdValue+"</div>"+afterDiv;
+            }else{
+                tdDiv = tdValue;
+            }
+            return tdDiv;
+        };
+
+        dt.generateTdClass = function (thObj, rowData) {
             var type = thObj[dt.COLUMN_TYPE];
             var externalClass = thObj.externalClass;
             var stockChangeColorField = thObj[dt.STOCK_CHANGE_COLOR_FIELD];
+            var riseFallStyle = thObj[dt.RISE_FALL_STYLE];
 
             var tdClass = "";
-            if (type == "number"||type=="rate"||type=="date"||type=="time") {
+            if (type == "number" || type == "rate" || type == "date" || type == "time") {
                 tdClass += "numberTD";
             } else {
                 tdClass += "baseTD";
@@ -297,37 +330,42 @@ var DragTable = {
             //rise and fall class
             if (typeof stockChangeColorField !== typeof undefined && stockChangeColorField !== false) {
                 var change = rowData[stockChangeColorField];
-                if(change>=0){
-                    tdClass += " "+dt.STOCK_RISE_CLASS;
-                }else{
-                    tdClass += " "+dt.STOCK_FALL_CLASS;
+                if (typeof riseFallStyle !== typeof undefined && riseFallStyle !== false) {
+
+                } else {
+                    if (change >= 0) {
+                        tdClass += " " + dt.STOCK_RISE_CLASS;
+                    } else {
+                        tdClass += " " + dt.STOCK_FALL_CLASS;
+                    }
                 }
+
             }
             if (typeof externalClass !== typeof undefined && externalClass !== false) {
                 tdClass += " " + externalClass;
             }
-            if (tdClass.trim() != "") {
-                return " class='"+tdClass+"'";
-            }else{
+            if (tdClass != "") {
+                return " class='" + tdClass + "'";
+            } else {
                 return "";
             }
         };
 
-        dt.generateStyle = function(display){
-            if(display=="none"){
+        dt.generateStyle = function (display) {
+            if (display == "none") {
                 return " style='display:none'";
-            }else{
+            } else {
                 return "";
             }
         };
 
-        dt.generateValue = function(thObj,rowData){
+        dt.generateValue = function (thObj, rowData) {
             var value = rowData[thObj.field];
-            if(thObj.format!="") {
+            if (thObj.format != "") {
                 return numeral(value).format(thObj.format);
-            }else if(thObj.dateTimeFormat!=""){
-                return moment(value,thObj.originalFormat).format(thObj.dateTimeFormat);
-            }else{
+            } else if (thObj.dateTimeFormat != "") {
+                return moment(value, thObj.originalFormat).format(thObj.dateTimeFormat);
+            } else {
                 return value;
             }
         };
