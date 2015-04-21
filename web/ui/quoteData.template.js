@@ -5,7 +5,7 @@ var forexName = ["美元 日圓","歐元 美元","英鎊 美元","美元 人民�
 var metalName = ["倫敦金","倫敦銀"];
 var forexMetalName = forexName.concat(metalName);
 var stockName = ["浦發銀行","白雲機場","武鋼股份","東風汽車","IF1505","IF1506"];
-var forex = {
+var forexTemplate = {
     //name:'@PICK(["美元 日圓","歐元 美元","英鎊 美元","美元 人民幣","倫敦金","倫敦銀"])',
     "buying":'@FLOAT(118,120,5,5)',
     "selling":'@FLOAT(118,120,5,5)',
@@ -20,7 +20,7 @@ var forex = {
         return JsonTool.formatFloat(this.buying-this.selling,2);
     }
 };
-var stock = {
+var stockTemplate = {
     "buying": '@FLOAT(5,25,4,4)',
     "selling": '@FLOAT(5,25,4,4)',
     "transaction": function () {
@@ -38,3 +38,22 @@ var stock = {
     "opening": '@FLOAT(10,20,4,4)',
     "close": '@FLOAT(10,20,4,4)'
 };
+
+function generateForexMetalRunChartData(forexData){
+    console.log(forexData.name);
+    var close = parseFloat(forexData.close);
+    forexData.valueList = [];
+    var time;
+    var data = {};
+    for(var hour=9;hour<15;hour++){
+        for(var moment=0;moment<60;moment++){
+            time = ((hour<10)?"0"+hour:hour)+""+
+            ((moment<10)?"0"+moment:moment);
+            data = {};
+            data.time = time;
+            data.value = Random.float(close*0.9,close*1.1,5,5);
+            forexData.valueList.push(data);
+        }
+    }
+    console.dir(forexData);
+}

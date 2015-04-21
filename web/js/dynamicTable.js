@@ -4,6 +4,7 @@
 var DragTable = {
     createNew: function (tableClass) {
         var dt = {};//dragTable
+        dt.tableClass = tableClass;
         dt.$table = $("." + tableClass);
         dt.$headTr = dt.$table.find("thead>tr");
         dt.$thArrowDiv;
@@ -13,6 +14,7 @@ var DragTable = {
          * @type {Array}
          */
         dt.thObjList = [];
+        dt.trList;
         dt.debug = false;
         dt.eventLogEnable = false;
         //dt.dragImgElement;
@@ -249,20 +251,30 @@ var DragTable = {
          */
         dt.renderDom = function () {
             //console.time("renderDom");
-            /**
-             * refresh thObjList
-             */
             dt.refreshThObjList();//refresh thObjList
             dt.renderTBody = "";
             for (var rowIndex = 0; rowIndex < dt.dataSize; rowIndex++) {
                 dt.renderTBody += dt.generateTr(rowIndex);
             }
             dt.$table.find("tbody").html(dt.renderTBody);
+            dt.trList = dt.$table.find("tbody").children();
+            dt.trList.each(function(index){
+               $(this).click(dt.onRowClick);
+            });
             //console.timeEnd("renderDom");
         };
 
+        dt.onRowClick = function(e){
+            var tr = e.currentTarget;
+            var evt = new Event("rowClick");
+            evt.tableClass = dt.tableClass;
+            evt.rowIndex = $(tr).attr("rowIndex");
+            evt.rowData = dt.data[evt.rowIndex];
+            document.dispatchEvent(evt);
+        };
+
         dt.generateTr = function (rowIndex) {
-            var tr = "<tr>";
+            var tr = "<tr rowIndex='"+rowIndex+"'>";
             var thObj;
             for (var colIndex = 0; colIndex < dt.columnSize; colIndex++) {
                 thObj = dt.thObjList[colIndex];
@@ -296,7 +308,7 @@ var DragTable = {
             var riseFallStyle = thObj[dt.RISE_FALL_STYLE];
             if (typeof riseFallStyle !== typeof undefined && riseFallStyle !== false) {
                 var change = rowData[stockChangeColorField];
-                if(riseFallStyle=="forex"){
+                if(riseFallStyle=="forexTemplate"){
                     if (change >= 0) {
                         divClass += " " + dt.FOREX_RISE_CLASS;
                         afterDiv += "<div class='forexRiseArrow'></div>";

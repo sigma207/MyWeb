@@ -26,13 +26,21 @@
             stockData = generateStockData();
             quote1.setDataSource(forexMetalData);
             quote2.setDataSource(stockData);
+
+            document.addEventListener("rowClick",tableRowClick);
         });
+
+        function tableRowClick(e){
+            if(e.tableClass=="quote1"){
+                generateForexMetalRunChartData(e.rowData);
+            }
+        }
 
         function generateForexData(option){
             var data = [];
             var temp;
             for (var i = 0; i < forexMetalName.length; i++) {
-                temp = Mock.mock(forex);
+                temp = Mock.mock(forexTemplate);
                 temp.name = forexMetalName[i];
                 data.push(temp);
             }
@@ -43,7 +51,7 @@
             var data = [];
             var temp;
             for (var i = 0; i < stockName.length; i++) {
-                temp = Mock.mock(stock);
+                temp = Mock.mock(stockTemplate);
                 temp.name = stockName[i];
                 data.push(temp);
             }
