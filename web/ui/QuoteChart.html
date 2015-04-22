@@ -14,6 +14,7 @@
     <script type="text/javascript" src="../js/domTool.js"></script>
     <script type="text/javascript" src="../js/dynamicTable.js"></script>
     <script type="text/javascript" src="quoteData.template.js"></script>
+    <script type="text/javascript" src="runChart.js"></script>
     <script type="text/javascript">
         var quote1;
         var quote2;
@@ -31,9 +32,11 @@
         });
 
         function tableRowClick(e){
-            if(e.tableClass=="quote1"){
-                generateForexMetalRunChartData(e.rowData);
+            var rowData = e.rowData;
+            if (typeof(rowData.valueList)=="undefined") {
+                generateValueList(rowData);
             }
+            chart(rowData);
         }
 
         function generateForexData(option){
@@ -88,6 +91,6 @@
             </tbody>
         </table>
     </div>
-<!--<canvas id="canvas" width="300" height="300"></canvas>-->
+<canvas id="canvas" width="300" height="300"></canvas>
 </body>
 </html>
