@@ -142,6 +142,7 @@ canvas.onmousemove = function(e){
         //console.log("mouseMove");
         e.preventDefault();
         loc = windowToCanvas(e.clientX, e.clientY);
+        console.log("x="+ loc.x+",y="+ loc.y);
         restoreDrawingSurface();
         updateRubberBand(loc);
         if(guideWires){

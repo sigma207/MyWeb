@@ -34,7 +34,9 @@
 .forexRise{
     display: inline;
     color: #FFFFFF;
-    background-color: #00ff00;
+    background-color: #00a900;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .forexRiseArrow{
@@ -46,7 +48,9 @@
 .forexFall{
     display: inline;
     color: #FFFFFF;
-    background-color: #ff0000;
+    background-color: #ad0000;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .forexFallArrow{

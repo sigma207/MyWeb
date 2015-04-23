@@ -266,11 +266,12 @@ var DragTable = {
 
         dt.onRowClick = function(e){
             var tr = e.currentTarget;
-            var evt = new Event("rowClick");
-            evt.tableClass = dt.tableClass;
-            evt.rowIndex = $(tr).attr("rowIndex");
-            evt.rowData = dt.data[evt.rowIndex];
-            document.dispatchEvent(evt);
+            //var evt = new Event("rowClick");
+            var tableClass = dt.tableClass;
+            var rowIndex = $(tr).attr("rowIndex");
+            var rowData = dt.data[rowIndex];
+            $( document ).trigger( "rowClick", [ tableClass, rowIndex,rowData ] );
+            //document.dispatchEvent(evt);
         };
 
         dt.generateTr = function (rowIndex) {
@@ -308,7 +309,7 @@ var DragTable = {
             var riseFallStyle = thObj[dt.RISE_FALL_STYLE];
             if (typeof riseFallStyle !== typeof undefined && riseFallStyle !== false) {
                 var change = rowData[stockChangeColorField];
-                if(riseFallStyle=="forexTemplate"){
+                if(riseFallStyle=="forex"){
                     if (change >= 0) {
                         divClass += " " + dt.FOREX_RISE_CLASS;
                         afterDiv += "<div class='forexRiseArrow'></div>";

@@ -2,8 +2,8 @@
  * Created by user on 2015/4/22.
  */
 var chartArea = {};
-var valueAxis = {};//¦¨¥æ»ù
-var volumeAxis = {};//¦¨¥æ¶q
+var valueAxis = {};//æˆäº¤åƒ¹
+var volumeAxis = {};//æˆäº¤é‡
 var info = {};
 var canvas;
 var ctx;
@@ -11,7 +11,7 @@ var drawData;
 var drawingSurfaceImageData;
 AXIS_MARGIN = 40;
 
-//AXIS_WIDTH = 360;//60¤À*6=360
+//AXIS_WIDTH = 360;//60åˆ†*6=360
 function chart(data) {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
@@ -23,7 +23,7 @@ function chart(data) {
     initValueAxis();
     initInfo();
     //console.dir(axis);
-    //console.dir(info);
+    console.dir(info);
     //console.dir(chartArea);
     draw();
     canvas.onmouseover = canvasOnMouseOver;
@@ -44,6 +44,11 @@ function draw(){
     drawVolumeBar();
     drawInfo();
     saveDrawingSurface();
+    drawValueVolumeInfo(drawData.valueList[drawData.valueList.length-1]);
+
+    var x = convertX(0);
+    var index = xToIndex(x);
+    console.log("x="+x+",log="+index);
 }
 
 function initInfo() {
@@ -261,24 +266,51 @@ function drawVolumeBar() {
 }
 
 function drawInfo() {
-    var x = 20;
-    var y = 20;
+    ctx.save();
+    var x = 5;
+    var y = 5;
+    ctx.font = "16px Helvetica";
+    ctx.textBaseline = "top";
     ctx.fillText(drawData.name, x, y);
+    ctx.restore();
 }
 
 function drawValueVolumeInfo(data){
-    var valueX = 100;
-    var volume = 300;
-    var y = 20;
-    ctx.fillText(data.value, valueX, y);
-    ctx.fillText(data.volume, volume, y);
+    ctx.save();
+    var valueX = 80;
+    var volumeX = 80;
+    var timeX = 250;
+    var y = 5;
+    var vx = 160;
+    var y2 = 20;
+    var variance = JsonTool.formatFloat(data.value - drawData.close,2);
+    var multi = JsonTool.formatFloat(variance/drawData.close*100,2);
+    ctx.font = "12px Helvetica";
+    ctx.textBaseline = "top";
+    ctx.fillText("æˆäº¤åƒ¹:"+data.value, valueX, y);
+    if(variance>0){
+        ctx.fillText("+"+variance+"("+multi+")%",vx,y);
+    }else if(variance<0){
+        ctx.fillText("-"+variance+"("+multi+")%",vx,y);
+    }else{
+        ctx.fillText(variance+"("+multi+")%",vx,y);
+    }
+    ctx.fillText("æˆäº¤é‡:"+data.volume, volumeX, y2);
+    ctx.fillText(moment(data.time, "HHmm").format("HH:mm"), timeX, y);
+    ctx.restore();
+}
+
+function drawGuideWires(x){
+    ctx.save();
+    drawVerticalAxis(x, chartArea.top, chartArea.y);
+    ctx.restore();
 }
 
 function drawDashLine(x1, y1, x2, y2, dashLength) {
     var deltaX = x2 - x1;
     var deltaY = y2 - y1;
-    var distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));//2ÂI¤§¶¡ªº¶ZÂ÷
-    var numDash = Math.floor(distance / dashLength);//µê½u©MªÅ¥Õªº¼Æ¶q
+    var distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));//2é»žä¹‹é–“çš„è·é›¢
+    var numDash = Math.floor(distance / dashLength);//è™›ç·šå’Œç©ºç™½çš„æ•¸é‡
     var x;
     var y;
     ctx.save();
@@ -305,7 +337,7 @@ function convertX(minuteIndex) {
 }
 
 function xToIndex(x) {
-    return Math.floor((x - chartArea.x) / info.minuteScale) ;
+    return Math.floor((x  - chartArea.x) / info.minuteScale);
 }
 
 function convertValueY(value) {
@@ -322,14 +354,16 @@ function canvasOnMouseOver(e){
 }
 
 function canvasOnMouseMove(e) {
-    console.log("canvasOnMouseMove");
+    //console.log("canvasOnMouseMove");
     e.preventDefault;
     var loc = windowToCanvas(e.clientX, e.clientY);
     var index = xToIndex(loc.x);
     //console.log("index=" + index);
     if(index>=0&&index<drawData.valueList.length){
+        //console.log("index="+index+":x="+ loc.x+",y="+ loc.y);
         restoreDrawingSurface();
         drawValueVolumeInfo(drawData.valueList[index]);
+        drawGuideWires(loc.x);
     }
     //console.log("x="+ loc.x+",y="+ loc.y);
 }
@@ -342,9 +376,9 @@ function canvasOnMouseOut(e){
 function windowToCanvas(x, y) {
     var bbox = canvas.getBoundingClientRect();
     return {
-        x: x - bbox.left * (canvas.width / bbox.width),
-        y: y - bbox.top * (canvas.height / bbox.height)
-    };
+        x: x-bbox.left,
+        y: y-bbox.top
+    }
 }
 
 function saveDrawingSurface(){

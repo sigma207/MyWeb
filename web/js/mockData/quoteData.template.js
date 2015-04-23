@@ -59,13 +59,13 @@ function generateValueList(forexData) {
     forexData.valueList = [];
     var time;
     var data = {};
-    for (var hour = 9; hour < 10; hour++) {
+    for (var hour = 9; hour < 15; hour++) {
         for (var moment = 0; moment < 60; moment++) {
             time = ((hour < 10) ? "0" + hour : hour) + "" +
             ((moment < 10) ? "0" + moment : moment);
             data = {};
             data.time = time;
-            data.value =  JsonTool.random(forexData.valueMin,forexData.valueMax);
+            data.value =  JsonTool.formatFloat(JsonTool.random(forexData.valueMin,forexData.valueMax),2);
             data.volume = JsonTool.randomInt(forexData.volumeMin,forexData.volumeMax);
             //data.value = Random.float(min, max, 0, 4);
             if(data.value<forexData.valueMin){//mock.js的隨機數有bug,有可能出現比min小的值
