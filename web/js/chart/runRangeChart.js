@@ -29,6 +29,7 @@ function chart(data) {
     canvas.onmouseover = canvasOnMouseOver;
     canvas.onmousemove = canvasOnMouseMove;
     canvas.onmouseout = canvasOnMouseOut;
+    $("canvas").mousewheel(canvasOnMouseWheel);
 }
 
 function draw(){
@@ -39,24 +40,37 @@ function draw(){
     drawVolumeText();
     drawValueDashLine();
     drawVolumeDashLine();
-    generateDataLoc();
-    drawHourText();
-    drawValueLine();
-    drawVolumeBar();
+    //generateDataLoc();
+    //drawHourText();
+    //drawValueLine();
+    //drawVolumeBar();
+    changeTimeRange(info.valueList.length-info.displayTimeRange);
+    generateRangeDataLoc();
+    drawRangeHourText();
+    drawRangeValueLine();
+    drawRangeVolumeBar();
     drawInfo();
     saveDrawingSurface();
-    drawValueVolumeInfo(drawData.valueList[drawData.valueList.length-1]);
+    drawValueVolumeInfo(drawData.valueList[info.timeEndIndex]);
 
     var x = convertX(0);
     var index = xToIndex(x);
     console.log("x="+x+",log="+index);
 }
 
+function changeTimeRange(timeStartIndex){
+    info.timeStartIndex = timeStartIndex;
+    info.timeEndIndex = info.timeStartIndex+info.displayTimeRange-1;
+    info.minuteScale = valueAxis.width / info.valueList.length;
+}
+
 function initInfo() {
     info.valueList = drawData.valueList;
     info.hourDistance = 60;
-    info.displayTimeRange = 60;
-    info.minuteScale = valueAxis.width / info.valueList.length;
+    info.displayTimeRange = 20;
+    info.timeStartIndex = -1;
+    info.timeEndIndex = -1;
+    info.minuteScale = 0;
     info.minuteRangeScale = valueAxis.width / info.displayTimeRange;
 
 
@@ -187,6 +201,15 @@ function drawHourText() {
     }
 }
 
+function drawRangeHourText() {
+    var y = chartArea.y + 10;
+    var currentHour = parseInt(drawData.valueList[info.timeStartIndex].time.toString().substring(0,2));
+    for (var i = 0; i <= info.displayTimeRange; i+=info.hourDistance) {
+        ctx.fillText(currentHour.toString(), convertRangeX(i), y);
+        currentHour++;
+    }
+}
+
 function drawValueText() {
     ctx.save();
     var x = valueAxis.x - 35;
@@ -247,6 +270,18 @@ function generateDataLoc() {
     }
 }
 
+function generateRangeDataLoc() {
+    var data;
+    var timeIndex = info.timeStartIndex;
+    for (var i = 0; i < info.displayTimeRange; i++,timeIndex++) {
+        data = drawData.valueList[timeIndex];
+        data.x = convertRangeX(i);
+        console.log("data.x="+data.x);
+        data.valueY = valueAxis.y - convertValueY(data.value);
+        data.volumeY = volumeAxis.y - convertVolumeY(data.volume);
+    }
+}
+
 function drawValueLine() {
     ctx.save();
     var data, oldValue, newValue, x, y, oldX, oldY;
@@ -274,12 +309,55 @@ function drawValueLine() {
     ctx.restore();
 }
 
+function drawRangeValueLine(){
+    ctx.save();
+    var data, oldValue, newValue, x, y, oldX, oldY;
+    for (var i = info.timeStartIndex; i <= info.timeEndIndex; i++) {
+
+        data = drawData.valueList[i];
+        newValue = data.value;
+        x = data.x;
+        y = data.valueY;
+        //console.log("i="+i+":x="+x+",y="+y);
+        if (i == 0) {
+        } else {
+            if (newValue > oldValue) {
+                ctx.strokeStyle = "red";
+            } else {
+                ctx.strokeStyle = "green";
+            }
+            ctx.beginPath();
+            ctx.moveTo(oldX, oldY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+        oldX = x;
+        oldY = y;
+        oldValue = newValue;
+    }
+    ctx.restore();
+}
+
 function drawVolumeBar() {
     ctx.save();
     var data;
     ctx.strokeStyle = "blue";
     ctx.beginPath();
     for (var i = 0; i < drawData.valueList.length; i++) {
+        data = drawData.valueList[i];
+        ctx.moveTo(data.x, volumeAxis.y);
+        ctx.lineTo(data.x, data.volumeY);
+    }
+    ctx.stroke();
+    ctx.restore();
+}
+
+function drawRangeVolumeBar() {
+    ctx.save();
+    var data;
+    ctx.strokeStyle = "blue";
+    ctx.beginPath();
+    for (var i = info.timeStartIndex; i <= info.timeEndIndex; i++) {
         data = drawData.valueList[i];
         ctx.moveTo(data.x, volumeAxis.y);
         ctx.lineTo(data.x, data.volumeY);
@@ -323,9 +401,9 @@ function drawValueVolumeInfo(data){
     ctx.restore();
 }
 
-function drawGuideWires(x){
+function drawGuideWires(index){
     ctx.save();
-    ctx.drawVerticalLine(x, chartArea.top, chartArea.y);
+    ctx.drawVerticalLine(drawData.valueList[info.timeStartIndex+index].x, chartArea.top, chartArea.y);
     ctx.restore();
 }
 
@@ -333,8 +411,16 @@ function convertX(minuteIndex) {
     return chartArea.x + (minuteIndex) * info.minuteScale;
 }
 
+function convertRangeX(minuteIndex){
+    return chartArea.x + (minuteIndex) * info.minuteRangeScale;
+}
+
 function xToIndex(x) {
     return Math.floor((x  - chartArea.x) / info.minuteScale);
+}
+
+function xToRangeIndex(x) {
+    return Math.round((x  - chartArea.x) / info.minuteRangeScale);
 }
 
 function convertValueY(value) {
@@ -354,13 +440,12 @@ function canvasOnMouseMove(e) {
     //console.log("canvasOnMouseMove");
     e.preventDefault;
     var loc = windowToCanvas(e.clientX, e.clientY);
-    var index = xToIndex(loc.x);
-    //console.log("index=" + index);
-    if(index>=0&&index<drawData.valueList.length){
-        //console.log("index="+index+":x="+ loc.x+",y="+ loc.y);
+    var index = xToRangeIndex(loc.x);
+    if(loc.x>=chartArea.x&&index>=0&&index<info.displayTimeRange){
+        console.log("index="+index+":x="+ loc.x+",y="+ loc.y);
         restoreDrawingSurface();
-        drawValueVolumeInfo(drawData.valueList[index]);
-        drawGuideWires(loc.x);
+        drawValueVolumeInfo(drawData.valueList[info.timeStartIndex+index]);
+        drawGuideWires(index);
     }
     //console.log("x="+ loc.x+",y="+ loc.y);
 }
@@ -368,6 +453,11 @@ function canvasOnMouseMove(e) {
 function canvasOnMouseOut(e){
     //console.log("canvasOnMouseOut");
     //saveDrawingSurface();
+}
+
+function canvasOnMouseWheel(e,delta){
+    e.originalEvent.preventDefault();
+    console.log(delta);
 }
 
 function windowToCanvas(x, y) {
@@ -383,4 +473,6 @@ function saveDrawingSurface(){
 }
 function restoreDrawingSurface(){
     ctx.putImageData(drawingSurfaceImageData,0,0);
-}
+}/**
+ * Created by user on 2015/4/23.
+ */
