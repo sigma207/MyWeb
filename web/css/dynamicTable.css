@@ -15,7 +15,7 @@
 }
 
 .numberTD {
-    padding-right: 1px;
+    padding-right: 2px;
     text-align: right;
 }
 
@@ -24,11 +24,11 @@
 }
 
 .stockRiseZh{
-    color: #ff0000;
+    color: #ad0000;
 }
 
 .stockFallZh{
-    color: #00ff00;
+    color: #00a900;
 }
 
 .forexRise{
@@ -41,8 +41,11 @@
 
 .forexRiseArrow{
     display: inline-block;
-    border: 5px solid;
-    border-color: transparent transparent #00ff00 transparent;
+    background: url('../images/triangle_01.png');
+    width: 10px;
+    height: 12px;
+    /*border: 5px solid;*/
+    /*border-color: transparent transparent #00ff00 transparent;*/
 }
 
 .forexFall{
@@ -55,8 +58,9 @@
 
 .forexFallArrow{
     display: inline-block;
-    border: 5px solid;
-    border-color: #ff0000 transparent transparent transparent;
+    background: url('../images/triangle_04.png');
+    width: 10px;
+    height: 12px;
 }
 
 .arrowDiv {

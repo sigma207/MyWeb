@@ -3,151 +3,8 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>index</title>
+    <link rel="stylesheet" href="css/jelly.css">
     <link rel="stylesheet" href="css/dynamicTable.css">
-    <style>
-        html, body {
-            margin: 0;
-        }
-
-        .container {
-            width: 1160px;
-            margin: 0 auto;
-            /*background-color: #00AACC;*/
-        }
-
-        .horizontalMiddle {
-            margin: 0 auto;
-        }
-
-        .middleContainer {
-            width: 960px;
-            margin: 0 auto;
-        }
-
-        .header {
-            /*background-color: #ffc905;*/
-            position: relative;
-            height: 115px;
-            z-index: 2;
-        }
-
-        .banner {
-            position: absolute;
-            top: 110px;
-            z-index: 1;
-        }
-
-        .logo {
-            position: absolute;
-            z-index: 2;
-        }
-
-        .bodyContainer {
-            background-image: url('images/banner_bg.png');
-            /*background-color: #ffc905;*/
-            z-index: 1;
-        }
-
-        .bannerContainer {
-            /*height: 280px;*/
-        }
-
-        .imgPlaceHolder {
-            width: 630px;
-            height: 270px;
-            display: inline-block;
-            /*background-color: #d6ffd4;*/
-        }
-
-        .news {
-            width: 300px;
-            height: 270px;
-            display: inline-block;
-            /*background-color: #d6ffd4;*/
-            /*margin-left: 0;*/
-            /*margin-top: 5px;*/
-            /*margin-bottom: 5px;*/
-        }
-
-        .newsTitle {
-            color: #FFFFFF;
-        }
-
-        .quoteChart {
-            padding: 5px;
-            /*background-color: #cafaff;*/
-        }
-
-        .logo, .nav {
-            display: inline;
-        }
-
-        .nav li {
-            list-style: none;
-            float: left;
-            padding-left: 20px;
-        }
-
-        .nav a {
-            text-decoration: none;
-            color: #000;
-            font-size: 20px;
-        }
-
-        .navContainer {
-            position: absolute;
-            right: 0;
-            bottom: 15px;
-        }
-
-        .productList {
-            /*height: 200px;*/
-        }
-
-
-        .productItem {
-            display: inline-block;
-            width: 310px;
-            height: 200px;
-            border: 1px solid #ffc905;
-        }
-
-        table {
-            border-collapse: collapse;
-            border: 1px solid #000;
-        }
-
-        th {
-            background-color: #ff7e05;
-        }
-
-        th, td {
-            height: 32px;
-        }
-
-        .oddEven tbody tr:nth-child(odd) {
-            background-color: #ffffff;
-        }
-
-        .oddEven tbody tr:nth-child(even) {
-            background-color: #dfdfdf;
-        }
-
-        .quoteContainer {
-            display: inline-block;
-            width: 320px;
-            height: 250px;
-        }
-
-        .copyRight {
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .canvas {
-            border: 1px solid #ffc905;
-        }
-    </style>
     <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
     <script type="text/javascript" src="js/numeral.min.js"></script>
@@ -211,14 +68,13 @@
     <div class="header middleContainer">
         <img class="logo" src="images/logo.png">
         <img src="images/banner.png" class="banner"/>
-
         <div class="navContainer">
             <ul class="nav">
-                <li><a href="#">公司簡介</a></li>
-                <li><a href="#">產品型錄</a></li>
-                <li><a href="#">購買須知</a></li>
-                <li><a href="#">技術支援</a></li>
-                <li><a href="#">聯絡方式</a></li>
+                <li><div class="menu"><a href="#">公司簡介</a></div></li>
+                <li><div class="menu"><a href="#">產品型錄</a></div></li>
+                <li><div class="menu"><a href="#">購買須知</a></div></li>
+                <li><div class="menu"><a href="#">技術支援</a></div></li>
+                <li><div class="menu"><a href="#">聯絡方式</a></div></li>
             </ul>
         </div>
     </div>
@@ -226,56 +82,80 @@
         <div class="bannerContainer middleContainer">
             <div class="imgPlaceHolder"></div>
             <div class="news">
-                <!--<p class="newsTitle">News</p>-->
+                <div class="newsTitle">網站公告</div>
+                <span>‧傑利科技網站正式上線~</span>
             </div>
         </div>
     </div>
     <div class="quoteChart middleContainer">
         <div class="quoteContainer">
-            <table width="100%" class="quote1 oddEven">
-                <thead>
-                <tr>
-                    <th field="name" tdClass="golden">貨幣對</th>
-                    <th field="buying" type="number" decimal="5" stockChangeColorField="buyChange"
-                        riseFallStyle="forex">買入價
-                    </th>
-                    <th field="selling" type="number" decimal="5" stockChangeColorField="sellChange"
-                        riseFallStyle="forex">賣出價
-                    </th>
-                    <th field="spread" type="number" decimal="1">點差</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <div class="quoteItem">
+                <table class="quote1 oddEven">
+                    <thead>
+                    <tr>
+                        <th field="name" tdClass="golden">貨幣對</th>
+                        <th field="buying" type="number" decimal="5" stockChangeColorField="buyChange"
+                            riseFallStyle="forex">買入價
+                        </th>
+                        <th field="selling" type="number" decimal="5" stockChangeColorField="sellChange"
+                            riseFallStyle="forex">賣出價
+                        </th>
+                        <th field="spread" type="number" decimal="1">點差</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="quoteItem">
+                <table width="100%" class="quote2 oddEven">
+                    <thead>
+                    <tr>
+                        <th field="name" tdClass="golden">名稱</th>
+                        <th field="transaction" type="number" decimal="4" stockChangeColorField="change">成交價</th>
+                        <th field="change" type="number" decimal="4" stockChangeColorField="change">漲跌</th>
+                        <th field="changeRate" type="rate" decimal="2" stockChangeColorField="change">漲跌幅(%)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="quoteContainer">
-            <table width="100%" class="quote2 oddEven">
-                <thead>
-                <tr>
-                    <th field="name" tdClass="golden">名稱</th>
-                    <th field="transaction" type="number" decimal="4" stockChangeColorField="change">成交價</th>
-                    <th field="change" type="number" decimal="4" stockChangeColorField="change">漲跌</th>
-                    <th field="changeRate" type="rate" decimal="2" stockChangeColorField="change">漲跌幅(%)</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <canvas id="canvas" class="canvas" width="300" height="250">
+        <canvas id="canvas" class="canvas">
             This text is displayed if your browser does not support HTML5 Canvas.
         </canvas>
     </div>
-    <div class="productList middleContainer">
-        <div class="productItem">產品001</div>
-        <div class="productItem">產品002</div>
-        <div class="productItem">產品003</div>
+    <div class="productContainer middleContainer">
+        <div class="productList">
+            <div class="productItem">
+                <div class="productTitle">產品001</div>
+                <div class="productDescribe">
+                    說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.
+                </div>
+                <div class="more"><a href="#">了解更多&gt;&gt;</a></div>
+            </div>
+            <div class="productItem">
+                <div class="productTitle">產品002</div>
+                <div class="productDescribe">
+                    說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.
+                </div>
+                <div class="more"><a href="#">了解更多&gt;&gt;</a></div>
+            </div>
+            <div class="productItem">
+                <div class="productTitle">產品003</div>
+                <div class="productDescribe">
+                    說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.
+                </div>
+                <div class="more"><a href="#">了解更多&gt;&gt;</a></div>
+            </div>
+        </div>
     </div>
     <div class="footer middleContainer">
-        <p class="copyRight">
-            Copyright©2015傑利科技股份有限公司Jelly Technology Inc.版權所有‧不得轉載
-        </p>
+        <div class="copyRightContainer">
+            Copyright&copy;2015 傑利科技股份有限公司 Jelly Technology Inc. 版權所有，不得轉載
+        </div>
+
     </div>
 </div>
 </body>
