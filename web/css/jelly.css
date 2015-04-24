@@ -167,15 +167,9 @@ th, td {
     box-sizing: border-box;
 }
 
-.canvas {
-
+.canvasContainer {
     float: left;
-    width: 320px;
-    height: 250px;
     border: 1px solid #FF7C00;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
 }
 
 .productContainer {

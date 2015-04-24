@@ -128,7 +128,7 @@ function drawCircle2(loc){
     ctx.stroke();
 }
 canvas.onmousedown = function (e) {
-    console.log("mouseDown");
+    console.log("mouseLast");
     var loc = windowToCanvas(e.clientX, e.clientY);
     e.preventDefault();
     saveDrawingSurface();
