@@ -13,7 +13,16 @@ var drawingAxisImageData;
 var drawingSurfaceImageData;
 AXIS_MARGIN = 40;
 AXIS_MARGIN_BOTTOM = 20;
-
+function rangeChartInit() {
+    canvas = document.getElementById("canvas");
+    //要把此js重寫成物件方式處理,不然這些事件會重覆宣告監聽
+    canvas.onmouseover = canvasOnMouseOver;
+    canvas.onmousedown = canvasOnMouseDown;
+    canvas.onmouseup = canvasOnMouseUp;
+    canvas.onmousemove = canvasOnMouseMove;
+    canvas.onmouseout = canvasOnMouseOut;
+    $("canvas").mousewheel(canvasOnMouseWheel);
+}
 function chart(data) {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
@@ -39,13 +48,7 @@ function chart(data) {
     //x = convertRangeX(index);
     //console.log("range x=" + x + ",index=" + index);
 
-    //要把此js重寫成物件方式處理,不然這些事件會重覆宣告監聽
-    canvas.onmouseover = canvasOnMouseOver;
-    canvas.onmousedown = canvasOnMouseDown;
-    canvas.onmouseup = canvasOnMouseUp;
-    canvas.onmousemove = canvasOnMouseMove;
-    canvas.onmouseout = canvasOnMouseOut;
-    $("canvas").mousewheel(canvasOnMouseWheel);
+
 }
 function drawBase() {
     drawValueAxis();
@@ -88,26 +91,33 @@ function changeTimeRange(timeStartIndex) {
  * @param addValue (+1或-1)
  */
 function addDisplayTimeRange(addValue) {
-    var value = info.displayTimeRange + (addValue * 2);
-    var newRange = 0;
-    if (value <= drawData.valueList.length) {
-        if (value <= info.minDisplaytimeRange) {
+    var newRange = info.displayTimeRange + (addValue * 2);
+    var start,end;
+    if (newRange <= drawData.valueList.length) {
+        if (newRange <= info.minDisplaytimeRange) {
             newRange = info.minDisplaytimeRange;//最小
         } else {
-            newRange = value;//範圍內隨便你
+            //newRange = value;//範圍內隨便你
         }
     } else {
         newRange = drawData.valueList.length;//最大
     }
-
-    var start = info.timeStartIndex - value;//30->29
-    var end = info.timeEndIndex + value;//39->40
+    if(newRange!=info.displayTimeRange){
+        if(addValue>0){//addValue=1
+            start = info.timeStartIndex - addValue;//30->29
+            end = info.timeEndIndex + addValue;//39->40
+        }else{//addValue=-1
+            start = info.timeStartIndex - addValue;//30->31
+            end = info.timeEndIndex + addValue;//39->38
+        }
+    }
 
     if (start >= 0 && end < drawData.valueList.length) {
         restoreDrawingAxisImageData();
         console.log("newRange=" + newRange + ",start=" + start + ",end=" + end);
         info.displayTimeRange = newRange;
         changeTimeRange(start);
+        saveDrawingSurface();
     }
 }
 
@@ -169,7 +179,6 @@ function initInfo() {
         var count = this.valueList.length;
         for (var i = 0; i <= count; i += this.hourDistance) {
             temp.push(i);
-            console.log(i);
         }
         return temp;
     };
@@ -248,12 +257,14 @@ function drawRangeTimeText() {
     var timeIndex = 0;
     var timeStep = 0;
     var currentHour = parseInt(drawData.valueList[info.timeStartIndex].time.toString().substring(0, 2));
-    if (info.displayTimeRange < 60) {
-        timeStep = 5;//一小時內 每隔5分顯示
-    } else if (info.displayTimeRange >= 60) {
-        timeStep = 30;//超過一小時的資料 每隔30分顯示
-    } else if (info.displayTimeRange >= 180) {
-        timeStep = 60;//超過一小時的資料 每隔60分顯示
+    if (info.displayTimeRange <= 30) {
+        timeStep = 5;//30分內 每隔5分顯示
+    } else if (info.displayTimeRange <= 60) {
+        timeStep = 10;//一小時內 每隔10分顯示
+    } else if (info.displayTimeRange <= 120) {
+        timeStep = 30;//2小時內 每隔30分顯示
+    } else {
+        timeStep = 60;//超過2小時 每隔60分顯示
     }
     for (var i = info.timeStartIndex; i < info.timeEndIndex; i += timeStep) {
         ctx.fillText(moment(drawData.valueList[i].time, "HHmm").format("HH:mm"), convertRangeX(timeIndex), y);
@@ -262,10 +273,6 @@ function drawRangeTimeText() {
     if (i != info.timeEndIndex - 1) {
         ctx.fillText(moment(drawData.valueList[info.timeEndIndex].time, "HHmm").format("HH:mm"), convertRangeX(info.displayTimeRange - 1), y);
     }
-    //for (var i = 0; i <= info.displayTimeRange; i+=info.hourDistance) {
-    //    ctx.fillText(currentHour.toString(), convertRangeX(i), y);
-    //    currentHour++;
-    //}
     ctx.restore();
 }
 
@@ -345,7 +352,6 @@ function drawRangeValueLine() {
         newValue = data.value;
         x = data.x;
         y = data.valueY;
-        //console.log("i="+i+":x="+x+",y="+y);
         if (i == 0) {
         } else {
             if (newValue > oldValue) {
@@ -458,17 +464,38 @@ function canvasOnMouseOver(e) {
 function canvasOnMouseDown(e) {
     e.preventDefault();
     var loc = windowToCanvas(e.clientX, e.clientY);
-    mouseLast.x = loc.x;
-    mouseLast.y = loc.y;
-    info.dragging = true;
+    var inChartArea = chartAreaLocCheck(loc);
+    if (inChartArea) {
+        restoreDrawingSurface();
+        info.dragging = true;
+    }
+    //mouseLast.x = loc.x;
+    //mouseLast.y = loc.y;
+
 }
 
 
 function dragStop() {
     console.log("dragStop");
-    info.dragging = false;
-    saveDrawingSurface();
-    drawMouseInfo(mouseLast.index);
+    if (info.dragging) {//如果onMouseDonw是在chartArea外面時,dragging會是false
+        info.dragging = false;
+        saveDrawingSurface();//停止拖曳時要把畫面儲存
+        //var loc = windowToCanvas(e.clientX, e.clientY);
+        //var inChartArea = chartAreaLocCheck(loc);
+        //if (inChartArea) {//如果還在範圍內才顯示資訊,有可能放開滑鼠時在chartArea外
+        //    drawMouseInfo(mouseLast.index);
+        //}
+
+    }
+}
+
+function outOfChartArea() {
+    mouseLast.index = -1;
+    restoreDrawingSurface();
+}
+
+function chartAreaLocCheck(loc) {
+    return (loc.x >= chartArea.x && loc.x <= chartArea.right);
 }
 
 function canvasOnMouseMove(e) {
@@ -476,38 +503,34 @@ function canvasOnMouseMove(e) {
     e.preventDefault;
     var loc = windowToCanvas(e.clientX, e.clientY);
     var index = xToRangeIndex(loc.x);
+    var inChartArea = chartAreaLocCheck(loc);
     //if (loc.x < 0 || loc.x >= canvas.width)return;
-    //console.log("x=" + loc.x + ",index=" + index);
-    if (info.dragging) {
-        var newTimeStartIndex = info.timeStartIndex - 1;
-        if (loc.x > mouseLast.x) {
-            newTimeStartIndex = info.timeStartIndex + 1;
-        }
-        if (newTimeStartIndex != info.timeStartIndex && newTimeStartIndex >= 0 && newTimeStartIndex <= info.valueList.length - info.displayTimeRange) {
-            //console.log("newTimeStartIndex="+newTimeStartIndex);
-            restoreDrawingAxisImageData();
-            console.log("changeTimeRange");
-            changeTimeRange(newTimeStartIndex);
-        }
-        mouseLast.x = loc.x;
-        mouseLast.y = loc.y;
-        mouseLast.index = index;
-    } else {
-        if (loc.x >= chartArea.x && index >= 0 && index < info.displayTimeRange) {
+    if (inChartArea) {
+        if (info.dragging) {
+            var newTimeStartIndex = -1;
+            if (loc.x > mouseLast.x && info.timeEndIndex < drawData.valueList.length - 1) {
+                newTimeStartIndex = info.timeStartIndex + 1;
+            } else if (loc.x < mouseLast.x && info.timeStartIndex > 0) {
+                newTimeStartIndex = info.timeStartIndex - 1;
+            }
+            if (newTimeStartIndex != -1) {
+                restoreDrawingAxisImageData();
+                changeTimeRange(newTimeStartIndex);
+            }
+
+            mouseLast.x = loc.x;
+            mouseLast.y = loc.y;
+            mouseLast.index = index;
+        } else {
             restoreDrawingSurface();
             drawMouseInfo(index);
         }
-
+    } else {
+        //outOfChartArea();
     }
-
-
-    //console.log("x="+ loc.x+",y="+ loc.y);
 }
 
 function canvasOnMouseOut(e) {
-    //console.log("canvasOnMouseOut");
-    //saveDrawingSurface();
-
     if (info.dragging) {
         dragStop();
     } else {
@@ -519,12 +542,20 @@ function canvasOnMouseOut(e) {
 function canvasOnMouseUp(e) {
     e.preventDefault();
     dragStop();
+    var loc = windowToCanvas(e.clientX, e.clientY);
+    var inChartArea = chartAreaLocCheck(loc);
+    if (inChartArea) {//如果還在範圍內才顯示資訊,有可能放開滑鼠時在chartArea外
+        drawMouseInfo(mouseLast.index);
+    }
 }
 
 function canvasOnMouseWheel(e, delta) {
     e.originalEvent.preventDefault();
-    console.log(delta);
-
+    if(delta>1){//有可能大於1或小於-1,要強迫修正
+        delta = 1;
+    }else if(delta<-1){
+        delta = -1;
+    }
     addDisplayTimeRange(delta);
 }
 

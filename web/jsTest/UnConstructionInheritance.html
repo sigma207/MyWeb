@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        var Taiwan = {
+            nation:"台灣",
+            location:["台北","台中","台南"]
+        };
+//        var Doctor = {
+//            career:"醫生"
+//        };
+        init();
+        function init(){
+//            extend1();
+//            extend2();
+//            extend2Problem();
+            extend3();
+        }
+
+        function extend1(){
+            var Doctor = object(Taiwan);
+            Doctor.career = "醫生";
+            Doctor.location.push("高雄");//push之後,連Taiwan對象也跟著變了
+            log(Doctor.nation);
+            log(Doctor.location);
+            log(Taiwan.location);
+
+        }
+
+        function object(o){
+            function F(){};
+            F.prototype = o;
+            return new F();
+        }
+
+        function extend2(){
+            var Doctor = shallowCopy(Taiwan);
+            Doctor.career = "醫生";
+            log(Doctor.nation);
+        }
+
+        /**
+         * shallowCopy issue
+         */
+        function extend2Problem(){
+            var Doctor = shallowCopy(Taiwan);
+            Doctor.career = "醫生";
+            Doctor.location.push("高雄");//push之後,連Taiwan對象也跟著變了
+            log(Doctor.location);
+            log(Taiwan.location);
+        }
+        function shallowCopy(p){
+            var c = {};
+            for(var key in p){
+                c[key] = p[key];
+            }
+            c.uber = p;
+            return c;
+        }
+
+        function extend3(){
+            var Doctor = deepCopy(Taiwan);
+            Doctor.career = "醫生";
+            Doctor.location.push("高雄");//push之後,Taiwan對象就"不會"也跟著變了
+            log(Doctor.location);
+            log(Taiwan.location);
+        }
+
+        function deepCopy(p,c){
+            var c = c || {};
+            for(var key in p){
+                if(typeof p[key] =="object"){
+                    c[key] =(p[key].constructor===Array)?[]:{};
+                    deepCopy(p[key],c[key]);
+                }else{
+                    c[key] = p[key];
+                }
+            }
+            return c;
+        }
+
+        function log(msg) {
+            console.log(msg);
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>

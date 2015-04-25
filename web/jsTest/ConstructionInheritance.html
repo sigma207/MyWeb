@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Js construction inherit</title>
+    <script>
+        init();
+        function init() {
+//            constructor();
+//            prototypeMode();
+//            directPrototype();
+//            emptyObjectExtend();
+            copy();
+        }
+        function constructor() {
+            var dog = new Dog("cool", "yellow");
+            console.log(dog.species);
+        }
+        function prototypeMode() {
+            Cat.prototype = new Animal();
+            console.log(Animal.prototype.constructor);
+            //Cat.prototype = new Animal()之後,連Cat.prototype.constructor也變成Animal:
+            console.log(Cat.prototype.constructor);
+            Cat.prototype.constructor = Cat;
+            console.log(Animal.prototype.constructor);
+            //Cat.prototype.constructor = Cat把Cat的constructor改回成Cat
+            console.log(Cat.prototype.constructor);
+            var cat = new Cat("gigi", "red");
+            console.log(cat.constructor);
+            console.log(cat.species);
+        }
+
+        function Animal() {
+            this.species = "animal";
+        }
+        function Cat(name, color) {
+            this.name = name;
+            this.color = color;
+        }
+        function Dog(name, color) {
+            Animal.apply(this, arguments);
+            this.name = name;
+            this.color = color;
+        }
+        /**
+         * 此方式會導致Human的constructor也改成Man
+         */
+        function directPrototype() {
+            Human.prototype.species = "human";
+            Man.prototype = Human.prototype;
+            Man.prototype.constructor = Man;
+            var man = new Man("John");
+            log(man.species);
+            log(Human.prototype.constructor);
+            log(Man.prototype.constructor);
+        }
+
+        function emptyObjectExtend() {
+            Human.prototype.species = "human";
+            extend(Man, Human);
+            var man = new Man("John");
+            log(man.species);
+            log(Human.prototype.constructor);
+            log(Man.prototype.constructor);
+        }
+
+        function extend(Child, Parent) {
+            var F = function () {
+            };
+            F.prototype = Parent.prototype;
+            Child.prototype = new F();
+            Child.prototype.constructor = Child;
+            Child.uper = Parent.prototype;
+        }
+
+        function copy(){
+            Human.prototype.species = "human";
+            copyExtend(Man, Human);
+            var man = new Man("John");
+            log(man.species);
+            log(Human.prototype.constructor);
+            log(Man.prototype.constructor);
+        }
+
+        function copyExtend(Child,Parent){
+            var p = Parent.prototype;
+            var c = Child.prototype;
+            for(var key in p){
+                c[key] = p[key];
+            }
+            c.uper = p;
+        }
+        function Human() {
+        }
+
+        function Man(name) {
+            this.name = name;
+        }
+
+        function log(msg) {
+            console.log(msg);
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>

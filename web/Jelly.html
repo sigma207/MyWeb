@@ -16,6 +16,8 @@
     <script type="text/javascript" src="js/mockData/quoteData.template.js"></script>
     <script type="text/javascript" src="js/chart/chart.js"></script>
     <script type="text/javascript" src="js/chart/runRangeChart.js"></script>
+    <script type="text/javascript" src="js/chart/myChart.js"></script>
+    <script type="text/javascript" src="js/chart/useMyChart.js"></script>
     <script type="text/javascript">
         var quote1;
         var quote2;
@@ -31,6 +33,8 @@
 
             document.addEventListener("rowClick", tableRowClick);
             $(document).on("rowClick", tableRowClick);
+            rangeChartInit();
+//            go();
         });
 
         function tableRowClick(e, tableClass, rowIndex, rowData) {
