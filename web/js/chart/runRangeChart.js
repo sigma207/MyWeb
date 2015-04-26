@@ -5,6 +5,7 @@ var chartArea = {};
 var valueAxis = {};//成交價
 var volumeAxis = {};//成交量
 var info = {};
+var loc = {};
 var canvas;
 var ctx;
 var drawData;
@@ -15,7 +16,6 @@ AXIS_MARGIN = 40;
 AXIS_MARGIN_BOTTOM = 20;
 function rangeChartInit() {
     canvas = document.getElementById("canvas");
-    //要把此js重寫成物件方式處理,不然這些事件會重覆宣告監聽
     canvas.onmouseover = canvasOnMouseOver;
     canvas.onmousedown = canvasOnMouseDown;
     canvas.onmouseup = canvasOnMouseUp;
@@ -39,16 +39,6 @@ function chart(data) {
     drawBase();
     drawTimeRangeData();
     saveDrawingSurface();
-    //chartArea.x + (minuteIndex * info.timeRangeScale);
-    //console.log("chartArea.x=" + chartArea.x + ",timeRangeScale=" + info.timeRangeScale + "chartArea.width=" + chartArea.width);
-    //var x = convertRangeX(0);
-    //var index = xToRangeIndex(x);
-    //console.log("range x=" + x + ",index=" + index);
-    //index = xToRangeIndex(39);
-    //x = convertRangeX(index);
-    //console.log("range x=" + x + ",index=" + index);
-
-
 }
 function drawBase() {
     drawValueAxis();
@@ -73,16 +63,7 @@ function drawMouseInfo(index) {
     drawGuideWires(index);
 }
 
-/**
- * 滑鼠左右移動是控制timeStartIndex
- * @param timeStartIndex
- */
-function changeTimeRange(timeStartIndex) {
-    info.timeStartIndex = timeStartIndex;
-    info.timeEndIndex = info.timeStartIndex + info.displayTimeRange - 1;
-    info.timeRangeScale = chartArea.width / (info.displayTimeRange - 1);
-    drawTimeRangeData();
-}
+
 
 /**
  * 滑鼠滾輪上下移動是控制displayTimeRange
@@ -92,7 +73,7 @@ function changeTimeRange(timeStartIndex) {
  */
 function addDisplayTimeRange(addValue) {
     var newRange = info.displayTimeRange + (addValue * 2);
-    var start,end;
+    var start, end;
     if (newRange <= drawData.valueList.length) {
         if (newRange <= info.minDisplaytimeRange) {
             newRange = info.minDisplaytimeRange;//最小
@@ -102,11 +83,11 @@ function addDisplayTimeRange(addValue) {
     } else {
         newRange = drawData.valueList.length;//最大
     }
-    if(newRange!=info.displayTimeRange){
-        if(addValue>0){//addValue=1
+    if (newRange != info.displayTimeRange) {
+        if (addValue > 0) {//addValue=1
             start = info.timeStartIndex - addValue;//30->29
             end = info.timeEndIndex + addValue;//39->40
-        }else{//addValue=-1
+        } else {//addValue=-1
             start = info.timeStartIndex - addValue;//30->31
             end = info.timeEndIndex + addValue;//39->38
         }
@@ -121,6 +102,17 @@ function addDisplayTimeRange(addValue) {
     }
 }
 
+/**
+ * 滑鼠左右移動是控制timeStartIndex
+ * @param timeStartIndex
+ */
+function changeTimeRange(timeStartIndex) {
+    info.timeStartIndex = timeStartIndex;
+    info.timeEndIndex = info.timeStartIndex + info.displayTimeRange - 1;
+    info.timeRangeScale = chartArea.width / (info.displayTimeRange +1);
+    drawTimeRangeData();
+}
+
 function initInfo() {
     info.dragging = false;
 
@@ -130,7 +122,7 @@ function initInfo() {
     info.minDisplaytimeRange = 10;
     info.timeStartIndex = info.valueList.length - info.displayTimeRange;
     info.timeEndIndex = info.timeStartIndex + info.displayTimeRange - 1;
-    info.timeRangeScale = chartArea.width / (info.displayTimeRange - 1);
+    info.timeRangeScale = chartArea.width / (info.displayTimeRange +1);
     info.timeGap = chartArea.width / info.displayTimeRange;
 
 
@@ -271,7 +263,7 @@ function drawRangeTimeText() {
         timeIndex += timeStep;
     }
     if (i != info.timeEndIndex - 1) {
-        ctx.fillText(moment(drawData.valueList[info.timeEndIndex].time, "HHmm").format("HH:mm"), convertRangeX(info.displayTimeRange - 1), y);
+        //ctx.fillText(moment(drawData.valueList[info.timeEndIndex].time, "HHmm").format("HH:mm"), convertRangeX(info.displayTimeRange - 1), y);
     }
     ctx.restore();
 }
@@ -309,8 +301,9 @@ function drawValueDashLine() {
 function drawVolumeText() {
     ctx.save();
     ctx.font = "8px Helvetica";
-    ctx.textBaseline = "top";
+    ctx.textBaseline = "bottom";
     ctx.textAlign = "right";
+    ctx.fillStyle = "blue";
     var x = volumeAxis.x - 5;
     var y = volumeAxis.y;
     var volumeTickList = info.volumeTicks();
@@ -325,7 +318,8 @@ function drawVolumeDashLine() {
     ctx.lineWidth = 0.5;
     var y = volumeAxis.y;
     var volumeTickList = info.volumeTicks();
-    for (var i = 0; i < volumeTickList.length; i++) {
+    //i=1底部的線不用劃(i=0=chartArea.y)
+    for (var i = 1; i < volumeTickList.length; i++) {
         y = volumeAxis.y - convertVolumeY(volumeTickList[i]);
         ctx.drawDashLine(volumeAxis.x, y, volumeAxis.right, y, 2);
     }
@@ -375,13 +369,22 @@ function drawRangeVolumeBar() {
     ctx.save();
     var data;
     ctx.strokeStyle = "blue";
+    ctx.fillStyle = "#3E92FF";
+    var startX,endX,quarterScale =info.timeRangeScale/4;
     ctx.beginPath();
     for (var i = info.timeStartIndex; i <= info.timeEndIndex; i++) {
         data = drawData.valueList[i];
-        ctx.moveTo(data.x, volumeAxis.y);
-        ctx.lineTo(data.x, data.volumeY);
+        startX = data.x-quarterScale;
+        endX = data.x+quarterScale;
+        ctx.moveTo(startX, volumeAxis.y);
+        ctx.lineTo(startX, data.volumeY);
+        ctx.lineTo(endX, data.volumeY);
+        ctx.lineTo(endX, volumeAxis.y);
+        //ctx.moveTo(data.x, volumeAxis.y);
+        //ctx.lineTo(data.x, data.volumeY);
     }
     ctx.stroke();
+    ctx.fill();
     ctx.restore();
 }
 
@@ -403,18 +406,29 @@ function drawValueVolumeInfo(data) {
     var y = 5;
     var vx = 160;
     var y2 = 20;
+
     var variance = JsonTool.formatFloat(data.value - drawData.close, 2);
     var multi = JsonTool.formatFloat(variance / drawData.close * 100, 2);
     ctx.font = "12px 微軟正黑體";
     ctx.textBaseline = "top";
-    ctx.fillText("成交價:" + data.value, valueX, y);
+    var transactionPrice = "成交價:";
+    var transactionPriceWidth = ctx.measureText(transactionPrice).width;
+    ctx.fillText(transactionPrice , valueX, y);
+
+    ctx.fillText(data.value, valueX+transactionPriceWidth, y);
+    if(variance>0){
+        ctx.fillStyle = "red";
+    }else{
+        ctx.fillStyle = "green";
+    }
     if (variance > 0) {
         ctx.fillText("+" + variance + "(" + multi + ")%", vx, y);
     } else if (variance < 0) {
-        ctx.fillText("-" + variance + "(" + multi + ")%", vx, y);
+        ctx.fillText(variance + "(" + multi + ")%", vx, y);
     } else {
         ctx.fillText(variance + "(" + multi + ")%", vx, y);
     }
+    ctx.fillStyle = "black";
     ctx.fillText("成交量:" + data.volume, volumeX, y2);
     ctx.fillText(moment(data.time, "HHmm").format("HH:mm"), timeX, y);
     ctx.restore();
@@ -422,7 +436,13 @@ function drawValueVolumeInfo(data) {
 
 function drawGuideWires(index) {
     ctx.save();
-    ctx.drawVerticalLine(drawData.valueList[info.timeStartIndex + index].x, chartArea.top, chartArea.y);
+    var data = drawData.valueList[info.timeStartIndex + index];
+    ctx.drawVerticalLine(data.x, chartArea.top, chartArea.y);
+    ctx.beginPath();
+    ctx.strokeStyle = "#FF7C00";
+    ctx.lineWidth = 2;
+    ctx.arc(data.x, data.valueY, 3,0,Math.PI*2,false);
+    ctx.stroke();
     //ctx.drawVerticalLine(x, chartArea.top, chartArea.y);
     ctx.restore();
 }
@@ -432,7 +452,7 @@ function convertX(minuteIndex) {
 }
 
 function convertRangeX(minuteIndex) {
-    return chartArea.x + (minuteIndex * info.timeRangeScale);
+    return chartArea.x +info.timeRangeScale+ (minuteIndex * info.timeRangeScale);
 }
 
 function xToIndex(x) {
@@ -440,10 +460,10 @@ function xToIndex(x) {
 }
 
 function xToRangeIndex(x) {
-    if (x < chartArea.x) {
+    if (x < chartArea.x +info.timeRangeScale) {
         return -1;
     } else {
-        return Math.round((x - chartArea.x) / info.timeRangeScale);
+        return Math.round((x - (chartArea.x+info.timeRangeScale)) / info.timeRangeScale);
     }
 
 }
@@ -456,56 +476,40 @@ function convertVolumeY(volume) {
     return (volume - info.volumeMin) * info.volumeScale;
 }
 
+function mouseLocation(e) {
+    var temp = windowToCanvas(e.clientX, e.clientY);
+    loc.x = temp.x;
+    loc.y = temp.y;
+    loc.index = xToRangeIndex(loc.x);
+    loc.inChartArea = (loc.x >= chartArea.x+info.timeRangeScale && loc.x <= chartArea.right-info.timeRangeScale);
+}
+
+function dragStop() {
+    //console.log("dragStop");
+    if (info.dragging) {//如果onMouseDonw是在chartArea外面時,dragging會是false
+        info.dragging = false;
+        saveDrawingSurface();//停止拖曳時要把畫面儲存
+    }
+}
+
 function canvasOnMouseOver(e) {
     //console.log("canvasOnMouseOver");
-    //restoreDrawingSurface();
 }
 
 function canvasOnMouseDown(e) {
     e.preventDefault();
-    var loc = windowToCanvas(e.clientX, e.clientY);
-    var inChartArea = chartAreaLocCheck(loc);
-    if (inChartArea) {
+    mouseLocation(e);
+    if (loc.inChartArea) {
         restoreDrawingSurface();
         info.dragging = true;
     }
-    //mouseLast.x = loc.x;
-    //mouseLast.y = loc.y;
-
-}
-
-
-function dragStop() {
-    console.log("dragStop");
-    if (info.dragging) {//如果onMouseDonw是在chartArea外面時,dragging會是false
-        info.dragging = false;
-        saveDrawingSurface();//停止拖曳時要把畫面儲存
-        //var loc = windowToCanvas(e.clientX, e.clientY);
-        //var inChartArea = chartAreaLocCheck(loc);
-        //if (inChartArea) {//如果還在範圍內才顯示資訊,有可能放開滑鼠時在chartArea外
-        //    drawMouseInfo(mouseLast.index);
-        //}
-
-    }
-}
-
-function outOfChartArea() {
-    mouseLast.index = -1;
-    restoreDrawingSurface();
-}
-
-function chartAreaLocCheck(loc) {
-    return (loc.x >= chartArea.x && loc.x <= chartArea.right);
 }
 
 function canvasOnMouseMove(e) {
     //console.log("canvasOnMouseMove");
     e.preventDefault;
-    var loc = windowToCanvas(e.clientX, e.clientY);
-    var index = xToRangeIndex(loc.x);
-    var inChartArea = chartAreaLocCheck(loc);
-    //if (loc.x < 0 || loc.x >= canvas.width)return;
-    if (inChartArea) {
+    mouseLocation(e);
+    if (loc.inChartArea) {
         if (info.dragging) {
             var newTimeStartIndex = -1;
             if (loc.x > mouseLast.x && info.timeEndIndex < drawData.valueList.length - 1) {
@@ -520,13 +524,13 @@ function canvasOnMouseMove(e) {
 
             mouseLast.x = loc.x;
             mouseLast.y = loc.y;
-            mouseLast.index = index;
+            mouseLast.index = loc.index;
         } else {
             restoreDrawingSurface();
-            drawMouseInfo(index);
+            drawMouseInfo(loc.index);
         }
-    } else {
-        //outOfChartArea();
+    }else{
+        restoreDrawingSurface();
     }
 }
 
@@ -536,29 +540,31 @@ function canvasOnMouseOut(e) {
     } else {
         restoreDrawingSurface();
     }
-
 }
 
 function canvasOnMouseUp(e) {
     e.preventDefault();
     dragStop();
-    var loc = windowToCanvas(e.clientX, e.clientY);
-    var inChartArea = chartAreaLocCheck(loc);
-    if (inChartArea) {//如果還在範圍內才顯示資訊,有可能放開滑鼠時在chartArea外
+    mouseLocation(e);
+    if (loc.inChartArea) {//如果還在範圍內才顯示資訊,有可能放開滑鼠時在chartArea外
         drawMouseInfo(mouseLast.index);
     }
 }
 
 function canvasOnMouseWheel(e, delta) {
     e.originalEvent.preventDefault();
-    if(delta>1){//有可能大於1或小於-1,要強迫修正
+    if (delta > 1) {//有可能大於1或小於-1,要強迫修正
         delta = 1;
-    }else if(delta<-1){
+    } else if (delta < -1) {
         delta = -1;
     }
     addDisplayTimeRange(delta);
+    mouseLocation(e.originalEvent);
+    if (loc.inChartArea) {//如果還在範圍內才顯示資訊,有可能放開滑鼠時在chartArea外
+        restoreDrawingSurface();
+        drawMouseInfo(loc.index);
+    }
 }
-
 
 function windowToCanvas(x, y) {
     var bbox = canvas.getBoundingClientRect();
@@ -566,10 +572,6 @@ function windowToCanvas(x, y) {
         x: x - bbox.left,
         y: y - bbox.top
     };
-    //return {
-    //    x: x - bbox.left * (canvas.width / bbox.width),
-    //    y: y - bbox.top * (canvas.height / bbox.height)
-    //};
 }
 
 function saveDrawingSurface() {
