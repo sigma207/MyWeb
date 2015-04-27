@@ -39,6 +39,12 @@ html, body {
     z-index: 2;
 }
 
+.langSelect {
+    position: absolute;
+    top: 20px;
+    right: 0;
+}
+
 .bodyContainer {
     background-image: url('../images/banner_bg.png');
 }
@@ -59,12 +65,9 @@ html, body {
 .news {
     width: 320px;
     height: 260px;
-    /*display: inline-block;*/
     float: left;
     background-color: rgba(255, 255, 255, 0.70);
-    /*background-color: #d6ffd4;*/
-
-    /*margin-left: 5px;*/
+    background-color: #ffd6b3;
     margin-top: 5px;
     margin-bottom: 5px;
     padding: 5px;
@@ -100,7 +103,8 @@ html, body {
 }
 
 .menu {
-    width: 100px;
+    /*width: 100px;*/
+    margin-left: 20px;
     height: 35px;
     color: #000;
 }
@@ -124,7 +128,7 @@ table {
     font-size: 12px;
 }
 
-.quote1{
+.quote1 {
     border-right: 5px solid #FFFFFF;
 }
 
@@ -134,6 +138,15 @@ th {
 
 th, td {
     height: 30px;
+}
+
+.oddTr {
+    background-color: #dfdfdf;
+}
+
+.evenTr {
+    background-color: #ffffff;
+
 }
 
 .oddEven tbody tr:nth-child(odd) {
@@ -169,7 +182,11 @@ th, td {
 
 .canvasContainer {
     float: left;
+    height: 250px;
     border: 1px solid #FF7C00;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .productContainer {
@@ -185,10 +202,10 @@ th, td {
     float: left;
     width: 320px;
     height: 250px;
-    background-image: -webkit-linear-gradient(270deg,rgba(255,251,248,1.00) 0%,rgba(251,233,217,1.00) 100%);
-    background-image: -moz-linear-gradient(270deg,rgba(255,251,248,1.00) 0%,rgba(251,233,217,1.00) 100%);
-    background-image: -o-linear-gradient(270deg,rgba(255,251,248,1.00) 0%,rgba(251,233,217,1.00) 100%);
-    background-image: linear-gradient(180deg,rgba(255,251,248,1.00) 0%,rgba(251,233,217,1.00) 100%);
+    background-image: -webkit-linear-gradient(270deg, rgba(255, 251, 248, 1.00) 0%, rgba(251, 233, 217, 1.00) 100%);
+    background-image: -moz-linear-gradient(270deg, rgba(255, 251, 248, 1.00) 0%, rgba(251, 233, 217, 1.00) 100%);
+    background-image: -o-linear-gradient(270deg, rgba(255, 251, 248, 1.00) 0%, rgba(251, 233, 217, 1.00) 100%);
+    background-image: linear-gradient(180deg, rgba(255, 251, 248, 1.00) 0%, rgba(251, 233, 217, 1.00) 100%);
     background-color: #fbe9d9;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -240,6 +257,7 @@ th, td {
     background-image: -moz-linear-gradient(270deg, rgba(225, 0, 25, 1.00) 0%, rgba(96, 0, 0, 1.00) 100%);
     background-image: -o-linear-gradient(270deg, rgba(225, 0, 25, 1.00) 0%, rgba(96, 0, 0, 1.00) 100%);
     background-image: linear-gradient(180deg, rgba(225, 0, 25, 1.00) 0%, rgba(96, 0, 0, 1.00) 100%);
+    background-color: #FF0000;
 }
 
 .more a:hover {

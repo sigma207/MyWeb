@@ -1,6 +1,7 @@
 /**
  * Created by user on 2015/4/22.
  */
+var chartInit = false;
 var chartArea = {};
 var valueAxis = {};//成交價
 var volumeAxis = {};//成交量
@@ -12,29 +13,37 @@ var drawData;
 var mouseLast = {};
 var drawingAxisImageData;
 var drawingSurfaceImageData;
+var valueField,volumeField, timeField;
 AXIS_MARGIN = 40;
+AXIS_MARGIN_TOP = 20;
 AXIS_MARGIN_BOTTOM = 20;
-function rangeChartInit() {
-    canvas = document.getElementById("canvas");
-    canvas.onmouseover = canvasOnMouseOver;
-    canvas.onmousedown = canvasOnMouseDown;
-    canvas.onmouseup = canvasOnMouseUp;
-    canvas.onmousemove = canvasOnMouseMove;
-    canvas.onmouseout = canvasOnMouseOut;
-    $("canvas").mousewheel(canvasOnMouseWheel);
-}
-function chart(data) {
+function rangeChartInit(value,volume,time) {
+    valueField = value;
+    volumeField = volume;
+    timeField = time;
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
+
+}
+function runChart(data) {
+    if(!chartInit){
+        canvas.onmouseover = canvasOnMouseOver;
+        canvas.onmousedown = canvasOnMouseDown;
+        canvas.onmouseup = canvasOnMouseUp;
+        canvas.onmousemove = canvasOnMouseMove;
+        canvas.onmouseout = canvasOnMouseOut;
+        $("canvas").mousewheel(canvasOnMouseWheel);
+        chartInit = true;
+    }
     drawData = data;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //console.dir(drawData);
     initChartArea();
     initVolumeAxis();
     initValueAxis();
     initInfo();
+    //console.dir(drawData);
     //console.dir(axis);
-    console.dir(info);
+    //console.dir(info);
     //console.dir(chartArea);
     drawBase();
     drawTimeRangeData();
@@ -48,6 +57,7 @@ function drawBase() {
     drawVolumeText();
     drawValueDashLine();
     drawVolumeDashLine();
+    drawInfo();
     saveDrawingAxisImageData();
 }
 function drawTimeRangeData() {
@@ -58,11 +68,9 @@ function drawTimeRangeData() {
 }
 
 function drawMouseInfo(index) {
-    drawInfo();
     drawValueVolumeInfo(drawData.valueList[info.timeStartIndex + index]);
     drawGuideWires(index);
 }
-
 
 
 /**
@@ -74,14 +82,14 @@ function drawMouseInfo(index) {
 function addDisplayTimeRange(addValue) {
     var newRange = info.displayTimeRange + (addValue * 2);
     var start, end;
-    if (newRange <= drawData.valueList.length) {
+    if (newRange <= info.numData) {
         if (newRange <= info.minDisplaytimeRange) {
             newRange = info.minDisplaytimeRange;//最小
         } else {
-            //newRange = value;//範圍內隨便你
+            //範圍內隨便你
         }
     } else {
-        newRange = drawData.valueList.length;//最大
+        newRange = info.numData;//最大
     }
     if (newRange != info.displayTimeRange) {
         if (addValue > 0) {//addValue=1
@@ -93,7 +101,7 @@ function addDisplayTimeRange(addValue) {
         }
     }
 
-    if (start >= 0 && end < drawData.valueList.length) {
+    if (start >= 0 && end < info.numData) {
         restoreDrawingAxisImageData();
         console.log("newRange=" + newRange + ",start=" + start + ",end=" + end);
         info.displayTimeRange = newRange;
@@ -109,25 +117,19 @@ function addDisplayTimeRange(addValue) {
 function changeTimeRange(timeStartIndex) {
     info.timeStartIndex = timeStartIndex;
     info.timeEndIndex = info.timeStartIndex + info.displayTimeRange - 1;
-    info.timeRangeScale = chartArea.width / (info.displayTimeRange +1);
+    info.timeRangeScale = chartArea.width / (info.displayTimeRange + 1);
     drawTimeRangeData();
 }
 
 function initInfo() {
     info.dragging = false;
-
-    info.valueList = drawData.valueList;
+    info.numData = drawData.valueList.length;
     info.hourDistance = 60;
     info.displayTimeRange = 10;
     info.minDisplaytimeRange = 10;
-    info.timeStartIndex = info.valueList.length - info.displayTimeRange;
+    info.timeStartIndex = info.numData - info.displayTimeRange;
     info.timeEndIndex = info.timeStartIndex + info.displayTimeRange - 1;
-    info.timeRangeScale = chartArea.width / (info.displayTimeRange +1);
-    info.timeGap = chartArea.width / info.displayTimeRange;
-
-
-    info.timeScale = chartArea.width / info.valueList.length;
-
+    info.timeRangeScale = chartArea.width / (info.displayTimeRange + 1);
 
     info.valueMin = JsonTool.formatFloat(drawData.valueMin, 2);
     info.valueMax = JsonTool.formatFloat(drawData.valueMax, 2);
@@ -154,7 +156,6 @@ function initInfo() {
             top = JsonTool.formatFloat(top + this.tickDistance, 2);
         }
         temp.push({top: this.valueMax, color: "red"});
-        //console.dir(temp);
         return temp;
     };
 
@@ -166,16 +167,6 @@ function initInfo() {
     info.volumeTicks = function () {
         return [0, this.volumeMiddle, this.volumeMax];
     };
-    info.minuteTicks = function () {
-        var temp = [];
-        var count = this.valueList.length;
-        for (var i = 0; i <= count; i += this.hourDistance) {
-            temp.push(i);
-        }
-        return temp;
-    };
-    //console.dir(info.valueTicks());
-    //console.dir(info.minuteTicks());
 }
 
 function initChartArea() {
@@ -183,7 +174,7 @@ function initChartArea() {
     chartArea.y = canvas.height - AXIS_MARGIN_BOTTOM;
     chartArea.right = canvas.width - AXIS_MARGIN;
     chartArea.width = chartArea.right - chartArea.x;
-    chartArea.top = AXIS_MARGIN;
+    chartArea.top = AXIS_MARGIN_TOP;
     chartArea.height = chartArea.y - chartArea.top;
     chartArea.volumeHeight = chartArea.height / 5;
     chartArea.spaceHeight = chartArea.height / 20;
@@ -191,7 +182,6 @@ function initChartArea() {
 
     chartArea.volumeY = chartArea.y;
     chartArea.valueY = chartArea.volumeY - chartArea.volumeHeight - chartArea.spaceHeight;
-    //console.dir(chartArea);
 }
 
 function initValueAxis() {
@@ -248,7 +238,6 @@ function drawRangeTimeText() {
     var y = chartArea.y + 10;
     var timeIndex = 0;
     var timeStep = 0;
-    var currentHour = parseInt(drawData.valueList[info.timeStartIndex].time.toString().substring(0, 2));
     if (info.displayTimeRange <= 30) {
         timeStep = 5;//30分內 每隔5分顯示
     } else if (info.displayTimeRange <= 60) {
@@ -259,7 +248,7 @@ function drawRangeTimeText() {
         timeStep = 60;//超過2小時 每隔60分顯示
     }
     for (var i = info.timeStartIndex; i < info.timeEndIndex; i += timeStep) {
-        ctx.fillText(moment(drawData.valueList[i].time, "HHmm").format("HH:mm"), convertRangeX(timeIndex), y);
+        ctx.fillText(moment(drawData.valueList[i][timeField], "HHmm").format("HH:mm"), convertRangeX(timeIndex), y);
         timeIndex += timeStep;
     }
     if (i != info.timeEndIndex - 1) {
@@ -332,8 +321,8 @@ function generateRangeDataLoc() {
     for (var i = 0; i < info.displayTimeRange; i++, timeIndex++) {
         data = drawData.valueList[timeIndex];
         data.x = convertRangeX(i);
-        data.valueY = valueAxis.y - convertValueY(data.value);
-        data.volumeY = volumeAxis.y - convertVolumeY(data.volume);
+        data.valueY = valueAxis.y - convertValueY(data[valueField]);
+        data.volumeY = volumeAxis.y - convertVolumeY(data[volumeField]);
     }
 }
 
@@ -343,7 +332,7 @@ function drawRangeValueLine() {
     for (var i = info.timeStartIndex; i <= info.timeEndIndex; i++) {
 
         data = drawData.valueList[i];
-        newValue = data.value;
+        newValue = data[valueField];
         x = data.x;
         y = data.valueY;
         if (i == 0) {
@@ -370,12 +359,12 @@ function drawRangeVolumeBar() {
     var data;
     ctx.strokeStyle = "blue";
     ctx.fillStyle = "#3E92FF";
-    var startX,endX,quarterScale =info.timeRangeScale/4;
+    var startX, endX, quarterScale = info.timeRangeScale / 4;
     ctx.beginPath();
     for (var i = info.timeStartIndex; i <= info.timeEndIndex; i++) {
         data = drawData.valueList[i];
-        startX = data.x-quarterScale;
-        endX = data.x+quarterScale;
+        startX = data.x - quarterScale;
+        endX = data.x + quarterScale;
         ctx.moveTo(startX, volumeAxis.y);
         ctx.lineTo(startX, data.volumeY);
         ctx.lineTo(endX, data.volumeY);
@@ -390,9 +379,10 @@ function drawRangeVolumeBar() {
 
 function drawInfo() {
     ctx.save();
-    var x = 5;
-    var y = 10;
-    ctx.font = "14px 微軟正黑體";
+    var x = canvas.width / 2;
+    var y = 3;
+    ctx.font = "12px 微軟正黑體";
+    ctx.textAlign = "center";
     ctx.textBaseline = "top";
     ctx.fillText(drawData.name, x, y);
     ctx.restore();
@@ -400,72 +390,95 @@ function drawInfo() {
 
 function drawValueVolumeInfo(data) {
     ctx.save();
-    var valueX = 80;
-    var volumeX = 80;
-    var timeX = 250;
-    var y = 5;
-    var vx = 160;
-    var y2 = 20;
 
-    var variance = JsonTool.formatFloat(data.value - drawData.close, 2);
+    var variance = JsonTool.formatFloat(data[valueField] - drawData.close, 2);
     var multi = JsonTool.formatFloat(variance / drawData.close * 100, 2);
     ctx.font = "12px 微軟正黑體";
     ctx.textBaseline = "top";
-    var transactionPrice = "成交價:";
-    var transactionPriceWidth = ctx.measureText(transactionPrice).width;
-    ctx.fillText(transactionPrice , valueX, y);
 
-    ctx.fillText(data.value, valueX+transactionPriceWidth, y);
-    if(variance>0){
-        ctx.fillStyle = "red";
-    }else{
-        ctx.fillStyle = "green";
-    }
+    var timeText = moment(data[timeField], "HHmm").format("HH:mm");
+    var timeMeasureText = ctx.measureText(timeText);
+
+    var valueText = data[valueField];
+    var valueMeasureText = ctx.measureText(valueText);
+
+    var volumeText = data[volumeField];
+    var volumeMeasureText = ctx.measureText(volumeText);
+
+    var varianceText = variance.toString();
+    var varianceMeasureText = ctx.measureText(varianceText);
+
+    var bgHeight = 14;
+    //時間bg
+    ctx.fillStyle = "#FF7C00";
+    var bgWidth = (timeMeasureText.width + 4);
+    ctx.fillRect(data.x - bgWidth / 2, chartArea.y, bgWidth, bgHeight);
+    //成交價bg
+    bgWidth = (valueMeasureText.width + 4);
+    ctx.fillRect(chartArea.x - bgWidth, data.valueY - bgHeight / 2, bgWidth, bgHeight);
+    //成交量bg
+    ctx.fillStyle = "blue";
+    bgWidth = (volumeMeasureText.width + 4);
+    ctx.fillRect(chartArea.x - bgWidth, data.volumeY - bgHeight / 2, bgWidth, bgHeight);
+    //漲幅bg
+    ctx.fillStyle = "#FF7C00";
+    //if (variance > 0) {
+    //    ctx.fillStyle = "red";
+    //} else if(variance < 0) {
+    //    ctx.fillStyle = "green";
+    //} else{
+    //    ctx.fillStyle = "black";
+    //}
+    //bgWidth = (varianceMeasureText.width + 4);
+    //ctx.fillRect(chartArea.right , data.valueY-bgHeight, canvas.width-chartArea.right, bgHeight*2);
+
+    var fixHeight = ($.browser.mozilla)?2:-1;//2 for firefox
+    ctx.fillStyle = "white";
+    ctx.fillText(moment(data[timeField], "HHmm").format("HH:mm"), data.x - (timeMeasureText.width / 2), chartArea.y + fixHeight);
+    ctx.fillText(valueText, chartArea.x - (valueMeasureText.width ) - 1, data.valueY - bgHeight / 2 + fixHeight);
+    ctx.fillText(volumeText, chartArea.x - (volumeMeasureText.width ) - 1, data.volumeY - bgHeight / 2 + fixHeight);
     if (variance > 0) {
-        ctx.fillText("+" + variance + "(" + multi + ")%", vx, y);
+        ctx.fillStyle = "red";
     } else if (variance < 0) {
-        ctx.fillText(variance + "(" + multi + ")%", vx, y);
+        ctx.fillStyle = "green";
     } else {
-        ctx.fillText(variance + "(" + multi + ")%", vx, y);
+        ctx.fillStyle = "black";
     }
-    ctx.fillStyle = "black";
-    ctx.fillText("成交量:" + data.volume, volumeX, y2);
-    ctx.fillText(moment(data.time, "HHmm").format("HH:mm"), timeX, y);
+    ctx.textAlign = "right";
+    ctx.fillText(variance, canvas.width - 2, data.valueY - bgHeight + fixHeight);
+    ctx.fillText(multi + "%", canvas.width - 2, data.valueY + fixHeight);
+
     ctx.restore();
+
 }
 
 function drawGuideWires(index) {
     ctx.save();
     var data = drawData.valueList[info.timeStartIndex + index];
-    ctx.drawVerticalLine(data.x, chartArea.top, chartArea.y);
+    //ctx.drawVerticalLine(data.x, chartArea.top, chartArea.y);
+    ctx.drawHorizontalLine(chartArea.x, data.valueY, data.x - 2);//圓心左邊的線
+    ctx.drawHorizontalLine(data.x + 2, data.valueY, chartArea.right);//圓心右邊的線
+    ctx.drawVerticalLine(data.x, chartArea.top, data.valueY - 2);//圓心上面的線
+    ctx.drawVerticalLine(data.x, data.valueY + 2, chartArea.y);//圓心下面的線
     ctx.beginPath();
     ctx.strokeStyle = "#FF7C00";
     ctx.lineWidth = 2;
-    ctx.arc(data.x, data.valueY, 3,0,Math.PI*2,false);
+    ctx.arc(data.x, data.valueY, 2, 0, Math.PI * 2, false);
     ctx.stroke();
     //ctx.drawVerticalLine(x, chartArea.top, chartArea.y);
     ctx.restore();
 }
 
-function convertX(minuteIndex) {
-    return chartArea.x + (minuteIndex) * info.timeScale;
-}
-
 function convertRangeX(minuteIndex) {
-    return chartArea.x +info.timeRangeScale+ (minuteIndex * info.timeRangeScale);
-}
-
-function xToIndex(x) {
-    return Math.floor((x - chartArea.x) / info.timeScale);
+    return chartArea.x + info.timeRangeScale + (minuteIndex * info.timeRangeScale);
 }
 
 function xToRangeIndex(x) {
-    if (x < chartArea.x +info.timeRangeScale) {
+    if (x < chartArea.x + info.timeRangeScale) {
         return -1;
     } else {
-        return Math.round((x - (chartArea.x+info.timeRangeScale)) / info.timeRangeScale);
+        return Math.round((x - (chartArea.x + info.timeRangeScale)) / info.timeRangeScale);
     }
-
 }
 
 function convertValueY(value) {
@@ -481,7 +494,7 @@ function mouseLocation(e) {
     loc.x = temp.x;
     loc.y = temp.y;
     loc.index = xToRangeIndex(loc.x);
-    loc.inChartArea = (loc.x >= chartArea.x+info.timeRangeScale && loc.x <= chartArea.right-info.timeRangeScale);
+    loc.inChartArea = (loc.x >= chartArea.x + info.timeRangeScale && loc.x <= chartArea.right - info.timeRangeScale);
 }
 
 function dragStop() {
@@ -512,7 +525,7 @@ function canvasOnMouseMove(e) {
     if (loc.inChartArea) {
         if (info.dragging) {
             var newTimeStartIndex = -1;
-            if (loc.x > mouseLast.x && info.timeEndIndex < drawData.valueList.length - 1) {
+            if (loc.x > mouseLast.x && info.timeEndIndex < info.numData - 1) {
                 newTimeStartIndex = info.timeStartIndex + 1;
             } else if (loc.x < mouseLast.x && info.timeStartIndex > 0) {
                 newTimeStartIndex = info.timeStartIndex - 1;
@@ -529,8 +542,11 @@ function canvasOnMouseMove(e) {
             restoreDrawingSurface();
             drawMouseInfo(loc.index);
         }
-    }else{
-        restoreDrawingSurface();
+    } else {
+        if (!info.dragging) {
+            restoreDrawingSurface();
+        }
+        //
     }
 }
 

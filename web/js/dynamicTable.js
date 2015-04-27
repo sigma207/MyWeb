@@ -375,6 +375,7 @@ var DragTable = {
         dt.generateValue = function (thObj, rowData) {
             var value = rowData[thObj.field];
             if (thObj.format != "") {
+                //console.log("format="+thObj.format+",value="+value);
                 return numeral(value).format(thObj.format);
             } else if (thObj.dateTimeFormat != "") {
                 return moment(value, thObj.originalFormat).format(thObj.dateTimeFormat);

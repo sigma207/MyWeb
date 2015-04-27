@@ -25,6 +25,7 @@
             var option = {resGetPath: "../locales/" + lang + "/test.json"};
             i18n.init(option, function (t) {
                 $("#container").i18n();
+                console.log(t);
             });
         }
     </script>
@@ -38,7 +39,6 @@
 
 <div id="container">
     <p data-i18n="test.title"></p>
-
     <div data-i18n="test.context"></div>
 </div>
 </body>

@@ -7,78 +7,45 @@
     <link rel="stylesheet" href="css/dynamicTable.css">
     <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="js/i18next-1.8.0.js"></script>
     <script type="text/javascript" src="js/numeral.min.js"></script>
-    <script type="text/javascript" src="js/moment.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
     <script type="text/javascript" src="js/mock.js"></script>
-    <script type="text/javascript" src="js/jsonTool.js"></script>
-    <script type="text/javascript" src="js/domTool.js"></script>
+    <script type="text/javascript" src="js/utility.js"></script>
     <script type="text/javascript" src="js/dynamicTable.js"></script>
     <script type="text/javascript" src="js/mockData/quoteData.template.js"></script>
     <script type="text/javascript" src="js/chart/chart.js"></script>
     <script type="text/javascript" src="js/chart/runRangeChart.js"></script>
-    <script type="text/javascript" src="js/chart/myChart.js"></script>
-    <script type="text/javascript" src="js/chart/useMyChart.js"></script>
-    <script type="text/javascript">
-        var quote1;
-        var quote2;
-        var forexMetalData;
-        var stockData;
-        $(document).ready(function () {
-            quote1 = DragTable.createNew("quote1");
-            quote2 = DragTable.createNew("quote2");
-            forexMetalData = generateForexData();
-            stockData = generateStockData();
-            quote1.setDataSource(forexMetalData);
-            quote2.setDataSource(stockData);
-
-            document.addEventListener("rowClick", tableRowClick);
-            $(document).on("rowClick", tableRowClick);
-            rangeChartInit();
-//            go();
-        });
-
-        function tableRowClick(e, tableClass, rowIndex, rowData) {
-            if (typeof(rowData.valueList) == "undefined") {
-                generateValueList(rowData);
-            }
-            chart(rowData);
-        }
-
-        function generateForexData(option) {
-            var data = [];
-            var temp;
-            for (var i = 0; i < forexMetalName.length; i++) {
-                temp = Mock.mock(forexTemplate);
-                temp.name = forexMetalName[i];
-                data.push(temp);
-            }
-            return data;
-        }
-
-        function generateStockData(option) {
-            var data = [];
-            var temp;
-            for (var i = 0; i < stockName.length; i++) {
-                temp = Mock.mock(stockTemplate);
-                temp.name = stockName[i];
-                data.push(temp);
-            }
-            return data;
-        }
-    </script>
+    <script type="text/javascript" src="js/jelly.js"></script>
 </head>
 <body>
 <div class="container">
     <div class="header middleContainer">
         <img class="logo" src="images/logo.png">
         <img src="images/banner.png" class="banner"/>
+        <select id="langSelect" class="langSelect">
+            <option value="zh-TW">中文(繁體)</option>
+            <option value="zh-CN">中文(简体)</option>
+            <option value="en-US">English</option>
+        </select>
+
         <div class="navContainer">
             <ul class="nav">
-                <li><div class="menu"><a href="#">公司簡介</a></div></li>
-                <li><div class="menu"><a href="#">產品型錄</a></div></li>
-                <li><div class="menu"><a href="#">購買須知</a></div></li>
-                <li><div class="menu"><a href="#">技術支援</a></div></li>
-                <li><div class="menu"><a href="#">聯絡方式</a></div></li>
+                <li>
+                    <div class="menu"><a href="#" data-i18n="main.menu1"></a></div>
+                </li>
+                <li>
+                    <div class="menu"><a href="#" data-i18n="main.menu2"></a></div>
+                </li>
+                <li>
+                    <div class="menu"><a href="#" data-i18n="main.menu3"></a></div>
+                </li>
+                <li>
+                    <div class="menu"><a href="#" data-i18n="main.menu4"></a></div>
+                </li>
+                <li>
+                    <div class="menu"><a href="#" data-i18n="main.menu5"></a></div>
+                </li>
             </ul>
         </div>
     </div>
@@ -86,8 +53,8 @@
         <div class="bannerContainer middleContainer">
             <div class="imgPlaceHolder"></div>
             <div class="news">
-                <div class="newsTitle">網站公告</div>
-                <span>‧傑利科技網站正式上線~</span>
+                <div class="newsTitle" data-i18n="main.newsTitle"></div>
+                <span data-i18n="main.news1"></span>
             </div>
         </div>
     </div>
@@ -97,14 +64,14 @@
                 <table class="quote1 oddEven">
                     <thead>
                     <tr>
-                        <th field="name" tdClass="golden">貨幣對</th>
+                        <th field="name" tdClass="golden" data-i18n="quote1.column1"></th>
                         <th field="buying" type="number" decimal="5" stockChangeColorField="buyChange"
-                            riseFallStyle="forex">買入價
+                            riseFallStyle="forex"  data-i18n="quote1.column2">
                         </th>
                         <th field="selling" type="number" decimal="5" stockChangeColorField="sellChange"
-                            riseFallStyle="forex">賣出價
+                            riseFallStyle="forex" data-i18n="quote1.column3">
                         </th>
-                        <th field="spread" type="number" decimal="1">點差</th>
+                        <th field="spread" type="number" decimal="1" data-i18n="quote1.column4"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -115,10 +82,10 @@
                 <table width="100%" class="quote2 oddEven">
                     <thead>
                     <tr>
-                        <th field="name" tdClass="golden">名稱</th>
-                        <th field="transaction" type="number" decimal="4" stockChangeColorField="change">成交價</th>
-                        <th field="change" type="number" decimal="4" stockChangeColorField="change">漲跌</th>
-                        <th field="changeRate" type="rate" decimal="2" stockChangeColorField="change">漲跌幅(%)</th>
+                        <th field="name" tdClass="golden" data-i18n="quote2.column1"></th>
+                        <th field="transaction" type="number" decimal="4" stockChangeColorField="change" data-i18n="quote2.column2"></th>
+                        <th field="change" type="number" decimal="4" stockChangeColorField="change" data-i18n="quote2.column3"></th>
+                        <th field="changeRate" type="rate" decimal="2" stockChangeColorField="change" data-i18n="quote2.column4"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -128,7 +95,7 @@
         </div>
         <div class="canvasContainer">
             <canvas id="canvas" class="canvas" width="318" height="250">
-                This text is displayed if your browser does not support HTML5 Canvas.
+                <!--This text is displayed if your browser does not support HTML5 Canvas.-->
             </canvas>
         </div>
 
@@ -136,33 +103,24 @@
     <div class="productContainer middleContainer">
         <div class="productList">
             <div class="productItem">
-                <div class="productTitle">產品001</div>
-                <div class="productDescribe">
-                    說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.
-                </div>
-                <div class="more"><a href="#">了解更多&gt;&gt;</a></div>
+                <div class="productTitle" data-i18n="product1.title"></div>
+                <div class="productDescribe" data-i18n="product1.describe"></div>
+                <div class="more"><a href="#" data-i18n="product.more"></a></div>
             </div>
             <div class="productItem">
-                <div class="productTitle">產品002</div>
-                <div class="productDescribe">
-                    說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.
-                </div>
-                <div class="more"><a href="#">了解更多&gt;&gt;</a></div>
+                <div class="productTitle" data-i18n="product2.title"></div>
+                <div class="productDescribe" data-i18n="product2.describe"></div>
+                <div class="more"><a href="#" data-i18n="product.more"></a></div>
             </div>
             <div class="productItem">
-                <div class="productTitle">產品003</div>
-                <div class="productDescribe">
-                    說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.說明內容.
-                </div>
-                <div class="more"><a href="#">了解更多&gt;&gt;</a></div>
+                <div class="productTitle" data-i18n="product3.title"></div>
+                <div class="productDescribe" data-i18n="product3.describe"></div>
+                <div class="more"><a href="#" data-i18n="product.more"></a></div>
             </div>
         </div>
     </div>
     <div class="footer middleContainer">
-        <div class="copyRightContainer">
-            Copyright&copy;2015 傑利科技股份有限公司 Jelly Technology Inc. 版權所有，不得轉載
-        </div>
-
+        <div class="copyRightContainer" data-i18n="main.copyRight"></div>
     </div>
 </div>
 </body>

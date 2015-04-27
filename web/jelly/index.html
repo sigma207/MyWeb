@@ -3,78 +3,81 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>index</title>
-    <style>
-        html,body {
-            margin-left: auto;
-            margin-right: auto;
-            width: 960px;
-            /*margin: 0 auto;*/
-        }
-        .header{
-            position: relative;
-            height: 145px;
-            /*background: #fedd00;*/
-            z-index: 2;
-        }
-        .logo{
-            position: absolute;
-            left: 0px;
-            z-index: 2;
-        }
-        .banner{
-            position: absolute;
-            top: 120px;
-            left: 10px;
-            z-index: 1;
-        }
-        .logo, .nav{
-            display: inline;
-        }
-        .nav li{
-            list-style: none;
-            float: left;
-            padding-left: 5px;
-        }
-        .nav a{
-            text-decoration: none;
-        }
-        .navContainer{
-            position: absolute;
-            right: 0px;
-            bottom: 25px;
-            /*background: #feada4;*/
-        }
 
-        .bannerContainer {
-            position: relative;
-            height: 320px;
-            background-image:url("../images/banner_bg.png") ;
-            z-index: 1;
-        }
-        
-        
-        /*.quote{*/
-            /*position: relative;*/
-        /*}*/
-    </style>
 </head>
 <body>
+<div class="bodyContainer">
+    <div class="bannerContainer middleContainer">
+        <div class="imgPlaceHolder"></div>
+        <div class="news">
+            <div class="newsTitle" data-i18n="main.newsTitle"></div>
+            <span data-i18n="main.news1"></span>
+        </div>
+    </div>
+</div>
+<div class="quoteChart middleContainer">
+    <div class="quoteContainer">
+        <div class="quoteItem">
+            <table class="quote1 oddEven">
+                <thead>
+                <tr>
+                    <th field="name" tdClass="golden" data-i18n="quote1.column1"></th>
+                    <th field="buying" type="number" decimal="5" stockChangeColorField="buyChange"
+                        riseFallStyle="forex" data-i18n="quote1.column2">
+                    </th>
+                    <th field="selling" type="number" decimal="5" stockChangeColorField="sellChange"
+                        riseFallStyle="forex" data-i18n="quote1.column3">
+                    </th>
+                    <th field="spread" type="number" decimal="1" data-i18n="quote1.column4"></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="quoteItem">
+            <table width="100%" class="quote2 oddEven">
+                <thead>
+                <tr>
+                    <th field="name" tdClass="golden" data-i18n="quote2.column1"></th>
+                    <th field="transaction" type="number" decimal="4" stockChangeColorField="change"
+                        data-i18n="quote2.column2"></th>
+                    <th field="change" type="number" decimal="4" stockChangeColorField="change"
+                        data-i18n="quote2.column3"></th>
+                    <th field="changeRate" type="rate" decimal="2" stockChangeColorField="change"
+                        data-i18n="quote2.column4"></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="canvasContainer">
+        <canvas id="canvas" class="canvas" width="318" height="250">
+            <!--This text is displayed if your browser does not support HTML5 Canvas.-->
+        </canvas>
+    </div>
 
-    <div class="header">
-        <img class="logo" src="../images/logo.png">
-            <div class="navContainer">
-                <ul class="nav">
-                    <li><a href="#">公司簡介</a></li>
-                    <li><a href="#">產品型錄</a></li>
-                    <li><a href="#">購買須知</a></li>
-                    <li><a href="#">技術支援</a></li>
-                    <li><a href="#">聯絡方式</a></li>
-                </ul>
-            </div>
-        <div class="banner"><img src="../images/banner.png"/></div>
+</div>
+<div class="productContainer middleContainer">
+    <div class="productList">
+        <div class="productItem">
+            <div class="productTitle" data-i18n="product1.title"></div>
+            <div class="productDescribe" data-i18n="product1.describe"></div>
+            <div class="more"><a href="#" data-i18n="product.more"></a></div>
+        </div>
+        <div class="productItem">
+            <div class="productTitle" data-i18n="product2.title"></div>
+            <div class="productDescribe" data-i18n="product2.describe"></div>
+            <div class="more"><a href="#" data-i18n="product.more"></a></div>
+        </div>
+        <div class="productItem">
+            <div class="productTitle" data-i18n="product3.title"></div>
+            <div class="productDescribe" data-i18n="product3.describe"></div>
+            <div class="more"><a href="#" data-i18n="product.more"></a></div>
+        </div>
     </div>
-    <div class="bannerContainer">
-    </div>
-    <div class="quote"><img src="../images/quote.png"/></div>
+</div>
 </body>
 </html>
