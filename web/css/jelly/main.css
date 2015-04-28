@@ -1,0 +1,101 @@
+/*@charset "utf-8";*/
+
+body {
+    font-family: 微軟正黑體;
+}
+
+html, body {
+    margin: 0;
+}
+
+.container {
+    width: 1160px;
+    margin: 0 auto;
+}
+
+.horizontalMiddle {
+    margin: 0 auto;
+}
+
+.middleContainer {
+    width: 960px;
+    margin: 0 auto;
+}
+
+.header {
+    position: relative;
+    height: 125px;
+    z-index: 1;
+}
+
+.banner {
+    position: absolute;
+    top: 100px;
+    z-index: 1;
+}
+
+.logo {
+    position: absolute;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.langSelect {
+    position: absolute;
+    top: 20px;
+    right: 0;
+}
+
+.logo, .nav {
+    display: inline;
+}
+
+.nav {
+    padding: 0;
+}
+
+.nav li {
+    list-style: none;
+    float: left;
+}
+
+.navContainer {
+    float: right;
+    text-align: right;
+    margin-top: 70px;
+}
+
+.menu {
+    margin-left: 20px;
+    height: 35px;
+    color: #000;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #000;
+    font-size: 20px;
+}
+
+.menu a:hover {
+    color: #ff7c00;
+    border-top: #ff7c00 5px solid;
+    font-weight: bolder;
+}
+
+.footer {
+    /*position: fixed;*/
+    width: 960px;
+    /*bottom: 0;*/
+    /*width: 100%;*/
+}
+
+.copyRightContainer {
+    float: left;
+    margin-top: 10px;
+    width: 100%;
+    border-top: #ff7c00 solid 2px;
+    text-align: center;
+    padding-top: 5px;
+    font-size: 14px;
+}

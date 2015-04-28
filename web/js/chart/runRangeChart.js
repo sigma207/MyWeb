@@ -13,11 +13,11 @@ var drawData;
 var mouseLast = {};
 var drawingAxisImageData;
 var drawingSurfaceImageData;
-var valueField,volumeField, timeField;
+var valueField, volumeField, timeField;
 AXIS_MARGIN = 40;
 AXIS_MARGIN_TOP = 20;
 AXIS_MARGIN_BOTTOM = 20;
-function rangeChartInit(value,volume,time) {
+function rangeChartInit(value, volume, time) {
     valueField = value;
     volumeField = volume;
     timeField = time;
@@ -26,7 +26,7 @@ function rangeChartInit(value,volume,time) {
 
 }
 function runChart(data) {
-    if(!chartInit){
+    if (!chartInit) {
         canvas.onmouseover = canvasOnMouseOver;
         canvas.onmousedown = canvasOnMouseDown;
         canvas.onmouseup = canvasOnMouseUp;
@@ -188,8 +188,6 @@ function initValueAxis() {
     valueAxis.x = chartArea.x;
     valueAxis.y = chartArea.valueY;
     valueAxis.top = chartArea.top;
-    valueAxis.right = chartArea.right;
-    valueAxis.width = chartArea.width;
     valueAxis.height = chartArea.valueHeight;
     valueAxis.color = "black";
     valueAxis.lineWidth = 1.0;
@@ -198,7 +196,7 @@ function initValueAxis() {
     valueAxis.ticksLineWidth = 0.5;
     valueAxis.horTicksSpacing = 10;
     valueAxis.verTicksSpacing = 10;
-    valueAxis.numHorTicks = valueAxis.width / valueAxis.horTicksSpacing;
+    valueAxis.numHorTicks = chartArea.width / valueAxis.horTicksSpacing;
     valueAxis.numVerTicks = valueAxis.height / valueAxis.verTicksSpacing;
     //console.dir(valueAxis);
 }
@@ -207,8 +205,6 @@ function initVolumeAxis() {
     volumeAxis.x = chartArea.x;
     volumeAxis.y = chartArea.volumeY;
     volumeAxis.top = chartArea.valueY;
-    volumeAxis.right = chartArea.right;
-    volumeAxis.width = chartArea.width;
     volumeAxis.height = chartArea.volumeHeight;
     volumeAxis.color = "black";
     volumeAxis.lineWidth = 1.0;
@@ -218,7 +214,7 @@ function drawValueAxis() {
     ctx.save();
     ctx.strokeStyle = valueAxis.color;
     ctx.lineWidth = valueAxis.lineWidth;
-    ctx.drawHorizontalLine(valueAxis.x, valueAxis.y, valueAxis.right);
+    ctx.drawHorizontalLine(valueAxis.x, valueAxis.y, chartArea.right);
     ctx.drawVerticalLine(valueAxis.x, valueAxis.y, valueAxis.top);
     ctx.restore();
 }
@@ -227,7 +223,7 @@ function drawVolumeAxis() {
     ctx.save();
     ctx.strokeStyle = volumeAxis.color;
     ctx.lineWidth = volumeAxis.lineWidth;
-    ctx.drawHorizontalLine(volumeAxis.x, volumeAxis.y, volumeAxis.right);
+    ctx.drawHorizontalLine(volumeAxis.x, volumeAxis.y, chartArea.right);
     ctx.drawVerticalLine(volumeAxis.x, volumeAxis.y, volumeAxis.top);
     ctx.restore();
 }
@@ -282,7 +278,7 @@ function drawValueDashLine() {
     for (var i = 1; i < valueTickList.length; i++) {
         tick = valueTickList[i];
         y = valueAxis.y - convertValueY(tick.top);
-        ctx.drawDashLine(valueAxis.x, y, valueAxis.right, y, 2);
+        ctx.drawDashLine(valueAxis.x, y, chartArea.right, y, 2);
     }
     ctx.restore();
 }
@@ -310,7 +306,7 @@ function drawVolumeDashLine() {
     //i=1底部的線不用劃(i=0=chartArea.y)
     for (var i = 1; i < volumeTickList.length; i++) {
         y = volumeAxis.y - convertVolumeY(volumeTickList[i]);
-        ctx.drawDashLine(volumeAxis.x, y, volumeAxis.right, y, 2);
+        ctx.drawDashLine(volumeAxis.x, y, chartArea.right, y, 2);
     }
     ctx.restore();
 }
@@ -330,7 +326,6 @@ function drawRangeValueLine() {
     ctx.save();
     var data, oldValue, newValue, x, y, oldX, oldY;
     for (var i = info.timeStartIndex; i <= info.timeEndIndex; i++) {
-
         data = drawData.valueList[i];
         newValue = data[valueField];
         x = data.x;
@@ -432,7 +427,7 @@ function drawValueVolumeInfo(data) {
     //bgWidth = (varianceMeasureText.width + 4);
     //ctx.fillRect(chartArea.right , data.valueY-bgHeight, canvas.width-chartArea.right, bgHeight*2);
 
-    var fixHeight = ($.browser.mozilla)?2:-1;//2 for firefox
+    var fixHeight = ($.browser.mozilla) ? 2 : -1;//2 for firefox
     ctx.fillStyle = "white";
     ctx.fillText(moment(data[timeField], "HHmm").format("HH:mm"), data.x - (timeMeasureText.width / 2), chartArea.y + fixHeight);
     ctx.fillText(valueText, chartArea.x - (valueMeasureText.width ) - 1, data.valueY - bgHeight / 2 + fixHeight);
@@ -546,7 +541,6 @@ function canvasOnMouseMove(e) {
         if (!info.dragging) {
             restoreDrawingSurface();
         }
-        //
     }
 }
 

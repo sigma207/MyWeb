@@ -17,15 +17,6 @@ if (typeof CanvasRenderingContext2D !== typeof undefined && CanvasRenderingConte
         this.stroke();
     };
 
-    //CanvasRenderingContext2D.prototype.fillRect = function (x, y, w, h) {
-    //    this.beginPath();
-    //    this.moveTo(x, y);
-    //    this.lineTo(x + w, y);
-    //    this.lineTo(x + w, y + h);
-    //    this.lineTo(x, y + h);
-    //    this.fill();
-    //};
-
     CanvasRenderingContext2D.prototype.drawDashLine = function (x1, y1, x2, y2, dashLength) {
         var deltaX = x2 - x1;
         var deltaY = y2 - y1;

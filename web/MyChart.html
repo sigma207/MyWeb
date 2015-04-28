@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MyChart</title>
+    <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="js/i18next-1.8.0.js"></script>
+    <script type="text/javascript" src="js/numeral.min.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
+    <script type="text/javascript" src="js/mock.js"></script>
+    <script type="text/javascript" src="js/utility.js"></script>
+    <script type="text/javascript" src="js/chart/chart.js"></script>
+    <script type="text/javascript" src="js/chart/myChart.js"></script>
+    <script type="text/javascript" src="js/chart/useMyChart.js"></script>
+    <script type="text/javascript" src="js/mockData/quoteData.template.js"></script>
+    <script>
+        $(document).ready(function () {
+            var runChart = RunChart.createNew(document.getElementById("canvas"));
+            runChart.draw(chartInit);
+        });
+
+        function chartInit(canvas, ctx) {
+            //console.log(this);
+            var chart = this;//this = runChart...
+
+            chart.padding(40, 20, 40, 40);
+            chart.init();
+
+            var drawData = generateStockData()[0];
+            generateValueList(drawData);
+            //var dd = DataDriven.createNew(drawData,"valueList");
+            chart.setDataSource(drawData,"valueList");
+            var area = chart.area;
+            var spaceHeight = area.height / 20;
+
+            var periodAxis = chart.createPeriodAxis();
+            var volumeAxis = periodAxis.createValueAxis(area.x, area.y, area.height / 5);
+            var valueAxis = periodAxis.createValueAxis(area.x, volumeAxis.y - volumeAxis.height - spaceHeight, area.height - volumeAxis.height - spaceHeight);
+            console.log(this);
+            //log(dd);
+            //log(axisValue);
+        }
+
+        function generateStockData(option) {
+            var data = [];
+            var temp;
+            for (var i = 0; i < stockName.length; i++) {
+                temp = Mock.mock(stockTemplate);
+                temp.name = stockName[i];
+                data.push(temp);
+            }
+            return data;
+        }
+    </script>
+</head>
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+<script>
+</script>
+</body>
+</html>
