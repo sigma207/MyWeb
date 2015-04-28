@@ -56,6 +56,7 @@ var Axis = {
         axis.x = x;
         axis.y = y;
         axis.length = length;
+        axis.column = undefined;
         return axis;
     }
 };
@@ -77,9 +78,25 @@ var AxisY = {
 };
 
 var ValueAxis = {
-    createNew: function (period, x, y, height) {
+    createNew: function (period, column, minColumn, maxColumn, x, y, height) {
         var axis = AxisY.createNew(x, y, height);
         axis.period = period;
+        axis.data = axis.period.chart.dataDriven.data;
+        axis.column = column;
+        axis.minColumn = minColumn;
+        axis.maxColumn = maxColumn;
+
+        axis.valueMin = JsonTool.formatFloat(axis.data[axis.minColumn], 2);
+        axis.valueMax = JsonTool.formatFloat(axis.data[axis.maxColumn], 2);
+        axis.valueDistance = JsonTool.formatFloat(axis.valueMax - axis.valueMin, 2);
+        axis.valueScale = axis.height / axis.valueDistance;
+        axis.createTicks = function(count){
+            axis.ticks = AxisTicks.createNew(axis,count);
+            return axis.ticks;
+        };
+        axis.setTicks = function (ticks) {
+            axis.ticks = ticks;
+        };
         return axis;
     }
 };
@@ -94,12 +111,29 @@ var PeriodAxis = {
         axis.startIndex = runChart.dataDriven.count - axis.displayRange;
         axis.endIndex = axis.startIndex + axis.displayRange - 1;
         axis.scale = runChart.area.width / (axis.displayRange + 1);
-        axis.createValueAxis = function (x, y, height) {
-            var valueAxis = ValueAxis.createNew(axis, x, y, height);
+        axis.createValueAxis = function (column, minColumn, maxColumn, x, y, height) {
+            var valueAxis = ValueAxis.createNew(axis, column, minColumn, maxColumn, x, y, height);
             axis.valueAxisList.push(valueAxis);
             return valueAxis;
         };
         return axis;
+    }
+};
+
+var AxisTicks = {
+    createNew: function (axis,count) {
+        var axisTick = {};
+        axisTick.axis = axis;
+        axisTick.count = count;
+        axisTick.distance = axis.valueDistance / axisTick.count;
+        axisTick.tickList = [];
+        axisTick.addTick = function (value,color) {
+            var tick = {};
+            tick.value = value;
+            tick.color = color||"black";
+            axisTick.tickList.push(tick);
+        };
+        return axisTick;
     }
 };
 
@@ -125,8 +159,9 @@ var RunChart = {
             }
             chart.drawValueAxis(chart.ctx);
         };
-        chart.createPeriodAxis = function () {
+        chart.createPeriodAxis = function (column) {
             chart.periodAxis = PeriodAxis.createNew(chart);
+            chart.periodAxis.column = column;
             return chart.periodAxis;
         };
 

@@ -23,7 +23,6 @@ function rangeChartInit(value, volume, time) {
     timeField = time;
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
-
 }
 function runChart(data) {
     if (!chartInit) {
@@ -501,7 +500,7 @@ function dragStop() {
 }
 
 function canvasOnMouseOver(e) {
-    //console.log("canvasOnMouseOver");
+    console.log("canvasOnMouseOver");
 }
 
 function canvasOnMouseDown(e) {
