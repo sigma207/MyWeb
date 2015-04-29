@@ -10,7 +10,10 @@
     height: 270px;
 }
 
-.imgBanner {
+#flashContent {
+}
+
+.swfContainer {
     position: absolute;
     bottom: 3px;
 }

@@ -12,15 +12,17 @@
     <script type="text/javascript" src="js/utility.js"></script>
     <script type="text/javascript" src="js/chart/chart.js"></script>
     <script type="text/javascript" src="js/chart/myChart.js"></script>
-    <script type="text/javascript" src="js/chart/useMyChart.js"></script>
+    <script type="text/javascript" src="js/chart/runChartDrawStyle.js"></script>
     <script type="text/javascript" src="js/mockData/quoteData.template.js"></script>
     <script>
         $(document).ready(function () {
+//            var drawStyle = DrawStyle.createNew();
             var runChart = RunChart.createNew(document.getElementById("canvas"));
+            runChart.setDrawStyle(DrawStyle.createNew(runChart));
             runChart.draw(chartInit);
         });
 
-        function chartInit(canvas, ctx) {
+        function chartInit() {
             //console.log(this);
             var chart = this;//this = runChart...
 
@@ -37,38 +39,8 @@
             var periodAxis = chart.createPeriodAxis("time");
             var volumeAxis = periodAxis.createValueAxis("volume", "volumeMin", "volumeMax", area.x, area.y, area.height / 5);
             var valueAxis = periodAxis.createValueAxis("value", "valueMin", "valueMax", area.x, volumeAxis.y - volumeAxis.height - spaceHeight, area.height - volumeAxis.height - spaceHeight);
-            volumeTicks(volumeAxis);
-            valueTicks(valueAxis);
+
             console.log(this);
-            //log(dd);
-            //log(axisValue);
-        }
-
-        function valueTicks(axis) {
-            var ticks = axis.createTicks(6);
-            var top = axis.valueMin;
-            var i;
-            for (i = 0; i < ticks.count / 2; i++) {
-                ticks.addTick(top, "green");
-                top = JsonTool.formatFloat(top + ticks.distance, 2);
-            }
-            top = axis.data.close;
-            for (i = 0; i < ticks.count / 2; i++) {
-                if (i == 0) {
-                    ticks.addTick(top, "black");
-                } else {
-                    ticks.addTick(top, "red");
-                }
-                top = JsonTool.formatFloat(top + ticks.distance, 2);
-            }
-            ticks.addTick(axis.valueMax, "red");
-        }
-
-        function volumeTicks(axis) {
-            var ticks = axis.createTicks(3);
-            ticks.addTick(0, "blue");
-            ticks.addTick(axis.valueMax / 2, "blue");
-            ticks.addTick(axis.valueMax, "blue");
         }
 
         function generateStockData(option) {
