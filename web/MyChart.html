@@ -3,6 +3,16 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>MyChart</title>
+    <style>
+        .canvasContainer{
+            position: relative;
+            padding: 0;
+            margin: 0;
+        }
+        .canvas{
+            position: relative;
+        }
+    </style>
     <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
     <script type="text/javascript" src="js/i18next-1.8.0.js"></script>
@@ -11,13 +21,17 @@
     <script type="text/javascript" src="js/mock.js"></script>
     <script type="text/javascript" src="js/utility.js"></script>
     <script type="text/javascript" src="js/chart/chart.js"></script>
-    <script type="text/javascript" src="js/chart/myChart.js"></script>
+    <script type="text/javascript" src="js/chart/flexibleChart.js"></script>
     <script type="text/javascript" src="js/chart/runChartDrawStyle.js"></script>
     <script type="text/javascript" src="js/mockData/quoteData.template.js"></script>
     <script>
+        var drawData;
         $(document).ready(function () {
+            drawData = generateStockData()[0];
+            generateValueList(drawData);
 //            var drawStyle = DrawStyle.createNew();
             var runChart = RunChart.createNew(document.getElementById("canvas"));
+            runChart.setDataSource(drawData, "valueList");
             runChart.setDrawStyle(DrawStyle.createNew(runChart));
             runChart.draw(chartInit);
         });
@@ -28,15 +42,10 @@
 
             chart.padding(40, 20, 40, 40);
             chart.init();
-
-            var drawData = generateStockData()[0];
-            generateValueList(drawData);
-            //var dd = DataDriven.createNew(drawData,"valueList");
-            chart.setDataSource(drawData, "valueList");
             var area = chart.area;
             var spaceHeight = area.height / 20;
 
-            var periodAxis = chart.createPeriodAxis("time");
+            var periodAxis = chart.createPeriodAxis("time",10,10);
             var volumeAxis = periodAxis.createValueAxis("volume", "volumeMin", "volumeMax", area.x, area.y, area.height / 5);
             var valueAxis = periodAxis.createValueAxis("value", "valueMin", "valueMax", area.x, volumeAxis.y - volumeAxis.height - spaceHeight, area.height - volumeAxis.height - spaceHeight);
 
@@ -56,7 +65,10 @@
     </script>
 </head>
 <body>
-<canvas id="canvas" width="500" height="500"></canvas>
+<div class="canvasContainer">
+    <canvas id="canvas" class="canvas" width="500" height="500"></canvas>
+</div>
+
 <script>
 </script>
 </body>

@@ -4,9 +4,10 @@
 var DrawStyle = {
     createNew: function (runChart) {
         var ds = {};
-        var bgCtx = runChart.canvas.getContext("2d");//背景
-        var ctx = runChart.valueCanvas.getContext("2d");//range data draw context
-
+        var bgCtx = runChart.getLayer(0).getContext("2d");//背景
+        var ctx = runChart.getLayer(1).getContext("2d");//range data draw context
+        var mouseCtx = runChart.getLayer(2).getContext("2d");//mouse layer
+        console.log(ctx);
         ds.layerFillStyleTest = function (runChart) {
             var newLayer = $(runChart.valueCanvas);
             //for test
@@ -15,28 +16,30 @@ var DrawStyle = {
             //newLayer.css("top", "50px");
             //newLayer.css("left", "50px");
 
-            bgCtx.fillStyle = "#D6FFD4";
-            bgCtx.fillRect(0, 0, runChart.canvas.width, runChart.canvas.height);
-            ctx.fillStyle = "#FFD6B3";
-            ctx.fillRect(0, 0, runChart.valueCanvas.width, runChart.valueCanvas.height);
-
+            //bgCtx.fillStyle = "#D6FFD4";
+            //bgCtx.fillRect(0, 0, runChart.canvas.width, runChart.canvas.height);
+            //ctx.fillStyle = "#FFD6B3";
+            //ctx.fillRect(0, 0, runChart.valueCanvas.width, runChart.valueCanvas.height);
         };
 
-        ds.valueAxis = function (axis) {//this = chart
+        ds.drawValueAxis = function (axis) {//this = chart
             bgCtx.save();
             bgCtx.drawHorizontalLine(axis.x, axis.y, this.area.right);
             bgCtx.drawVerticalLine(axis.x, axis.y, axis.top);
             bgCtx.restore();
         };
 
-        ds.valueAxisTicks = function (axis) {
+        ds.drawValueAxisTicks = function (axis) {
             bgCtx.save();
             bgCtx.textBaseline = "bottom";
             bgCtx.textAlign = "right";
+            var valueFormat;
             if (axis.column == "value") {
                 bgCtx.font = "10px Helvetica";
+                valueFormat = "0,0.00";
             } else if (axis.column == "volume") {
                 bgCtx.font = "8px Helvetica";
+                valueFormat = "0,0";
             }
             var x = axis.x - 5;
             var y = axis.y;
@@ -45,13 +48,61 @@ var DrawStyle = {
                 tick = axis.ticks.tickList[i];
                 bgCtx.fillStyle = tick.color;
                 y = axis.y - axis.convertY(tick.value);
-                bgCtx.fillText(numeral(tick.value).format("0,0.00"), x, y);
+                bgCtx.fillText(numeral(tick.value).format(valueFormat), x, y);
                 if (i > 0)bgCtx.drawDashLine(axis.x, y, this.area.right, y, 2);//在軸線上不用劃
             }
             bgCtx.restore();
         };
 
-        ds.periodAxisTicks = function(axis){
+        ds.drawValueAxisData = function (valueAxis) {
+            var periodAxis = valueAxis.period;
+            var list = this.dataDriven.list;
+            var data,i;
+            ctx.save();
+            if(valueAxis.column=="value"){
+                var oldValue, newValue, x, y, oldX, oldY;
+                for (i = periodAxis.startIndex; i <= periodAxis.endIndex; i++) {
+                    data = list[i];
+                    newValue = data[valueAxis.column];
+                    x = data.x;
+                    y = data[valueAxis.column+"Y"];
+                    if (i == 0) {
+                    } else {
+                        if (newValue > oldValue) {
+                            ctx.strokeStyle = "red";
+                        } else {
+                            ctx.strokeStyle = "green";
+                        }
+                        ctx.beginPath();
+                        ctx.moveTo(oldX, oldY);
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                    }
+                    oldX = x;
+                    oldY = y;
+                    oldValue = newValue;
+                }
+            }else if(valueAxis.column=="volume"){
+                ctx.strokeStyle = "blue";
+                ctx.fillStyle = "#3E92FF";
+                var startX, endX, quarterScale = periodAxis.scale / 4;
+                ctx.beginPath();
+                for (i = periodAxis.startIndex; i <= periodAxis.endIndex; i++) {
+                    data = list[i];
+                    startX = data.x - quarterScale;
+                    endX = data.x + quarterScale;
+                    ctx.moveTo(startX, valueAxis.y);
+                    ctx.lineTo(startX, data[valueAxis.column+"Y"]);
+                    ctx.lineTo(endX, data[valueAxis.column+"Y"]);
+                    ctx.lineTo(endX, valueAxis.y);
+                }
+                ctx.stroke();
+                ctx.fill();
+            }
+            ctx.restore();
+        };
+
+        ds.drawPeriodAxisTicks = function (axis) {
             ctx.save();
             ctx.fillStyle = "black";
             ctx.textAlign = "center";

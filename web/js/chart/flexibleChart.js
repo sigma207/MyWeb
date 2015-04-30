@@ -14,6 +14,7 @@ var Chart = {
         chart.PADDING_LEFT = 0;
         chart.PADDING_RIGHT = 0;
         chart.drawStyle = undefined;
+        chart.mouseLoc = {};
         chart.padding = function () {
             if (arguments.length == 1) {
                 var padding = arguments[0];
@@ -57,9 +58,40 @@ var Chart = {
             newLayer.attr("width", baseLayer.attr("width"));
             newLayer.attr("height", baseLayer.attr("height"));
             newLayer.css("position", "absolute");
-            newLayer.css("opacity", "0.5");
+            newLayer.css("opacity", "1");
             return canvas;
         };
+
+        chart.addMouseLayer = function (id) {
+            var canvas = $(chart.addLayer(id));
+            canvas.mousemove(chart.canvasMouseMove);
+            return canvas.eq(0);
+        };
+
+        chart.getLayer = function (index) {
+            return chart.layers[index];
+        };
+
+        chart.canvasMouseMove = function (e) {
+
+            var temp = chart.windowToCanvas(e.clientX, e.clientY);
+            chart.mouseLoc.x = temp.x;
+            chart.mouseLoc.y = temp.y;
+            if(typeof chart.layerMouseMouse !== typeof undefined){
+                chart.layerMouseMouse();
+            }
+        };
+
+
+
+        chart.windowToCanvas = function (x, y) {
+            var bbox = canvas.getBoundingClientRect();
+            return {
+                x: x - bbox.left,
+                y: y - bbox.top
+            };
+        };
+
         chart.initLayer();
         return chart;
     }
@@ -120,11 +152,12 @@ var ValueAxis = {
         axis.valueMax = JsonTool.formatFloat(axis.data[axis.maxColumn], 2);
         axis.valueDistance = JsonTool.formatFloat(axis.valueMax - axis.valueMin, 2);
         axis.valueScale = axis.height / axis.valueDistance;
-        axis.drawAxis = period.chart.drawStyle.valueAxis;
-        axis.drawTicks = period.chart.drawStyle.valueAxisTicks;
+        axis.drawValueAxis = period.chart.drawStyle.drawValueAxis;
+        axis.drawValueAxisTicks = period.chart.drawStyle.drawValueAxisTicks;
+        axis.drawValueAxisData = period.chart.drawStyle.drawValueAxisData;
 
         axis.convertY = function (value) {
-            return (value - axis.valueMin) * axis.valueScale;
+            return Math.round((value - axis.valueMin) * axis.valueScale);
         };
 
         axis.createTicks = function (count) {
@@ -137,34 +170,38 @@ var ValueAxis = {
 };
 
 var PeriodAxis = {
-    createNew: function (runChart) {
+    createNew: function (runChart, displayRange, displayRangeMin) {
         var axis = AxisX.createNew(runChart.area.x, runChart.area.y, runChart.area.width);
         axis.chart = runChart;
         axis.valueAxisList = [];
-        axis.displayRange = 10;
-        axis.displayRangeMin = 10;
+        axis.displayRange = displayRange;
+        axis.displayRangeMin = displayRangeMin;
         axis.startIndex = runChart.dataDriven.count - axis.displayRange;
         axis.endIndex = axis.startIndex + axis.displayRange - 1;
         axis.scale = runChart.area.width / (axis.displayRange + 1);
-        axis.drawTicks = axis.chart.drawStyle.periodAxisTicks;
+        axis.drawPeriodAxisTicks = axis.chart.drawStyle.drawPeriodAxisTicks;
         axis.createValueAxis = function (column, minColumn, maxColumn, x, y, height) {
             var valueAxis = ValueAxis.createNew(axis, column, minColumn, maxColumn, x, y, height);
             axis.valueAxisList.push(valueAxis);
             return valueAxis;
         };
-        axis.convertX = function(index){
-            return axis.chart.area.x + axis.scale + (index * axis.scale);
+        axis.convertX = function (index) {
+            return Math.round(axis.chart.area.x + axis.scale + (index * axis.scale));
         };
-        axis.generateDataLoc = function(){
+        /**
+         * 生成時間軸內資料的x,y
+         */
+        axis.generateDataLoc = function () {
             var list = axis.chart.dataDriven.list;
             var data;
             var valueAxis;
+            var valueAxisCount = axis.valueAxisList.length;
             for (var i = 0, timeIndex = axis.startIndex; i < axis.displayRange; i++, timeIndex++) {
                 data = list[timeIndex];
                 data.x = axis.convertX(i);
-                for(var v=0;v<axis.valueAxisList.length;v++){
+                for (var v = 0; v < valueAxisCount; v++) {
                     valueAxis = axis.valueAxisList[v];
-                    data[valueAxis.column+"Y"] = valueAxis.y - valueAxis.convertY(data[valueAxis.column]);
+                    data[valueAxis.column + "Y"] = valueAxis.y - valueAxis.convertY(data[valueAxis.column]);
                 }
             }
         };
@@ -195,6 +232,7 @@ var RunChart = {
         chart.area = {};
         //var valueCanvas = chart.addLayer("valueLayer");
         chart.valueCanvas = chart.addLayer("valueLayer");
+        chart.mouseCanvas = chart.addMouseLayer("mouseLayer");
 
         //var chartArea = chart.area;
         chart.init = function () {
@@ -209,8 +247,8 @@ var RunChart = {
             chart.area.height = chart.area.y - chart.area.top;
         };
 
-        chart.createPeriodAxis = function (column) {
-            chart.periodAxis = PeriodAxis.createNew(chart);
+        chart.createPeriodAxis = function (column, displayRange, displayRangeMin) {
+            chart.periodAxis = PeriodAxis.createNew(chart, displayRange, displayRangeMin);
             chart.periodAxis.column = column;
             return chart.periodAxis;
         };
@@ -221,18 +259,22 @@ var RunChart = {
             }
             chart.periodAxis.generateDataLoc();
             chart.drawAxis();
-
         };
 
         chart.drawAxis = function () {
             var periodAxis = chart.periodAxis;
-            periodAxis.drawTicks.call(chart, periodAxis);
+            periodAxis.drawPeriodAxisTicks.call(chart, periodAxis);
             var valueAxis;
             for (var i = 0; i < periodAxis.valueAxisList.length; i++) {
                 valueAxis = periodAxis.valueAxisList[i];
-                valueAxis.drawAxis.call(chart, valueAxis);
-                valueAxis.drawTicks.call(chart, valueAxis);
+                valueAxis.drawValueAxis.call(chart, valueAxis);
+                valueAxis.drawValueAxisTicks.call(chart, valueAxis);
+                valueAxis.drawValueAxisData.call(chart, valueAxis);
             }
+        };
+
+        chart.layerMouseMouse = function () {
+            console.log("layerMouseMouse");
         };
         return chart;
     }

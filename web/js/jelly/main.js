@@ -7,6 +7,7 @@ var forexMetalData;
 var stockData;
 var logo;
 var langSelect;
+var currentLang = "";
 var currentContentUrl = "";
 var contentUrl = {
     index: "jelly/Index.html",
@@ -17,6 +18,7 @@ var contentUrl = {
     menu5: "jelly/Contact.html"
 };
 $(document).ready(function () {
+    currentLang = $.browser.lang;
     currentContentUrl = contentUrl.index;
     init();
     loadContentUrl();
@@ -28,32 +30,43 @@ function loadContentUrl() {
 
 function contentLoad() {
     console.log("currentContentUrl=" + currentContentUrl);
+    $(".bodyContainer").css("backgroundImage", "url('images/banner_bg.png')");//用load之後的css沒用,只好手動設
     if (currentContentUrl == contentUrl.index) {
         onIndexLoad();
     } else {
+
+        //$(".subTitleHead").css("backgroundImage", "url('images/banner_bg.png')");//用load之後的css沒用,只好手動設
         switch (currentContentUrl) {
             case contentUrl.menu1:
-
+                //$(".sbuTitleBg").css("backgroundImage", "url('images/sub_banner_01.png')");//用load之後的css沒用,只好手動設
                 break;
         }
     }
-    langSelect.val($.browser.lang).change();
+    langSelect.val(currentLang).change();
 }
 function init() {
     logo = $(".logo");
-    $(".menu").on("click", menuClick);
+    $(".menuItem").on("click", menuClick);
     logo.on("click", logoClick);
     langSelect = $("#langSelect");
     langSelect.change(function (e) {
-        console.log("Change:" + $(this).val());
-        changeLang($(this).val());
+        //console.log("Change:" + $(this).val());
+        currentLang = $(this).val();
+        changeLang(currentLang);
     });
 }
 
 function menuClick(e) {
-    var menuIndex = $(e.currentTarget).parent().index();//div -parent--> li
-    currentContentUrl = contentUrl["menu" + (menuIndex + 1)];
-    loadContentUrl();
+    var menuItem = $(e.currentTarget);
+    if(!menuItem.hasClass("menuDisable")){
+        console.log("menuClick");
+        $(".menuItem").addClass("menu").removeClass("menuDisable");
+        menuItem.removeClass("menu");
+        menuItem.addClass("menuDisable");
+        var menuIndex = menuItem.parent().index();//div -parent--> li
+        currentContentUrl = contentUrl["menu" + (menuIndex + 1)];
+        loadContentUrl();
+    }
 }
 
 function logoClick(e) {
@@ -62,7 +75,7 @@ function logoClick(e) {
 }
 
 function onIndexLoad() {
-    $(".bodyContainer").css("backgroundImage", "url('images/banner_bg.png')");//用load之後的css沒用,只好手動設
+
     quote1 = DragTable.createNew("quote1");
     quote2 = DragTable.createNew("quote2");
     forexMetalData = generateForexData();
