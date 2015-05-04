@@ -11,8 +11,8 @@ var DrawStyle = {
         ds.layerFillStyleTest = function (runChart) {
             var newLayer = $(runChart.valueCanvas);
             //for test
-            newLayer.css("top", "0");
-            newLayer.css("left", "0");
+            //newLayer.css("top", "0");
+            //newLayer.css("left", "0");
             //newLayer.css("top", "50px");
             //newLayer.css("left", "50px");
 
@@ -21,6 +21,100 @@ var DrawStyle = {
             //ctx.fillStyle = "#FFD6B3";
             //ctx.fillRect(0, 0, runChart.valueCanvas.width, runChart.valueCanvas.height);
         };
+
+        ds.drawMouseLayerMove = function () {
+            //mouseCtx
+            if(this.mouseLoc.inChartArea){
+                this.clearLayer(2);
+                ds.mouseInfo.call(this);
+            }
+        };
+
+        ds.mouseInfo = function () {
+            //drawValueVolumeInfo(drawData.valueList[info.timeStartIndex + index]);
+            var canvas = this.mouseCanvas;
+            var periodAxis = this.periodAxis;
+            var source = this.dataDriven.source;
+            var list = this.dataDriven.list;
+            var data = list[periodAxis.startIndex + this.mouseLoc.index];
+            var chartArea = this.area;
+
+            mouseGuideWires();
+            drawValueVolumeInfo();
+
+            function mouseGuideWires() {
+                mouseCtx.save();
+                //ctx.drawVerticalLine(data.x, chartArea.top, chartArea.y);
+                mouseCtx.drawHorizontalLine(chartArea.x, data.valueY, data.x - 2);//圓心左邊的線
+                mouseCtx.drawHorizontalLine(data.x + 2, data.valueY, chartArea.right);//圓心右邊的線
+                mouseCtx.drawVerticalLine(data.x, chartArea.top, data.valueY - 2);//圓心上面的線
+                mouseCtx.drawVerticalLine(data.x, data.valueY + 2, chartArea.y);//圓心下面的線
+                mouseCtx.beginPath();
+                mouseCtx.strokeStyle = "#FF7C00";
+                mouseCtx.lineWidth = 2;
+                mouseCtx.arc(data.x, data.valueY, 2, 0, Math.PI * 2, false);
+                mouseCtx.stroke();
+                //ctx.drawVerticalLine(x, chartArea.top, chartArea.y);
+                mouseCtx.restore();
+            }
+
+            function drawValueVolumeInfo() {
+                mouseCtx.save();
+
+                var variance = JsonTool.formatFloat(data.value - source.close, 2);
+                var multi = JsonTool.formatFloat(variance / source.close * 100, 2);
+                mouseCtx.font = "12px 微軟正黑體";
+                mouseCtx.textBaseline = "top";
+
+                var timeText = moment(data.time, "HHmm").format("HH:mm");
+                var timeMeasureText = mouseCtx.measureText(timeText);
+
+                var valueText = data.value;
+                var valueMeasureText = mouseCtx.measureText(valueText);
+
+                var volumeText = data.volume;
+                var volumeMeasureText = mouseCtx.measureText(volumeText);
+
+                var varianceText = variance.toString();
+                var varianceMeasureText = mouseCtx.measureText(varianceText);
+
+                var bgHeight = 14;
+                //時間bg
+                mouseCtx.fillStyle = "#FF7C00";
+                var bgWidth = (timeMeasureText.width + 4);
+                mouseCtx.fillRect(data.x - bgWidth / 2, chartArea.y, bgWidth, bgHeight);
+                //成交價bg
+                bgWidth = (valueMeasureText.width + 4);
+                mouseCtx.fillRect(chartArea.x - bgWidth, data.valueY - bgHeight / 2, bgWidth, bgHeight);
+                //成交量bg
+                mouseCtx.fillStyle = "blue";
+                bgWidth = (volumeMeasureText.width + 4);
+                mouseCtx.fillRect(chartArea.x - bgWidth, data.volumeY - bgHeight / 2, bgWidth, bgHeight);
+                //漲幅bg
+                mouseCtx.fillStyle = "#FF7C00";
+
+                var fixHeight = ($.browser.mozilla) ? 2 : -1;//2 for firefox
+                mouseCtx.fillStyle = "white";
+                mouseCtx.fillText(moment(data.time, "HHmm").format("HH:mm"), data.x - (timeMeasureText.width / 2), chartArea.y + fixHeight);
+                mouseCtx.fillText(valueText, chartArea.x - (valueMeasureText.width ) - 1, data.valueY - bgHeight / 2 + fixHeight);
+                mouseCtx.fillText(volumeText, chartArea.x - (volumeMeasureText.width ) - 1, data.volumeY - bgHeight / 2 + fixHeight);
+                if (variance > 0) {
+                    mouseCtx.fillStyle = "red";
+                } else if (variance < 0) {
+                    mouseCtx.fillStyle = "green";
+                } else {
+                    mouseCtx.fillStyle = "black";
+                }
+                mouseCtx.textAlign = "left";
+                mouseCtx.fillText(variance, chartArea.right, data.valueY - bgHeight + fixHeight);
+                mouseCtx.fillText(multi + "%", chartArea.right , data.valueY + fixHeight);
+
+                mouseCtx.restore();
+
+            }
+        };
+
+
 
         ds.drawValueAxis = function (axis) {//this = chart
             bgCtx.save();
@@ -139,7 +233,7 @@ var DrawStyle = {
                     ticks.addTick(top, "green");
                     top = JsonTool.formatFloat(top + ticks.distance, 2);
                 }
-                top = axis.data.close;
+                top = axis.source.close;
                 for (i = 0; i < ticks.count / 2; i++) {
                     if (i == 0) {
                         ticks.addTick(top, "black");

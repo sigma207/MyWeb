@@ -35,12 +35,13 @@ var Chart = {
             chart.drawStyle = drawStyle;
         };
 
-        chart.setDataSource = function (data, listName) {
-            chart.dataDriven = DataDriven.createNew(chart, data, listName);
+        chart.setDataSource = function (source, listName) {
+            chart.dataDriven = DataDriven.createNew(chart, source, listName);
             return chart.dataDriven;
         };
 
         chart.initLayer = function () {
+            $(chart.baseLayer).css("position","absolute");
             chart.layers.push(chart.baseLayer);
             chart.layerIndex = 0;
         };
@@ -64,7 +65,7 @@ var Chart = {
 
         chart.addMouseLayer = function (id) {
             var canvas = $(chart.addLayer(id));
-            canvas.mousemove(chart.canvasMouseMove);
+            canvas.mousemove(chart.onMouseMove);
             return canvas.eq(0);
         };
 
@@ -72,16 +73,24 @@ var Chart = {
             return chart.layers[index];
         };
 
-        chart.canvasMouseMove = function (e) {
+        chart.clearLayer = function (index){
+            var layer =chart.layers[index];
+            layer.getContext("2d").clearRect(0,0,layer.width,layer.height);
+        };
 
+        chart.onMouseMove = function (e) {
+            e.preventDefault;
             var temp = chart.windowToCanvas(e.clientX, e.clientY);
             chart.mouseLoc.x = temp.x;
             chart.mouseLoc.y = temp.y;
-            if(typeof chart.layerMouseMouse !== typeof undefined){
-                chart.layerMouseMouse();
-            }
+            //if(typeof chart.layerMouseMouse !== typeof undefined){
+            chart.mouseLayerMove();
+            //}
         };
 
+        chart.mouseLayerMove = function () {
+            console.log("Chart:mouseLayerMove");
+        };
 
 
         chart.windowToCanvas = function (x, y) {
@@ -98,16 +107,16 @@ var Chart = {
 };
 
 var DataDriven = {
-    createNew: function (chart, data, listName) {
+    createNew: function (chart, source, listName) {
         var dataDriven = {};
         dataDriven.chart = chart;
         dataDriven.listName = listName;
         dataDriven.reset = function (newData) {
-            dataDriven.data = newData;
-            dataDriven.list = data[listName];
+            dataDriven.source = newData;
+            dataDriven.list = source[listName];
             dataDriven.count = dataDriven.list.length;
         };
-        dataDriven.reset(data);
+        dataDriven.reset(source);
         return dataDriven;
     }
 };
@@ -143,13 +152,13 @@ var ValueAxis = {
     createNew: function (period, column, minColumn, maxColumn, x, y, height) {
         var axis = AxisY.createNew(x, y, height);
         axis.period = period;
-        axis.data = axis.period.chart.dataDriven.data;
+        axis.source = axis.period.chart.dataDriven.source;
         axis.column = column;
         axis.minColumn = minColumn;
         axis.maxColumn = maxColumn;
 
-        axis.valueMin = JsonTool.formatFloat(axis.data[axis.minColumn], 2);
-        axis.valueMax = JsonTool.formatFloat(axis.data[axis.maxColumn], 2);
+        axis.valueMin = JsonTool.formatFloat(axis.source[axis.minColumn], 2);
+        axis.valueMax = JsonTool.formatFloat(axis.source[axis.maxColumn], 2);
         axis.valueDistance = JsonTool.formatFloat(axis.valueMax - axis.valueMin, 2);
         axis.valueScale = axis.height / axis.valueDistance;
         axis.drawValueAxis = period.chart.drawStyle.drawValueAxis;
@@ -188,6 +197,14 @@ var PeriodAxis = {
         axis.convertX = function (index) {
             return Math.round(axis.chart.area.x + axis.scale + (index * axis.scale));
         };
+        axis.convertIndex = function (x) {
+            if (x < axis.chart.area.x + axis.scale) {
+                return -1;
+            } else {
+                return Math.round((x - (axis.chart.area.x + axis.scale)) / axis.scale);
+            }
+        };
+
         /**
          * 生成時間軸內資料的x,y
          */
@@ -259,6 +276,7 @@ var RunChart = {
             }
             chart.periodAxis.generateDataLoc();
             chart.drawAxis();
+
         };
 
         chart.drawAxis = function () {
@@ -273,8 +291,15 @@ var RunChart = {
             }
         };
 
-        chart.layerMouseMouse = function () {
-            console.log("layerMouseMouse");
+        //var superLayerMouseMove = chart.layerMouseMove;
+        chart.mouseLayerMove = function () {
+            //console.log("RunChart:mouseLayerMove");
+            var periodAxis = chart.periodAxis;
+            chart.mouseLoc.index =  periodAxis.convertIndex(chart.mouseLoc.x);
+            chart.mouseLoc.inChartArea = (chart.mouseLoc.x >= chart.area.x + periodAxis.scale && chart.mouseLoc.x <= chart.area.right - periodAxis.scale);
+
+            chart.drawStyle.drawMouseLayerMove.call(chart);
+            //superLayerMouseMove.call(chart);
         };
         return chart;
     }

@@ -29,8 +29,10 @@
         $(document).ready(function () {
             drawData = generateStockData()[0];
             generateValueList(drawData);
+
 //            var drawStyle = DrawStyle.createNew();
             var runChart = RunChart.createNew(document.getElementById("canvas"));
+            console.log(runChart);
             runChart.setDataSource(drawData, "valueList");
             runChart.setDrawStyle(DrawStyle.createNew(runChart));
             runChart.draw(chartInit);
