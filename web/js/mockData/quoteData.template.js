@@ -1,7 +1,7 @@
 /**
  * Created by user on 2015/4/21.
  */
-var forexName = ["美元 日圓", "歐元 美元", "英鎊 美元", "美元 人民幣"];
+var forexName = ["美元 人民幣", "美元 日圓", "歐元 美元", "英鎊 美元"];
 var metalName = ["倫敦金", "倫敦銀"];
 var forexMetalName = forexName.concat(metalName);
 var stockName = ["浦發銀行", "白雲機場", "武鋼股份", "東風汽車", "IF1505", "IF1506"];

@@ -449,17 +449,16 @@ function drawValueVolumeInfo(data) {
 function drawGuideWires(index) {
     ctx.save();
     var data = drawData.valueList[info.timeStartIndex + index];
-    //ctx.drawVerticalLine(data.x, chartArea.top, chartArea.y);
-    ctx.drawHorizontalLine(chartArea.x, data.valueY, data.x - 2);//圓心左邊的線
-    ctx.drawHorizontalLine(data.x + 2, data.valueY, chartArea.right);//圓心右邊的線
-    ctx.drawVerticalLine(data.x, chartArea.top, data.valueY - 2);//圓心上面的線
-    ctx.drawVerticalLine(data.x, data.valueY + 2, chartArea.y);//圓心下面的線
+    ctx.strokeStyle = "gray";
+    ctx.drawHorizontalLine(chartArea.x, data.valueY, chartArea.right);
+    ctx.drawVerticalLine(data.x, chartArea.top, chartArea.right);
     ctx.beginPath();
     ctx.strokeStyle = "#FF7C00";
+    ctx.fillStyle = "white";
     ctx.lineWidth = 2;
     ctx.arc(data.x, data.valueY, 2, 0, Math.PI * 2, false);
     ctx.stroke();
-    //ctx.drawVerticalLine(x, chartArea.top, chartArea.y);
+    ctx.fill();
     ctx.restore();
 }
 

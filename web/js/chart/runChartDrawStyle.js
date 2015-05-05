@@ -24,9 +24,26 @@ var DrawStyle = {
 
         ds.drawMouseLayerMove = function () {
             //mouseCtx
-            if(this.mouseLoc.inChartArea){
-                this.clearLayer(2);
-                ds.mouseInfo.call(this);
+            var mouse = this.mouse;
+            var mouseLast = this.mouseLast;
+            var periodAxis = this.periodAxis;
+            this.clearLayer(mouseCtx);
+            if(mouse.inChartArea){
+                if(mouse.dragging){
+                    var newStartIndex = -1;
+                    if (mouse.x > mouseLast.x && periodAxis.endIndex < this.dataDriven.count - 1) {
+                        newStartIndex = periodAxis.startIndex + 1;
+                    } else if (mouse.x < mouseLast.x && periodAxis.startIndex > 0) {
+                        newStartIndex = periodAxis.startIndex - 1;
+                    }
+                    if (newStartIndex != -1) {
+                        this.clearLayer(ctx);
+                        this.changePeriodRange(newStartIndex);
+                    }
+                }else{
+                    ds.mouseInfo.call(this);
+                }
+
             }
         };
 
@@ -36,7 +53,7 @@ var DrawStyle = {
             var periodAxis = this.periodAxis;
             var source = this.dataDriven.source;
             var list = this.dataDriven.list;
-            var data = list[periodAxis.startIndex + this.mouseLoc.index];
+            var data = list[periodAxis.startIndex + this.mouse.index];
             var chartArea = this.area;
 
             mouseGuideWires();
@@ -44,17 +61,16 @@ var DrawStyle = {
 
             function mouseGuideWires() {
                 mouseCtx.save();
-                //ctx.drawVerticalLine(data.x, chartArea.top, chartArea.y);
-                mouseCtx.drawHorizontalLine(chartArea.x, data.valueY, data.x - 2);//圓心左邊的線
-                mouseCtx.drawHorizontalLine(data.x + 2, data.valueY, chartArea.right);//圓心右邊的線
-                mouseCtx.drawVerticalLine(data.x, chartArea.top, data.valueY - 2);//圓心上面的線
-                mouseCtx.drawVerticalLine(data.x, data.valueY + 2, chartArea.y);//圓心下面的線
+                mouseCtx.strokeStyle = "gray";
+                mouseCtx.drawHorizontalLine(chartArea.x, data.valueY, chartArea.right);
+                mouseCtx.drawVerticalLine(data.x, chartArea.top, chartArea.y);
                 mouseCtx.beginPath();
                 mouseCtx.strokeStyle = "#FF7C00";
+                mouseCtx.fillStyle = "white";
                 mouseCtx.lineWidth = 2;
-                mouseCtx.arc(data.x, data.valueY, 2, 0, Math.PI * 2, false);
+                mouseCtx.arc(data.x, data.valueY, 3, 0, Math.PI * 2, false);
                 mouseCtx.stroke();
-                //ctx.drawVerticalLine(x, chartArea.top, chartArea.y);
+                mouseCtx.fill();
                 mouseCtx.restore();
             }
 
@@ -113,8 +129,6 @@ var DrawStyle = {
 
             }
         };
-
-
 
         ds.drawValueAxis = function (axis) {//this = chart
             bgCtx.save();

@@ -33,6 +33,10 @@ html, body {
     z-index: 0;
 }
 
+.sub_content{
+    margin-top: 10px;
+}
+
 .banner {
     position: absolute;
     top: 100px;
@@ -156,5 +160,5 @@ html, body {
 .describe {
     font-size: 18px;
     color: #888888;
-    margin: 0 5px 0 5px;
+    /*margin: 0 5px 0 5px;*/
 }

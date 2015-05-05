@@ -93,6 +93,9 @@ function onIndexLoad() {
         $(".oddEven>tbody>tr:odd").addClass("oddTr");
         $(".oddEven>tbody>tr:even").addClass("evenTr");
     }
+    var rowData = forexMetalData[0];
+    generateValueList(rowData);
+    runChart(rowData);
 }
 
 function changeLang(lang) {

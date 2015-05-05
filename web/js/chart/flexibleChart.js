@@ -14,7 +14,8 @@ var Chart = {
         chart.PADDING_LEFT = 0;
         chart.PADDING_RIGHT = 0;
         chart.drawStyle = undefined;
-        chart.mouseLoc = {};
+        chart.mouse = {};
+        chart.mouseLast = {};
         chart.padding = function () {
             if (arguments.length == 1) {
                 var padding = arguments[0];
@@ -41,7 +42,7 @@ var Chart = {
         };
 
         chart.initLayer = function () {
-            $(chart.baseLayer).css("position","absolute");
+            $(chart.baseLayer).css("position", "absolute");
             chart.layers.push(chart.baseLayer);
             chart.layerIndex = 0;
         };
@@ -66,6 +67,10 @@ var Chart = {
         chart.addMouseLayer = function (id) {
             var canvas = $(chart.addLayer(id));
             canvas.mousemove(chart.onMouseMove);
+            canvas.mousedown(chart.onMouseDown);
+            canvas.mouseout(chart.onMouseOut);
+            canvas.mouseup(chart.onMouseUp);
+            canvas.mousewheel(chart.onMouseWheel);
             return canvas.eq(0);
         };
 
@@ -73,23 +78,64 @@ var Chart = {
             return chart.layers[index];
         };
 
-        chart.clearLayer = function (index){
-            var layer =chart.layers[index];
-            layer.getContext("2d").clearRect(0,0,layer.width,layer.height);
+        chart.clearLayer = function (ctx) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         };
 
         chart.onMouseMove = function (e) {
-            e.preventDefault;
+            e.preventDefault();
             var temp = chart.windowToCanvas(e.clientX, e.clientY);
-            chart.mouseLoc.x = temp.x;
-            chart.mouseLoc.y = temp.y;
+            chart.mouse.x = temp.x;
+            chart.mouse.y = temp.y;
+
             //if(typeof chart.layerMouseMouse !== typeof undefined){
             chart.mouseLayerMove();
+            chart.mouseLast.x = chart.mouse.x;
+            chart.mouseLast.y = chart.mouse.y;
             //}
+        };
+
+        chart.onMouseDown = function (e) {
+            e.preventDefault();
+            chart.mouseLayerDown();
+        };
+
+        chart.onMouseOut = function (e) {
+            chart.mouseLayerOut();
+        };
+
+        chart.onMouseUp = function (e) {
+            chart.mouseLayerUp();
+        };
+
+        chart.onMouseWheel = function (e, delta) {
+            e.preventDefault();
+            if (delta > 1) {//有可能大於1或小於-1,要強迫修正
+                delta = 1;
+            } else if (delta < -1) {
+                delta = -1;
+            }
+            chart.mouseLayerWheel(delta);
         };
 
         chart.mouseLayerMove = function () {
             console.log("Chart:mouseLayerMove");
+        };
+
+        chart.mouseLayerDown = function () {
+
+        };
+
+        chart.mouseLayerUp = function () {
+
+        };
+
+        chart.mouseLayerOut = function () {
+
+        };
+
+        chart.mouseLayerWheel = function (delta) {
+
         };
 
 
@@ -222,6 +268,13 @@ var PeriodAxis = {
                 }
             }
         };
+
+        axis.changeDisplayRange = function (startIndex) {
+            axis.startIndex = startIndex;
+            axis.endIndex = axis.startIndex + axis.displayRange - 1;
+            axis.scale = axis.chart.area.width / (axis.displayRange + 1);
+
+        };
         return axis;
     }
 };
@@ -274,33 +327,69 @@ var RunChart = {
             if (typeof initFunction == "function") {
                 initFunction.call(this);//this = chart
             }
-            chart.periodAxis.generateDataLoc();
+            //chart.periodAxis.generateDataLoc();
             chart.drawAxis();
+            chart.drawPeriod();
+        };
 
+        chart.drawPeriod = function () {
+            var periodAxis = chart.periodAxis;
+            periodAxis.generateDataLoc();
+            periodAxis.drawPeriodAxisTicks.call(chart, periodAxis);
+            var valueAxis;
+            for (var i = 0; i < periodAxis.valueAxisList.length; i++) {
+                valueAxis = periodAxis.valueAxisList[i];
+                valueAxis.drawValueAxisData.call(chart, valueAxis);
+            }
         };
 
         chart.drawAxis = function () {
             var periodAxis = chart.periodAxis;
-            periodAxis.drawPeriodAxisTicks.call(chart, periodAxis);
+            //periodAxis.drawPeriodAxisTicks.call(chart, periodAxis);
             var valueAxis;
             for (var i = 0; i < periodAxis.valueAxisList.length; i++) {
                 valueAxis = periodAxis.valueAxisList[i];
                 valueAxis.drawValueAxis.call(chart, valueAxis);
                 valueAxis.drawValueAxisTicks.call(chart, valueAxis);
-                valueAxis.drawValueAxisData.call(chart, valueAxis);
+                //valueAxis.drawValueAxisData.call(chart, valueAxis);
             }
+        };
+
+        chart.changePeriodRange = function (startIndex) {
+            chart.periodAxis.changeDisplayRange(startIndex);
+            chart.drawPeriod();
         };
 
         //var superLayerMouseMove = chart.layerMouseMove;
         chart.mouseLayerMove = function () {
             //console.log("RunChart:mouseLayerMove");
             var periodAxis = chart.periodAxis;
-            chart.mouseLoc.index =  periodAxis.convertIndex(chart.mouseLoc.x);
-            chart.mouseLoc.inChartArea = (chart.mouseLoc.x >= chart.area.x + periodAxis.scale && chart.mouseLoc.x <= chart.area.right - periodAxis.scale);
+            chart.mouse.index = periodAxis.convertIndex(chart.mouse.x);
+            chart.mouse.inChartArea = (chart.mouse.x >= chart.area.x + periodAxis.scale && chart.mouse.x <= chart.area.right - periodAxis.scale);
 
             chart.drawStyle.drawMouseLayerMove.call(chart);
+            chart.mouseLast.index = chart.mouse.index;
             //superLayerMouseMove.call(chart);
         };
+
+        chart.mouseLayerDown = function () {
+            if (chart.mouse.inChartArea) {
+                chart.mouse.dragging = true;
+            }
+        };
+
+        chart.mouseLayerUp = function () {
+            chart.mouse.dragging = false;
+        };
+
+        chart.mouseLayerOut = function () {
+            chart.mouse.dragging = false;
+        };
+
+        chart.mouseLayerWheel = function (delta) {
+            //準備處理....
+        };
+
         return chart;
     }
 };

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Bezier</title>
+    <script type="text/javascript" src="../js/myCanvas.js"></script>
+</head>
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+<script>
+    var ctx = document.getElementById("canvas").getContext("2d");
+    ctx.fillStyle = "cornflowerblue";
+//    ctx.strokeStyle = "blue";
+
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+
+    ctx.strokeStyle = "gray";
+    ctx.beginPath();
+    ctx.moveTo(120, 130);
+    ctx.lineTo(200,150);
+    ctx.lineTo(220,250);
+    ctx.stroke();
+
+    ctx.strokeStyle = "red";
+    ctx.beginPath();
+    ctx.moveTo(120, 130);
+    ctx.quadraticCurveTo(200, 150, 220, 250);
+    ctx.stroke();
+
+//    ctx.drawPoint(120,130);
+    ctx.drawPoint(200,150);
+//    ctx.drawPoint(160,150);
+</script>
+</body>
+</html>
