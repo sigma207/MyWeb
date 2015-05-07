@@ -273,7 +273,37 @@ var PeriodAxis = {
             axis.startIndex = startIndex;
             axis.endIndex = axis.startIndex + axis.displayRange - 1;
             axis.scale = axis.chart.area.width / (axis.displayRange + 1);
+        };
 
+        axis.addDisplayRange = function (addValue) {
+            var newRange = axis.displayRange + (addValue * 2);
+            var start, end;
+            if (newRange <= axis.chart.dataDriven.count) {
+                if (newRange <= axis.displayRangeMin) {
+                    newRange = axis.displayRangeMin;//最小
+                } else {
+                    //範圍內隨便你
+                }
+            } else {
+                newRange = axis.chart.dataDriven.count;//最大
+            }
+            console.log("newRange="+newRange);
+            if (newRange != axis.displayRange) {
+                if (addValue > 0) {//addValue=1
+                    start = axis.startIndex - addValue;//30->29
+                    end = axis.endIndex + addValue;//39->40
+                } else {//addValue=-1
+                    start = axis.startIndex - addValue;//30->31
+                    end = axis.endIndex + addValue;//39->38
+                }
+            }
+
+            if (start >= 0 && end < axis.chart.dataDriven.count) {
+                axis.displayRange = newRange;
+                axis.changeDisplayRange(start);
+                return start;
+            }
+            return -1;
         };
         return axis;
     }
@@ -335,6 +365,7 @@ var RunChart = {
         chart.drawPeriod = function () {
             var periodAxis = chart.periodAxis;
             periodAxis.generateDataLoc();
+            chart.clearLayer(chart.valueCanvas.getContext("2d"));
             periodAxis.drawPeriodAxisTicks.call(chart, periodAxis);
             var valueAxis;
             for (var i = 0; i < periodAxis.valueAxisList.length; i++) {
@@ -387,7 +418,11 @@ var RunChart = {
         };
 
         chart.mouseLayerWheel = function (delta) {
-            //準備處理....
+            var periodAxis = chart.periodAxis;
+            var start = periodAxis.addDisplayRange(delta);
+            if(start!=-1){
+                chart.drawPeriod();
+            }
         };
 
         return chart;

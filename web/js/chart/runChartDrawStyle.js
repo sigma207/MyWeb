@@ -28,8 +28,8 @@ var DrawStyle = {
             var mouseLast = this.mouseLast;
             var periodAxis = this.periodAxis;
             this.clearLayer(mouseCtx);
-            if(mouse.inChartArea){
-                if(mouse.dragging){
+            if (mouse.inChartArea) {
+                if (mouse.dragging) {
                     var newStartIndex = -1;
                     if (mouse.x > mouseLast.x && periodAxis.endIndex < this.dataDriven.count - 1) {
                         newStartIndex = periodAxis.startIndex + 1;
@@ -40,7 +40,7 @@ var DrawStyle = {
                         this.clearLayer(ctx);
                         this.changePeriodRange(newStartIndex);
                     }
-                }else{
+                } else {
                     ds.mouseInfo.call(this);
                 }
 
@@ -48,8 +48,6 @@ var DrawStyle = {
         };
 
         ds.mouseInfo = function () {
-            //drawValueVolumeInfo(drawData.valueList[info.timeStartIndex + index]);
-            var canvas = this.mouseCanvas;
             var periodAxis = this.periodAxis;
             var source = this.dataDriven.source;
             var list = this.dataDriven.list;
@@ -123,7 +121,7 @@ var DrawStyle = {
                 }
                 mouseCtx.textAlign = "left";
                 mouseCtx.fillText(variance, chartArea.right, data.valueY - bgHeight + fixHeight);
-                mouseCtx.fillText(multi + "%", chartArea.right , data.valueY + fixHeight);
+                mouseCtx.fillText(multi + "%", chartArea.right, data.valueY + fixHeight);
 
                 mouseCtx.restore();
 
@@ -165,15 +163,15 @@ var DrawStyle = {
         ds.drawValueAxisData = function (valueAxis) {
             var periodAxis = valueAxis.period;
             var list = this.dataDriven.list;
-            var data,i;
+            var data, i;
             ctx.save();
-            if(valueAxis.column=="value"){
+            if (valueAxis.column == "value") {
                 var oldValue, newValue, x, y, oldX, oldY;
                 for (i = periodAxis.startIndex; i <= periodAxis.endIndex; i++) {
                     data = list[i];
                     newValue = data[valueAxis.column];
                     x = data.x;
-                    y = data[valueAxis.column+"Y"];
+                    y = data[valueAxis.column + "Y"];
                     if (i == 0) {
                     } else {
                         if (newValue > oldValue) {
@@ -190,7 +188,7 @@ var DrawStyle = {
                     oldY = y;
                     oldValue = newValue;
                 }
-            }else if(valueAxis.column=="volume"){
+            } else if (valueAxis.column == "volume") {
                 ctx.strokeStyle = "blue";
                 ctx.fillStyle = "#3E92FF";
                 var startX, endX, quarterScale = periodAxis.scale / 4;
@@ -200,8 +198,8 @@ var DrawStyle = {
                     startX = data.x - quarterScale;
                     endX = data.x + quarterScale;
                     ctx.moveTo(startX, valueAxis.y);
-                    ctx.lineTo(startX, data[valueAxis.column+"Y"]);
-                    ctx.lineTo(endX, data[valueAxis.column+"Y"]);
+                    ctx.lineTo(startX, data[valueAxis.column + "Y"]);
+                    ctx.lineTo(endX, data[valueAxis.column + "Y"]);
                     ctx.lineTo(endX, valueAxis.y);
                 }
                 ctx.stroke();
