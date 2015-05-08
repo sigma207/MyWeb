@@ -3,34 +3,390 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Bezier</title>
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="../js/myCanvas.js"></script>
+    <script type="text/javascript" src="../js/utility.js"></script>
 </head>
 <body>
-<canvas id="canvas" width="500" height="500"></canvas>
+<canvas id="canvas" width="800" height="500"></canvas>
 <script>
-    var ctx = document.getElementById("canvas").getContext("2d");
-    ctx.fillStyle = "cornflowerblue";
-//    ctx.strokeStyle = "blue";
-
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    var t = 0;
+    var baseImgData;
+    var bezierImgData;
+    var linePointImgData;
     ctx.lineWidth = 2;
-    ctx.lineCap = "round";
+    //    linear();
+    //        quadratic();
+    //    cubic();
+    testBezier();
+    function linear() {
+        var p0 = new Point(100, 100);
+        var p1 = new Point(200, 200);
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.stroke();
+        baseImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var moveId = setInterval(linearCurves, 50);
 
-    ctx.strokeStyle = "gray";
-    ctx.beginPath();
-    ctx.moveTo(120, 130);
-    ctx.lineTo(200,150);
-    ctx.lineTo(220,250);
-    ctx.stroke();
+        function linearCurves() {
+            ctx.putImageData(baseImgData, 0, 0);
+//            var x = (1 - t) * p0.x + t * p1.x;
+//            var y = (1 - t) * p0.y + t * p1.y;
+            var b = getLinearPoint(p0, p1, t);
+            ctx.strokeStyle = "red";
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+            ctx.fillText("t=" + t.toString(), 50, 50);
+            if (t >= 1) {
+                clearInterval(moveId);
+            }
+            t += 0.01;
+        }
+    }
 
-    ctx.strokeStyle = "red";
-    ctx.beginPath();
-    ctx.moveTo(120, 130);
-    ctx.quadraticCurveTo(200, 150, 220, 250);
-    ctx.stroke();
+    function quadratic() {
+        var p0 = new Point(100, 100);
+        var p1 = new Point(200, 20);
+        var p2 = new Point(300, 100);
+        var lastPoint = p0;
+        ctx.strokeStyle = "lightgray";
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+        ctx.fillText("P0", p0.x, p0.y);
+        ctx.fillText("P1", p1.x, p1.y);
+        ctx.fillText("P2", p2.x, p2.y);
+        ctx.strokeStyle = "lightblue";
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.quadraticCurveTo(p1.x, p1.y, p2.x, p2.y);
+        ctx.stroke();
+        baseImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        bezierImgData = baseImgData;
+        linePointImgData = baseImgData;
+        var moveId = setInterval(quadraticCurves, 50);
 
-//    ctx.drawPoint(120,130);
-    ctx.drawPoint(200,150);
-//    ctx.drawPoint(160,150);
+        function quadraticCurves() {
+            ctx.putImageData(bezierImgData, 0, 0);
+
+            var b = getQuadraticBezierPoint(p0, p1, p2);
+            ctx.strokeStyle = "red";
+            ctx.beginPath();
+            ctx.moveTo(lastPoint.x, lastPoint.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+
+            bezierImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+//            ctx.putImageData(baseImgData, 0, 0);
+
+            ctx.fillText("t=" + t.toString(), 50, 150);
+
+            var q0 = getLinearPoint(p0, p1, t);
+            var q1 = getLinearPoint(p1, p2, t);
+            ctx.strokeStyle = "lightgreen";
+            ctx.beginPath();
+            ctx.moveTo(q0.x, q0.y);
+            ctx.lineTo(q1.x, q1.y);
+            ctx.stroke();
+            ctx.fillText("Q0", q0.x, q0.y);
+            ctx.fillText("Q1", q1.x, q1.y);
+
+
+            ctx.fillStyle = "black";
+            ctx.arc(b.x, b.y, 2, 0, Math.PI * 2, true);
+            ctx.fill();
+            if (t >= 1) {
+                t = 0;
+                bezierImgData = baseImgData;
+                lastPoint = p0;
+            } else {
+                lastPoint = b;
+            }
+            t += 0.01;
+        }
+    }
+
+    function cubic() {
+        var p0 = new Point(50, 400);
+        var p1 = new Point(40, 50);
+        var p2 = new Point(350, 50);
+        var p3 = new Point(400, 400);
+        var lastPoint = p0;
+        ctx.strokeStyle = "lightgray";
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.lineTo(p3.x, p3.y);
+        ctx.stroke();
+        ctx.fillText("P0", p0.x, p0.y);
+        ctx.fillText("P1", p1.x, p1.y);
+        ctx.fillText("P2", p2.x, p2.y);
+        ctx.fillText("P3", p3.x, p3.y);
+        ctx.strokeStyle = "lightblue";
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+        ctx.stroke();
+        baseImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        bezierImgData = baseImgData;
+        setInterval(cubicCurves, 50);
+        function cubicCurves() {
+            ctx.putImageData(bezierImgData, 0, 0);
+
+            var b = getCubicBezierPoint(p0, p1, p2, p3);
+            ctx.strokeStyle = "red";
+            ctx.beginPath();
+            ctx.moveTo(lastPoint.x, lastPoint.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+
+            bezierImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            ctx.fillText("t=" + t.toString(), 50, 450);
+
+            var q0 = getLinearPoint(p0, p1, t);
+            var q1 = getLinearPoint(p1, p2, t);
+            var q2 = getLinearPoint(p2, p3, t);
+
+            ctx.strokeStyle = "lightgreen";
+            ctx.beginPath();
+            ctx.moveTo(q0.x, q0.y);
+            ctx.lineTo(q1.x, q1.y);
+            ctx.lineTo(q2.x, q2.y);
+            ctx.stroke();
+            ctx.fillText("Q0", q0.x, q0.y);
+            ctx.fillText("Q1", q1.x, q1.y);
+            ctx.fillText("Q2", q2.x, q2.y);
+            var r0 = getLinearPoint(q0, q1, t);
+            var r1 = getLinearPoint(q1, q2, t);
+            ctx.strokeStyle = "blue";
+            ctx.beginPath();
+            ctx.moveTo(r0.x, r0.y);
+            ctx.lineTo(r1.x, r1.y);
+            ctx.stroke();
+            ctx.fillText("R0", r0.x, r0.y);
+            ctx.fillText("R1", r1.x, r1.y);
+
+            ctx.fillStyle = "black";
+            ctx.arc(b.x, b.y, 2, 0, Math.PI * 2, true);
+            ctx.fill();
+            if (t >= 1) {
+                t = 0;
+                bezierImgData = baseImgData;
+                lastPoint = p0;
+            } else {
+                lastPoint = b;
+            }
+            t += 0.01;
+        }
+    }
+
+    function testBezier() {
+        var points = [];
+        points.push(new Point(50, 400));
+        points.push(new Point(40, 50));
+        points.push(new Point(350, 50));
+        points.push(new Point(400, 400));
+        points.push(new Point(500, 100));
+//        points.push(new Point(600, 400));
+        bezier(points);
+    }
+
+    function bezier(points) {
+        var lastPoint = points[0];
+        var i, point;
+        ctx.strokeStyle = "lightgray";
+        ctx.beginPath();
+        for (i = 0; i < points.length; i++) {
+            point = points[i];
+            if (i == 0) {
+                ctx.moveTo(point.x, point.y);
+            } else {
+                ctx.lineTo(point.x, point.y);
+            }
+        }
+        ctx.stroke();
+        for (i = 0; i < points.length; i++) {
+            point = points[i];
+            ctx.fillText("P" + i, point.x, point.y);
+        }
+
+//        //how to draw smooth curve through N points using javascript HTML5 canvas?
+//        //http://stackoverflow.com/questions/7054272/how-to-draw-smooth-curve-through-n-points-using-javascript-html5-canvas
+//        ctx.strokeStyle = "lightblue";
+//        ctx.beginPath();
+//        ctx.moveTo(points[0].x, points[0].y);
+//        for(i=1;i<points.length-2;i++) {
+//            var xc = (points[i].x + points[i + 1].x) / 2;
+//            var yc = (points[i].y + points[i + 1].y) / 2;
+//            ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+//        }
+//        ctx.quadraticCurveTo(points[i].x, points[i].y, points[i+1].x,points[i+1].y);
+//        ctx.stroke();
+        baseImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        bezierImgData = baseImgData;
+        setInterval(go, 50);
+        function go() {
+            ctx.putImageData(bezierImgData, 0, 0);
+
+            var i;
+            var b = P(points, t);
+            ctx.strokeStyle = "red";
+            ctx.beginPath();
+            ctx.moveTo(lastPoint.x, lastPoint.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+
+            bezierImgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            ctx.fillText("t=" + t.toString(), 50, 450);
+
+            var qList = [];
+            for(i=0;i<points.length-1;i++){
+                qList.push(getLinearPoint(points[i], points[i+1], t));
+            }
+            ctx.strokeStyle = "lightgreen";
+            ctx.beginPath();
+            for(i=0;i<qList.length;i++){
+                var qx = qList[i];
+                if(i==0){
+                    ctx.moveTo(qx.x, qx.y);
+                }else{
+                    ctx.lineTo(qx.x, qx.y);
+                }
+                ctx.fillText("Q"+i, qx.x, qx.y);
+            }
+            ctx.stroke();
+
+            var rList = [];
+            ctx.strokeStyle = "blue";
+            ctx.beginPath();
+            for(i=0;i<qList.length-1;i++){
+                var rx = getLinearPoint(qList[i], qList[i+1], t);
+                if(i==0){
+                    ctx.moveTo(rx.x, rx.y);
+                }else{
+                    ctx.lineTo(rx.x, rx.y);
+                }
+                ctx.fillText("R"+i, rx.x, rx.y);
+                rList.push(rx);
+            }
+            ctx.stroke();
+
+            ctx.strokeStyle = "purple";
+            ctx.beginPath();
+            for(i=0;i<rList.length-1;i++){
+                var sx = getLinearPoint(rList[i], rList[i+1], t);
+                if(i==0){
+                    ctx.moveTo(sx.x, sx.y);
+                }else{
+                    ctx.lineTo(sx.x, sx.y);
+                }
+                ctx.fillText("S"+i, sx.x, sx.y);
+//                rList.push(sx);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, 2, 0, Math.PI * 2, true);
+            ctx.fill();
+
+            if (t >= 1) {
+                t = 0;
+                bezierImgData = baseImgData;
+                lastPoint = points[0];
+            } else {
+                lastPoint = b;
+            }
+            t += 0.01;
+        }
+    }
+
+    function getLinearPoint(startPoint, endPoint, t) {
+        var x = (1 - t) * startPoint.x + t * endPoint.x;
+        var y = (1 - t) * startPoint.y + t * endPoint.y;
+        return new Point(x, y);
+    }
+
+    function getQuadraticBezierPoint(startPoint, controlPoint, endPoint) {
+        var x = Math.pow(1 - t, 2) * startPoint.x + 2 * t * (1 - t) * controlPoint.x + Math.pow(t, 2) * endPoint.x;
+        var y = Math.pow(1 - t, 2) * startPoint.y + 2 * t * (1 - t) * controlPoint.y + Math.pow(t, 2) * endPoint.y;
+        return new Point(x, y);
+    }
+
+    function getCubicBezierPoint(startPoint, controlPoint1, controlPoint2, endPoint) {
+        var x = Math.pow(1 - t, 3) * startPoint.x + 3 * t * Math.pow(1 - t, 2) * controlPoint1.x + 3 * Math.pow(t, 2) * (1 - t) * controlPoint2.x + Math.pow(t, 3) * endPoint.x;
+        var y = Math.pow(1 - t, 3) * startPoint.y + 3 * t * Math.pow(1 - t, 2) * controlPoint1.y + 3 * Math.pow(t, 2) * (1 - t) * controlPoint2.y + Math.pow(t, 3) * endPoint.y;
+        return new Point(x, y);
+    }
+
+    function getBezierCurvePoint(points, t) {
+        var n = points.length - 1;//
+        var x = 0, y = 0;
+        var point;
+
+//        x += Math.pow(1 - t, n) * point.x;
+//        y += Math.pow(1 - t, n) * point.y;
+
+        for (var i = 0; i < points.length; i++) {
+            point = points[i];
+            x += Math.pow(1 - t, n - i) * Math.pow(t, i) * point.x;
+            y += Math.pow(1 - t, n - i) * Math.pow(t, i) * point.y;
+        }
+
+//        point = points[points.length-1];
+//        x += Math.pow(t, n) * point.x;
+//        y += Math.pow(t, n) * point.y;
+        return new Point(x, y);
+    }
+
+    /**Computes factorial*/
+    function fact(k) {
+        if (k == 0 || k == 1) {
+            return 1;
+        }
+        else {
+            return k * fact(k - 1);
+        }
+    }
+
+    /**Computes Bernstain
+     *@param {Integer} i - the i-th index
+     *@param {Integer} n - the total number of points
+     *@param {Number} t - the value of parameter t , between 0 and 1
+     **/
+    function B(i, n, t) {
+        //if(n < i) throw "Wrong";
+        return fact(n) / (fact(i) * fact(n - i)) * Math.pow(t, i) * Math.pow(1 - t, n - i);
+    }
+
+
+    /**Computes a point's coordinates for a value of t
+     *@param {Number} t - a value between o and 1
+     *@param {Array} points - an {Array} of [x,y] coodinates. The initial points
+     **/
+    function P(points,t) {
+        var r = [0, 0];
+        var n = points.length - 1;
+        for (var i = 0; i <= n; i++) {
+            r[0] += points[i].x * B(i, n, t);
+            r[1] += points[i].y * B(i, n, t);
+        }
+        return new Point(r[0], r[1]);
+    }
+
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
 </script>
 </body>
 </html>
