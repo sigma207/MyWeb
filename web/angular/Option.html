@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Option</title>
+
+    <script type="text/javascript" src="../js/angular.min.js"></script>
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+//            angular.module("myApp", []).controller("MyController", MyController);
+        });
+
+        function MyController($scope,$timeout) {
+            $scope.queryType = [{value: "1019", label: "時間"}, {value: "1018", label: "價格"}];
+            $scope.selectQueryType = $scope.queryType[0];
+        }
+    </script>
+</head>
+<body ng-controller="MyController">
+<select ng-model="selectQueryType" ng-options="type.label for type in queryType">
+</select>
+<script>
+    var myApp = angular.module("myApp", []);
+    myApp.controller("MyController", MyController);
+    console.log(myApp);
+//    function MyController($scope,$timeout) {
+//        $scope.queryType = [{value: "1019", label: "時間"}, {value: "1018", label: "價格"}];
+//    }
+</script>
+</body>
+</html>
