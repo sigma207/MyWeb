@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Quote</title>
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../js/WebSocketManager.js"></script>
+    <script type="text/javascript" src="../js/quoteFormat.js"></script>
+    <script>
+        var wsm;
+        var messageDiv;
+        $(document).ready(function () {
+            console.log("init");
+            messageDiv = $("#message");
+            $("#stop").on("click", function (e) {
+                stop();
+            });
+            wsm = new WebSocketManager("ws://122.152.162.81:10890/websocket");
+            $(document).on("WebSocketDataEvent",onData);
+            $(document).on("WebSocketStateEvent",onState);
+            $(document).on("WebSocketLogEvent",onLog);
+//            document.addEventListener("WebSocketDataEvent", onData, false);
+//            document.addEventListener("WebSocketStateEvent", onState, false);
+//            document.addEventListener("WebSocketLogEvent", onLog, false);
+            wsm.connect();
+        });
+
+        function stop() {
+            var xx = '{"srv":"QUOTE","tr":"5002","tp":"r","zip":"0","encrypt":"0","mid":abc123,"c":{"tp":"RT,RQ,RB","es":"G|6ECC"}}';
+            wsm.send(xx);
+        }
+
+        $(window).unload(function () {
+            stop();
+        });
+        function onData(evt,data) {
+            var temp = JSON.parse(data);
+            console.log(JSON.parse(temp.c));
+
+            if (temp.tr == "5003") {
+                quoteFormat(JSON.parse(temp.c).data);
+                var xx = '{"srv":"QUOTE","tr":"5001","tp":"r","zip":"0","encrypt":"0","mid":abc123,"c":{"tp":"RT,RQ,RB","es":"G|6ECC"}}';
+                wsm.send(xx);
+            }
+        }
+        function onState(evt,readyState) {
+            messageDiv.html(messageDiv.html() + "<p>current state:" + readyState + "</p>");
+            if (readyState == 1) {
+                var xx = '{"srv":"QUOTE","tr":"5003","tp":"r","zip":"0","encrypt":"0","mid":abc123,"c":{"es":"G|6ECC"}}';
+                wsm.send(xx);
+            }
+        }
+        function onLog(evt,msg) {
+            messageDiv.html(messageDiv.html() + "<p>log:" + msg + "</p>");
+        }
+    </script>
+</head>
+<body>
+
+<input id="stop" type="button" value="stop"/>
+
+<div id="message"></div>
+</body>
+</html>

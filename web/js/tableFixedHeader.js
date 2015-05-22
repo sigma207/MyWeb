@@ -11,7 +11,7 @@ var FixedHeader = {
         fh.init = function () {
             fh.table.css("position", "relative");
             fh.scroll.on("scroll", function (e) {
-                fh.updatePosition();
+                //fh.updatePosition();
             });
 
             $(window).resize(function () {
@@ -37,10 +37,9 @@ var FixedHeader = {
             thList.each(function (index) {
                 $(this).css("width", thHolderList.eq(index).css("width"));
                 console.log(index+" "+$(this).css("width")+":"+thHolderList.eq(index).css("width"));
-
             });
             //tr.css("width", holderTr.css("width"));
-            fh.updatePosition();
+            //fh.updatePosition();
         };
 
         /**
@@ -55,7 +54,7 @@ var FixedHeader = {
 
             fh.tHead.after("<thead class='tHeadHolder'>" + fh.tHead.html() + "</thead>");
             fh.tHeadHolder = $(".tHeadHolder");
-            fh.tHead.css("position", "absolute");
+            fh.tHead.css("position", "fixed");
             //var tr = fh.tHead.children().eq(0);
             //tr.css("position", "absolute");
         };

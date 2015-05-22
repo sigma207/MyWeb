@@ -6,6 +6,18 @@
 
 }
 
+.dynamicTable thead,th {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.dynamicTable thead>tr {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 .dragOverColumn {
     border-style: dashed;
 }
