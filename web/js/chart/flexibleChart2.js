@@ -457,7 +457,9 @@ var RunChart = {
             var periodAxis = chart.periodAxis;
             var start = periodAxis.addDisplayRange(delta);
             if (start != -1) {
+                chart.layerManager.clearLayer(2);
                 chart.drawPeriod();
+                chart.mouseMove();
             }
         };
 

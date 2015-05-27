@@ -34,11 +34,13 @@
             var runChart = RunChart.createNew(document.getElementById("canvas"));
             var drawStyle = DrawStyle.createNew(runChart);
             console.log(runChart);
-            runChart.setDataSource(drawData, "valueList");
+
             runChart.padding(40, 20, 40, 40);
             runChart.init();
             var area = runChart.area;
             var spaceHeight = area.height / 20;
+
+            runChart.setDataSource(drawData, "valueList");
 
             var periodAxis = runChart.createPeriodAxis("time",10,10);
             var volumeAxis = periodAxis.createValueAxis("volume", "volumeMin", "volumeMax", area.x, area.y, area.height / 5);

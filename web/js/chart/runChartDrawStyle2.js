@@ -43,7 +43,7 @@ var DrawStyle = {
 
         ds.drawValueAxisData = function (ctx) {
             var valueAxis = this;
-            console.log("drawValueAxisData:%s",valueAxis.column);
+            //console.log("drawValueAxisData:%s",valueAxis.column);
             var periodAxis = valueAxis.period;
             var list = runChart.dataDriven.list;
             var data, i;
