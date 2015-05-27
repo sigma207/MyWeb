@@ -30,23 +30,19 @@
             drawData = generateStockData()[0];
             generateValueList(drawData);
 
-//            var drawStyle = DrawStyle.createNew();
             var runChart = RunChart.createNew(document.getElementById("canvas"));
-            var drawStyle = DrawStyle.createNew(runChart);
-            console.log(runChart);
 
             runChart.padding(40, 20, 40, 40);
             runChart.init();
             var area = runChart.area;
             var spaceHeight = area.height / 20;
 
-            runChart.setDataSource(drawData, "valueList");
-
             var periodAxis = runChart.createPeriodAxis("time",10,10);
             var volumeAxis = periodAxis.createValueAxis("volume", "volumeMin", "volumeMax", area.x, area.y, area.height / 5);
             var valueAxis = periodAxis.createValueAxis("value", "valueMin", "valueMax", area.x, volumeAxis.y - volumeAxis.height - spaceHeight, area.height - volumeAxis.height - spaceHeight);
             var mouse = runChart.createMouse(runChart.layerManager.getLayerById("mouseLayer"));
 
+            var drawStyle = DrawStyle.createNew(runChart);
             valueAxis.addLayerDrawFunction(0,drawStyle.drawValueAxis);
             valueAxis.addLayerDrawFunction(0,drawStyle.drawValueAxisTicks);
             volumeAxis.addLayerDrawFunction(0,drawStyle.drawValueAxis);
@@ -58,6 +54,9 @@
             periodAxis.addLayerDrawFunction(1,drawStyle.drawPeriodAxisTicks);
 
             mouse.addLayerDrawFunction(2,drawStyle.drawMouseLayerMove);
+
+            var dataDriven = DataDriven.createNew(runChart, drawData, "valueList");
+            runChart.setDataDriven(dataDriven);
 
             runChart.draw();
         });

@@ -27,11 +27,6 @@ var Chart = {
             }
         };
 
-        chart.setDataSource = function (source, listName) {
-            chart.dataDriven = DataDriven.createNew(chart, source, listName);
-            return chart.dataDriven;
-        };
-
         chart.windowToCanvas = function (x, y) {
             var bbox = canvas.getBoundingClientRect();
             return {
@@ -238,15 +233,17 @@ var ValueAxis = {
     createNew: function (period, column, minColumn, maxColumn, x, y, height) {
         var axis = AxisY.createNew(x, y, height);
         axis.period = period;
-        axis.source = axis.period.chart.dataDriven.source;
         axis.column = column;
         axis.minColumn = minColumn;
         axis.maxColumn = maxColumn;
 
-        axis.valueMin = JsonTool.formatFloat(axis.source[axis.minColumn], 2);
-        axis.valueMax = JsonTool.formatFloat(axis.source[axis.maxColumn], 2);
-        axis.valueDistance = JsonTool.formatFloat(axis.valueMax - axis.valueMin, 2);
-        axis.valueScale = axis.height / axis.valueDistance;
+        axis.onDataDriven = function () {
+            axis.source = axis.period.chart.dataDriven.source;
+            axis.valueMin = JsonTool.formatFloat(axis.source[axis.minColumn], 2);
+            axis.valueMax = JsonTool.formatFloat(axis.source[axis.maxColumn], 2);
+            axis.valueDistance = JsonTool.formatFloat(axis.valueMax - axis.valueMin, 2);
+            axis.valueScale = axis.height / axis.valueDistance;
+        };
 
         axis.convertY = function (value) {
             return Math.round((value - axis.valueMin) * axis.valueScale);
@@ -266,17 +263,23 @@ var PeriodAxis = {
         axis.valueAxisList = [];
         axis.displayRange = displayRange;
         axis.displayRangeMin = displayRangeMin;
-        axis.startIndex = runChart.dataDriven.count - axis.displayRange;
-        axis.endIndex = axis.startIndex + axis.displayRange - 1;
-        axis.scale = runChart.area.width / (axis.displayRange + 1);
+
+        axis.onDataDriven = function () {
+            axis.startIndex = runChart.dataDriven.count - axis.displayRange;
+            axis.endIndex = axis.startIndex + axis.displayRange - 1;
+            axis.scale = runChart.area.width / (axis.displayRange + 1);
+        };
+
         axis.createValueAxis = function (column, minColumn, maxColumn, x, y, height) {
             var valueAxis = ValueAxis.createNew(axis, column, minColumn, maxColumn, x, y, height);
             axis.valueAxisList.push(valueAxis);
             return valueAxis;
         };
+
         axis.convertX = function (index) {
             return Math.round(axis.chart.area.x + axis.scale + (index * axis.scale));
         };
+
         axis.convertIndex = function (x) {
             if (x < axis.chart.area.x + axis.scale) {
                 return -1;
@@ -367,7 +370,6 @@ var RunChart = {
 
         chart.layerManager.addLayer("valueLayer");
         chart.layerManager.addLayer("mouseLayer");
-        //chart.mouseCanvas = chart.addMouseLayer("mouseLayer");
 
         chart.init = function () {
             chart.setArea();
@@ -379,6 +381,17 @@ var RunChart = {
             chart.area.width = chart.area.right - chart.area.x;
             chart.area.top = chart.PADDING_TOP;
             chart.area.height = chart.area.y - chart.area.top;
+        };
+
+        chart.setDataDriven = function (dataDriven) {
+            chart.dataDriven = dataDriven;
+            var periodAxis = chart.periodAxis;
+            periodAxis.onDataDriven();
+            var valueAxis;
+            for (var i = 0; i < periodAxis.valueAxisList.length; i++) {
+                valueAxis = periodAxis.valueAxisList[i];
+                valueAxis.onDataDriven();
+            }
         };
 
         chart.createPeriodAxis = function (column, displayRange, displayRangeMin) {
@@ -451,6 +464,9 @@ var RunChart = {
 
         chart.mouseUp = function () {
             chart.mouse.dragging = false;
+            if(chart.mouse.inChartArea){
+                chart.mouseMove();
+            }
         };
 
         chart.mouseWheel = function (delta) {
