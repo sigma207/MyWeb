@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MyChart</title>
+    <style>
+        .canvasContainer{
+            position: relative;
+            padding: 0;
+            margin: 0;
+        }
+        .canvas{
+            position: relative;
+        }
+    </style>
+    <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="js/i18next-1.8.0.js"></script>
+    <script type="text/javascript" src="js/numeral.min.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
+    <script type="text/javascript" src="js/mock.js"></script>
+    <script type="text/javascript" src="js/utility.js"></script>
+    <script type="text/javascript" src="js/chart/chart.js"></script>
+    <script type="text/javascript" src="js/chart/flexibleChart2.js"></script>
+    <script type="text/javascript" src="js/chart/runChartDrawStyle2.js"></script>
+    <script type="text/javascript" src="js/mockData/quoteData.template.js"></script>
+    <script>
+        var drawData;
+        $(document).ready(function () {
+            drawData = generateStockData()[0];
+            generateValueList(drawData);
+
+//            var drawStyle = DrawStyle.createNew();
+            var runChart = RunChart.createNew(document.getElementById("canvas"));
+            var drawStyle = DrawStyle.createNew(runChart);
+            console.log(runChart);
+            runChart.setDataSource(drawData, "valueList");
+            runChart.padding(40, 20, 40, 40);
+            runChart.init();
+            var area = runChart.area;
+            var spaceHeight = area.height / 20;
+
+            var periodAxis = runChart.createPeriodAxis("time",10,10);
+            var volumeAxis = periodAxis.createValueAxis("volume", "volumeMin", "volumeMax", area.x, area.y, area.height / 5);
+            var valueAxis = periodAxis.createValueAxis("value", "valueMin", "valueMax", area.x, volumeAxis.y - volumeAxis.height - spaceHeight, area.height - volumeAxis.height - spaceHeight);
+            var mouse = runChart.createMouse(runChart.layerManager.getLayerById("mouseLayer"));
+
+            valueAxis.addLayerDrawFunction(0,drawStyle.drawValueAxis);
+            valueAxis.addLayerDrawFunction(0,drawStyle.drawValueAxisTicks);
+            volumeAxis.addLayerDrawFunction(0,drawStyle.drawValueAxis);
+            volumeAxis.addLayerDrawFunction(0,drawStyle.drawValueAxisTicks);
+
+            valueAxis.addLayerDrawFunction(1,drawStyle.drawValueAxisData);
+            volumeAxis.addLayerDrawFunction(1,drawStyle.drawValueAxisData);
+
+            periodAxis.addLayerDrawFunction(1,drawStyle.drawPeriodAxisTicks);
+
+            mouse.addLayerDrawFunction(2,drawStyle.drawMouseLayerMove);
+
+            runChart.draw();
+        });
+
+        function generateStockData(option) {
+            var data = [];
+            var temp;
+            for (var i = 0; i < stockName.length; i++) {
+                temp = Mock.mock(stockTemplate);
+                temp.name = stockName[i];
+                data.push(temp);
+            }
+            return data;
+        }
+    </script>
+</head>
+<body>
+<div class="canvasContainer">
+    <canvas id="canvas" class="canvas" width="500" height="500"></canvas>
+</div>
+
+<script>
+</script>
+</body>
+</html>

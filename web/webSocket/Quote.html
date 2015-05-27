@@ -6,6 +6,7 @@
     <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="../js/WebSocketManager.js"></script>
     <script type="text/javascript" src="../js/quoteFormat.js"></script>
+    <script type="text/javascript" src="../js/pako.js"></script>
     <script>
         var wsm;
         var messageDiv;
@@ -15,7 +16,8 @@
             $("#stop").on("click", function (e) {
                 stop();
             });
-            wsm = new WebSocketManager("ws://122.152.162.81:10890/websocket");
+//            wsm = new WebSocketManager("ws://122.152.162.81:10890/websocket");
+            wsm = new WebSocketManager("ws://122.152.162.81:10891/websocket");
             $(document).on("WebSocketDataEvent",onData);
             $(document).on("WebSocketStateEvent",onState);
             $(document).on("WebSocketLogEvent",onLog);
@@ -28,25 +30,43 @@
         function stop() {
             var xx = '{"srv":"QUOTE","tr":"5002","tp":"r","zip":"0","encrypt":"0","mid":abc123,"c":{"tp":"RT,RQ,RB","es":"G|6ECC"}}';
             wsm.send(xx);
+            wsm.close();
         }
 
-        $(window).unload(function () {
+        $(window).on("beforeunload", function () {
             stop();
         });
         function onData(evt,data) {
             var temp = JSON.parse(data);
-            console.log(JSON.parse(temp.c));
+//            console.log(JSON.parse(temp.c));
 
             if (temp.tr == "5003") {
                 quoteFormat(JSON.parse(temp.c).data);
                 var xx = '{"srv":"QUOTE","tr":"5001","tp":"r","zip":"0","encrypt":"0","mid":abc123,"c":{"tp":"RT,RQ,RB","es":"G|6ECC"}}';
                 wsm.send(xx);
+            } else if(temp.tr="1001"){
+                var objContentBase64EncodedCompressedBytesInStr = temp['c'].replace('\r\n', '');
+                var objContentCompressedBytesInStr = atob(objContentBase64EncodedCompressedBytesInStr);
+                var decompressedBytes = pako.ungzip(objContentCompressedBytesInStr); // Ungzip it.
+                console.log(decompressedBytes);
+
+                var blob = new Blob([new Uint8Array(decompressedBytes)]); // Store it to blob for FileReader.
+                var filereader = new FileReader();
+                var L_this = this;
+                filereader.onload = function (IN_event) {
+                    temp['zip'] = '0';
+                    temp['c'] = JSON.parse(IN_event.target.result);
+                    temp['c'] = temp['c'].replace(/\u0003/g, '\r\n');
+                    console.log(temp);
+                };
+                filereader.readAsText(blob);
             }
         }
         function onState(evt,readyState) {
             messageDiv.html(messageDiv.html() + "<p>current state:" + readyState + "</p>");
             if (readyState == 1) {
-                var xx = '{"srv":"QUOTE","tr":"5003","tp":"r","zip":"0","encrypt":"0","mid":abc123,"c":{"es":"G|6ECC"}}';
+//                var xx = '{"srv":"QUOTE","tr":"5003","tp":"r","zip":"0","encrypt":"0","mid":abc123,"c":{"es":"G|6ECC"}}';
+                var xx = '{"srv":"TICK","tr":"1001","tp":"r","zip":"0","encrypt":"0","mid":abc123,"c":{"ex":"G","id":"6ECC","td":"20150525","bt":"09:00:00","et":"11:06:00"}}';
                 wsm.send(xx);
             }
         }
