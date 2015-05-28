@@ -110,8 +110,11 @@ var DrawStyle = {
             }
             var list = runChart.dataDriven.list;
             for (var i = axis.startIndex; i < axis.endIndex; i += timeStep) {
-                ctx.fillText(moment(list[i][axis.column], "HHmm").format("HH:mm"), axis.convertX(timeIndex), y);
-                timeIndex += timeStep;
+                if(i<list.length){
+                    ctx.fillText(moment(list[i][axis.column], "HHmm").format("HH:mm"), axis.convertX(timeIndex), y);
+                    timeIndex += timeStep;
+                }
+
             }
             if (i != axis.endIndex - 1) {
                 //ctx.fillText(moment(drawData.valueList[info.timeEndIndex].time, "HHmm").format("HH:mm"), convertRangeX(info.displayTimeRange - 1), y);

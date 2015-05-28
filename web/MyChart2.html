@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <title>MyChart</title>
     <style>
-        .canvasContainer{
+        .canvasContainer {
             position: relative;
             padding: 0;
             margin: 0;
         }
-        .canvas{
+
+        .canvas {
             position: relative;
         }
     </style>
@@ -30,6 +31,34 @@
             drawData = generateStockData()[0];
             generateValueList(drawData);
 
+            var today = moment().format('YYYYMMDD');
+            console.log(today);
+            var startTime = moment(today + "090000", "YYYYMMDDHHmmss");
+            var endTime = moment(today + "170000", "YYYYMMDDHHmmss");
+            console.log(startTime.from(endTime));
+            console.log(endTime.diff(startTime, "minute"));
+            console.log(endTime.diff(startTime, "second"));
+            var timeSeconds = endTime.diff(startTime, "second");
+//            var tickCount = timeSeconds / TickType.MINUTE;
+            var tickCount = 10000;
+            var tickList = [];
+//            console.log(startTime.add(5,"minute").format('YYYYMMDDHHmmss'));
+            var time = startTime;
+            var i;
+            console.time("time");
+            for (i = 0; i < tickCount; i++) {
+//                time = time.add(1+i,"minute").format("HHmm");
+//                startTime.add(1,"minute");
+                tickList.push(moment(startTime.add(1,"minute")));
+//                tickList.push(startTime.add(1,"minute").format("HHmm"));
+//                console.log(startTime.format("HHmm"));
+//                tickList.push(startTime.add(1+i,"minute").format("HHmm"));
+            }
+            console.timeEnd("time");
+//            for (i = 0; i < tickCount; i++) {
+////                console.log(tickList[i].format("HHmm"));
+//            }
+            console.log(tickList);
             var runChart = RunChart.createNew(document.getElementById("canvas"));
 
             runChart.padding(40, 20, 40, 40);
@@ -37,23 +66,23 @@
             var area = runChart.area;
             var spaceHeight = area.height / 20;
 
-            var periodAxis = runChart.createPeriodAxis("time",10,10);
+            var periodAxis = runChart.createPeriodAxis("time", startTime, endTime, TickType.MINUTE);
             var volumeAxis = periodAxis.createValueAxis("volume", "volumeMin", "volumeMax", area.x, area.y, area.height / 5);
             var valueAxis = periodAxis.createValueAxis("value", "valueMin", "valueMax", area.x, volumeAxis.y - volumeAxis.height - spaceHeight, area.height - volumeAxis.height - spaceHeight);
             var mouse = runChart.createMouse(runChart.layerManager.getLayerById("mouseLayer"));
 
             var drawStyle = DrawStyle.createNew(runChart);
-            valueAxis.addLayerDrawFunction(0,drawStyle.drawValueAxis);
-            valueAxis.addLayerDrawFunction(0,drawStyle.drawValueAxisTicks);
-            volumeAxis.addLayerDrawFunction(0,drawStyle.drawValueAxis);
-            volumeAxis.addLayerDrawFunction(0,drawStyle.drawValueAxisTicks);
+            valueAxis.addLayerDrawFunction(0, drawStyle.drawValueAxis);
+            valueAxis.addLayerDrawFunction(0, drawStyle.drawValueAxisTicks);
+            volumeAxis.addLayerDrawFunction(0, drawStyle.drawValueAxis);
+            volumeAxis.addLayerDrawFunction(0, drawStyle.drawValueAxisTicks);
 
-            valueAxis.addLayerDrawFunction(1,drawStyle.drawValueAxisData);
-            volumeAxis.addLayerDrawFunction(1,drawStyle.drawValueAxisData);
+            valueAxis.addLayerDrawFunction(1, drawStyle.drawValueAxisData);
+            volumeAxis.addLayerDrawFunction(1, drawStyle.drawValueAxisData);
 
-            periodAxis.addLayerDrawFunction(1,drawStyle.drawPeriodAxisTicks);
+            periodAxis.addLayerDrawFunction(1, drawStyle.drawPeriodAxisTicks);
 
-            mouse.addLayerDrawFunction(2,drawStyle.drawMouseLayerMove);
+            mouse.addLayerDrawFunction(2, drawStyle.drawMouseLayerMove);
 
             var dataDriven = DataDriven.createNew(runChart, drawData, "valueList");
             runChart.setDataDriven(dataDriven);

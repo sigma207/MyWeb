@@ -255,17 +255,46 @@ var ValueAxis = {
         return axis;
     }
 };
+var TickType = {
+    SECOND: 1,
+    MINUTE: 60
+};
+
+var TimeTick = {
+    createNew: function (startTime, endTime, tickType) {
+        var tt = {};
+        tt.startTime = startTime;
+        tt.endTime = endTime;
+        tt.timeSeconds = endTime.diff(startTime, "second");
+        tt.tickCount = tt.timeSeconds / tickType;
+
+        for(var i=0;i<tt.tickCount;i++){
+
+        }
+    }
+
+};
 
 var PeriodAxis = {
-    createNew: function (runChart, displayRange, displayRangeMin) {
+    createNew: function (runChart, startTime, endTime, tickType) {
         var axis = AxisX.createNew(runChart.area.x, runChart.area.y, runChart.area.width);
         axis.chart = runChart;
         axis.valueAxisList = [];
-        axis.displayRange = displayRange;
-        axis.displayRangeMin = displayRangeMin;
+        axis.startTime = startTime;
+        axis.endTime = endTime;
+        axis.tickType = tickType;
+        axis.timeSeconds = axis.endTime.diff(axis.startTime, "second");
+        axis.tickCount = axis.timeSeconds / axis.tickType;
+        axis.tickList = [];
+        axis.displayRange = 0;
+        axis.displayRangeMin = 0;
 
         axis.onDataDriven = function () {
-            axis.startIndex = runChart.dataDriven.count - axis.displayRange;
+            if (axis.displayRange == 0) {
+                axis.displayRange = axis.tickCount;
+                axis.displayRangeMin = axis.displayRange;
+            }
+            axis.startIndex = 0;
             axis.endIndex = axis.startIndex + axis.displayRange - 1;
             axis.scale = runChart.area.width / (axis.displayRange + 1);
         };
@@ -274,6 +303,14 @@ var PeriodAxis = {
             var valueAxis = ValueAxis.createNew(axis, column, minColumn, maxColumn, x, y, height);
             axis.valueAxisList.push(valueAxis);
             return valueAxis;
+        };
+
+        axis.generateTickTime = function () {
+
+        };
+
+        axis.getTimeByIndex = function (index) {
+            //moment(axis.startTime)
         };
 
         axis.convertX = function (index) {
@@ -296,7 +333,9 @@ var PeriodAxis = {
             var data;
             var valueAxis;
             var valueAxisCount = axis.valueAxisList.length;
-            for (var i = 0, timeIndex = axis.startIndex; i < axis.displayRange; i++, timeIndex++) {
+            for (var i = 0, timeIndex = axis.startIndex;
+                 i < axis.displayRange && timeIndex < axis.chart.dataDriven.count;
+                 i++, timeIndex++) {
                 data = list[timeIndex];
                 data.x = axis.convertX(i);
                 for (var v = 0; v < valueAxisCount; v++) {
@@ -394,14 +433,13 @@ var RunChart = {
             }
         };
 
-        chart.createPeriodAxis = function (column, displayRange, displayRangeMin) {
-            chart.periodAxis = PeriodAxis.createNew(chart, displayRange, displayRangeMin);
+        chart.createPeriodAxis = function (column, startTime, endTime, tickType) {
+            chart.periodAxis = PeriodAxis.createNew(chart, startTime, endTime, tickType);
             chart.periodAxis.column = column;
             return chart.periodAxis;
         };
 
         chart.draw = function () {
-            //chart.periodAxis.generateDataLoc();
             chart.drawAxis();
             chart.drawPeriod();
         };
@@ -464,7 +502,7 @@ var RunChart = {
 
         chart.mouseUp = function () {
             chart.mouse.dragging = false;
-            if(chart.mouse.inChartArea){
+            if (chart.mouse.inChartArea) {
                 chart.mouseMove();
             }
         };
