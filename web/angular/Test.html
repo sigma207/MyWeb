@@ -2,7 +2,7 @@
 <html ng-app="myApp">
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Clock</title>
+    <title>Modal</title>
     <style>
         .animate-enter {
             -webkit-transition: 1s linear all; /* Chrome */
@@ -77,18 +77,36 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
+                    <button type="button" class="close" aria-label="Close" ng-click="$hide()"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Hey Ho Let's Go!</h4>
                 </div>
-                <div class="modal-body" ng-bind="content"></div>
+                <div class="modal-body">
+                    {{myName}}
+                    <button ng-click="showChildModal()">TEST</button>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
                 </div>
             </div>
         </div>
     </div>
-
 </script>
-
+<script type="text/ng-template" id="child.html">
+    <div class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" aria-label="Close" ng-click="$hide()"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">child</h4>
+                </div>
+                <div class="modal-body">{{myName}}</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
 
 <script type="text/javascript">
     var app = angular.module("myApp", ["ngAnimate","ngSanitize","mgcrea.ngStrap"]);
@@ -110,14 +128,40 @@
             });
         };
         $scope.modal = {title: 'Title', content: 'Hello Modal<br />This is a multiline message!'};
-        function MyController($scope) {
+
+
+        $scope.myName = 'abc';
+        function MyController() {
             $log.info("MyController");
+            $log.info( $scope.myName );
+
+            var childModal = $modal({
+                scope: $scope,
+                controller: ChildController,
+                templateUrl: "child.html",
+                animation: 'am-fade-and-scale',
+                show: false
+            });
+
+            $scope.showChildModal = function () {
+                childModal.$promise.then(childModal.show);
+            };
+            $scope.hideChildModal = function () {
+                childModal.$promise.then(childModal.hide);
+            };
+            $log.info($scope.showChildModal);
         }
 
-        MyController.$inject = ['$scope'];
+        function ChildController() {
+            $log.info("ChildController");
+            $log.info($scope.showChildModal);
+        }
+
         var myModal = $modal({
+            scope: $scope,
             controller: MyController,
             templateUrl: "test.html",
+            animation: 'am-fade-and-scale',
             show: false
         });
 
@@ -127,6 +171,8 @@
         $scope.hideModal = function () {
             myModal.$promise.then(myModal.hide);
         };
+
+        $log.info($scope.showChildModal);
     }
 </script>
 </body>
