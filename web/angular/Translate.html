@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Translate</title>
+    <script type="text/javascript" src="../js/angular.min.js"></script>
+    <script type="text/javascript" src="../js/angular-translate.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-translate-loader-static-files/2.6.1/angular-translate-loader-static-files.js"></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-translate-loader-url/2.6.1/angular-translate-loader-url.js"></script>-->
+    <script type="text/javascript" src="../js/angular-translate-loader-url.js"></script>
+</head>
+<body ng-controller="MyController">
+{{'title'|translate}}
+<button ng-click="changeLang('en-US')">en</button>
+<button ng-click="changeLang('zh-TW')">zh</button>
+<script type="text/javascript">
+
+    var app = angular.module("myApp", ["pascalprecht.translate"]);
+    app.config(function ($translateProvider) {
+//        console.log("abc");
+//        $translateProvider.translations("en-US", {
+//            title: "title"
+//        }).translations("zh-TW", {
+//            title: "標題"
+//        });
+
+//        $translateProvider.useStaticFilesLoader({
+//            prefix: '../languages/',
+//            suffix: '.json'
+//        });
+        $translateProvider.preferredLanguage("en-US");
+    });
+    app.controller("MyController", MyController);
+    function MyController($scope, $translate) {
+        $scope.changeLang = function (lang) {
+            $translate.use(lang);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Clock</title>
+    <style>
+        .animate-enter {
+            -webkit-transition: 1s linear all; /* Chrome */
+            transition: 1s linear all;
+            opacity: 0;
+        }
+
+        .animate-enter.animate-enter-active {
+            opacity: 1;
+        }
+
+        .modal-backdrop.am-fade {
+            opacity: .7;
+            transition: opacity .35s linear;
+        }
+        .modal-backdrop.am-fade.ng-enter {
+            opacity: 0;
+        }
+        .modal-backdrop.am-fade.ng-enter.ng-enter-active {
+            opacity: .5;
+        }
+
+        .modal-backdrop.am-fade.ng-leave {
+            opacity: .5;
+        }
+        .modal-backdrop.am-fade.ng-leave.ng-leave-active {
+            opacity: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/angular-motion.css">
+    <!--<link rel="stylesheet" href="//mgcrea.github.io/angular-strap/styles/libs.min.css">-->
+    <script type="text/javascript" src="../js/angular.min.js"></script>
+    <script type="text/javascript" src="../js/angular/angular-sanitize.js"></script>
+    <script type="text/javascript" src="../js/angular/angular-animate.min.js"></script>
+    <script type="text/javascript" src="../js/angular/angular-strap.js"></script>
+    <script type="text/javascript" src="../js/angular/angular-strap.tpl.js"></script>
+
+
+</head>
+<body>
+
+<div ng-controller="TestController">
+    <h1>Hello</h1>
+    <button class="btn btn-sm btn-success" ng-click="query()">SEARCH</button>
+    <button type="button" class="btn btn-lg btn-primary" data-animation="am-fade-and-scale" data-placement="center" bs-modal="modal">Click to toggle modal
+        <br />
+        <small>(using an object)</small>
+    </button>
+    <button ng-click="showModal()">TEST</button>
+</div>
+<script type="text/ng-template" id="modal.custom.html">
+    <div class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" ng-show="title">
+                    <button type="button" class="close" aria-label="Close" ng-click="$hide()"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" ng-bind="title"></h4></div>
+                <div class="modal-body">
+                    ABC
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/ng-template" id="test.html">
+    <div class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Hey Ho Let's Go!</h4>
+                </div>
+                <div class="modal-body" ng-bind="content"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+
+<script type="text/javascript">
+    var app = angular.module("myApp", ["ngAnimate","ngSanitize","mgcrea.ngStrap"]);
+    app.config(function($modalProvider) {
+        angular.extend($modalProvider.defaults, {
+            html: true
+        });
+    });
+    app.controller("TestController", TestController);
+    function TestController($scope, $log, $modal) {
+        $scope.query = function (){
+            var modal = $modal({
+                scope: $scope,
+                show: true,
+                animation: 'am-fade-and-scale',
+                placement: 'center',
+                //template: '/templates/sql-dba-request-list-group.html'
+                template: 'modal.custom.html'
+            });
+        };
+        $scope.modal = {title: 'Title', content: 'Hello Modal<br />This is a multiline message!'};
+        function MyController($scope) {
+            $log.info("MyController");
+        }
+
+        MyController.$inject = ['$scope'];
+        var myModal = $modal({
+            controller: MyController,
+            templateUrl: "test.html",
+            show: false
+        });
+
+        $scope.showModal = function () {
+            myModal.$promise.then(myModal.show);
+        };
+        $scope.hideModal = function () {
+            myModal.$promise.then(myModal.hide);
+        };
+    }
+</script>
+</body>
+</html>

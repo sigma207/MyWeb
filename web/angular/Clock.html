@@ -12,7 +12,7 @@
     <h1>Hello{{clock}}</h1>
 </div>
 <script type="text/javascript">
-    angular.module("myApp",[]).controller("MyController",MyController);
+    angular.module("myApp",["mgcrea.ngStrap"]).controller("MyController",MyController);
     function MyController($scope,$timeout){
         console.log("mycontroller");
         var updateClock = function(){

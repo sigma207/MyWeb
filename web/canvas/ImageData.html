@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>ImageData</title>
+</head>
+<body>
+<canvas id="canvas" width="300" height="300"></canvas>
+<script>
+    function Dot(x, y, r, g, b, a) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+        var d = this;
+        this.changeColor = function () {
+            var r = d.r;
+            d.r = d.g;
+            d.g = d.b;
+            d.b = r;
+        };
+        this.moveY = function (y) {
+            d.y += y;
+        };
+        this.changeColor();
+    }
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    //    ctx.fillStyle = "#FF0000";
+    //    ctx.fillRect(0, 0, 150, 300);
+    ctx.font = "50px 微软雅黑 bold";
+    ctx.fillStyle = "#0000AA";
+    //    ctx.fillRect(150, 0, 150, 300);
+
+    ctx.fillText("ABCD", 100, 100);
+
+    var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    var dots = [];
+    var i, width = imgData.width, height = imgData.height;
+    var imgDataLength = imgData.data.length;
+    var data = undefined;
+
+    //        console.log("y=%s",y);
+    for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+            i = (x + (y * width )) * 4;
+            if (imgData.data[i + 3] > 0) {
+                dots.push(new Dot(x, y, imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], imgData.data[i + 3]));
+            }
+//            console.log("x=%s,y=%s,i=%s,r=%s,g=%s,b=%s", x, y, i, imgData.data[i], imgData.data[i + 1], imgData.data[i + 2]);
+        }
+    }
+    console.log(dots);
+    render();
+
+    function render() {
+//        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        console.time("render dot");
+        var count = dots.length;
+        var dot = undefined;
+
+        for (i = 0; i < count; i++) {
+            dot = dots[i];
+            dot.moveY(50);
+            ctx.fillStyle = "rgba(" + dot.r + "," + dot.g + "," + dot.b + "," + dot.a + ")";
+            ctx.beginPath();
+            ctx.arc(dot.x, dot.y, 1, 0, 2 * Math.PI, false);
+            ctx.fill();
+//        ctx.fillRect(dot.x, dot.y,1,1);
+        }
+        console.timeEnd("render dot");
+    }
+
+</script>
+</body>
+</html>

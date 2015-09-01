@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tree</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="../css/bootstrap-treeview.min.css">-->
+    <script type="text/javascript" src="../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap-treeview.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            console.log("ready");
+            $("#tree").treeview({data: getTree(),backColor: 'green'});
+        });
+
+        function getTree() {
+            return [
+                {
+                    text: "root1",
+                    nodes:[
+                        {
+                            text:"child1-1",
+                            nodes:[
+                                {
+                                    text:"child1-1-1"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    text: "root2"
+                }
+            ];
+        }
+    </script>
+</head>
+<body>
+<div id="tree"></div>
+</body>
+</html>
