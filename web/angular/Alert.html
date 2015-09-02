@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Alert</title>
+    <style>
+        .animate-enter {
+            -webkit-transition: 1s linear all; /* Chrome */
+            transition: 1s linear all;
+            opacity: 0;
+        }
+
+        .animate-enter.animate-enter-active {
+            opacity: 1;
+        }
+
+        .modal-backdrop.am-fade {
+            opacity: .7;
+            transition: opacity .35s linear;
+        }
+        .modal-backdrop.am-fade.ng-enter {
+            opacity: 0;
+        }
+        .modal-backdrop.am-fade.ng-enter.ng-enter-active {
+            opacity: .5;
+        }
+
+        .modal-backdrop.am-fade.ng-leave {
+            opacity: .5;
+        }
+        .modal-backdrop.am-fade.ng-leave.ng-leave-active {
+            opacity: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/angular-motion.css">
+    <!--<link rel="stylesheet" href="//mgcrea.github.io/angular-strap/styles/libs.min.css">-->
+    <script type="text/javascript" src="../js/angular.min.js"></script>
+    <script type="text/javascript" src="../js/angular/angular-sanitize.js"></script>
+    <script type="text/javascript" src="../js/angular/angular-animate.min.js"></script>
+    <script type="text/javascript" src="../js/angular/angular-strap.js"></script>
+    <script type="text/javascript" src="../js/angular/angular-strap.tpl.js"></script>
+
+
+</head>
+<body>
+
+<div ng-controller="TestController">
+    <h1>Hello</h1>
+    <button ng-click="showAlert()">TEST</button>
+</div>
+
+<script type="text/javascript">
+    var app = angular.module("myApp", ["ngAnimate","ngSanitize","mgcrea.ngStrap"]);
+
+    app.controller("TestController", TestController);
+    function TestController($scope, $log, $alert) {
+        var myAlert = $alert({title: 'Holy guacamole!', content: 'Best check yo self, you\'re not looking too good.', placement: 'top', type: 'danger', keyboard: true, show: false});
+        $scope.showAlert = function() {
+            myAlert.show(); // or myAlert.$promise.then(myAlert.show) if you use an external html template
+        };
+    }
+</script>
+</body>
+</html>

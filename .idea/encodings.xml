@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/src/com/sigma/ws/ChatEntPoint.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/css/jelly/index.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/css/jelly/main.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/js/chart/runChart.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/js/jelly.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/js/jelly/main.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/js/mockData/quoteData.template.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/js/tableFixedHeader.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/locales/en-US/jelly.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/locales/zh-CN/jelly.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/locales/zh-TW/jelly.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/ui/quoteData.template.js" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>
